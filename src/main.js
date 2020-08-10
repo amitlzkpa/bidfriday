@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+import router from '@/router';
 import mondaySdk from 'monday-sdk-js';
 import axios from 'axios';
 
@@ -17,5 +18,7 @@ Vue.prototype.monday = mondaySdk();
 Vue.config.productionTip = false;
 
 new Vue({
+  el: '#app',
+  router,
   render: h => h(App),
-}).$mount('#app')
+});

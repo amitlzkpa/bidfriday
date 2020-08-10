@@ -1,5 +1,5 @@
 {
-  "name": "bidfriday-request",
+  "name": "bidfriday-monday",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,7 +21,8 @@
     "mongoose": "^5.9.28",
     "ngrok": "^3.2.7",
     "nodemon": "^2.0.4",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-router": "^3.4.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",

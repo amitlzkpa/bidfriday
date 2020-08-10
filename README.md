@@ -1,4 +1,4 @@
-# bidfriday-request
+# bidfriday-monday
 
 ## Project setup
 ```
