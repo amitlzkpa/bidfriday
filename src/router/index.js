@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import About from '@/components/About.vue';
-import Body from '@/components/Body.vue';
+import MondayRequestBoardView from '@/components/MondayRequestBoardView.vue';
 
 
 Vue.use(VueRouter);
@@ -17,9 +17,9 @@ export default new VueRouter({
       component: About
     },
     {
-      path: '/monday/request',
-      name: 'MondayRequest',
-      component: Body
+      path: '/monday/boardview/request',
+      name: 'MondayRequestBoardView',
+      component: MondayRequestBoardView
     }
   ]
 });
