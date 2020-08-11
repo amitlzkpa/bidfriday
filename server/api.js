@@ -44,4 +44,12 @@ router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
 
 
 
+router.post('/create-or-update-tender', async (req, res) => {
+  let tInfo = req.body;
+  console.log(tInfo);
+  return res.json(tInfo);
+});
+
+
+
 module.exports = router;

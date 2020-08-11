@@ -67,9 +67,6 @@ export default {
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
 
-      console.log(this.rows);
-      console.log(this.cols);
-
       await this.updateToBidsBoard();
     },
     async updateToBidsBoard() {

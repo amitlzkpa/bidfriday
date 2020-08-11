@@ -1,6 +1,7 @@
 <template>
-  <div>    
+  <div>
     <button @click="refresh">Refresh</button>
+    <button @click="enableBidding">Enable Bidding</button>
     <p v-for="row in rows" :key="row.name">
       {{ row.name }}
     </p>
@@ -77,6 +78,19 @@ export default {
         mutStr = `mutation { create_column (board_id: ${this.currBoardData.id}, title: "${colName}", column_type: long_text) { id } }`;
         res = await this.monday.api(mutStr);
       }
+
+    },
+    async enableBidding() {
+      
+      let res;
+      let queryStr = `query { boards (ids: ${this.linkedBoardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
+      res = await this.monday.api(queryStr);
+
+      console.log(res.data);
+
+      res = await this.$api.post('/api/create-or-update-tender', res.data);
+
+      console.log(res.data);
 
     }
   }
