@@ -37,4 +37,11 @@ router.get('/boardpair-from-requestboard/:requestBoard', async (req, res) => {
 
 
 
+router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
+  let b = await BoardPair.findOne({ bidsBoard: req.params.bidsBoard })
+  return res.send(b);
+});
+
+
+
 module.exports = router;
