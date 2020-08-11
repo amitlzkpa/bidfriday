@@ -65,7 +65,7 @@ export default {
       res = await this.monday.api(queryStr);
 
       let rowsInReqBoard = res.data.boards[0].items.map(c => c.name);
-      let colsInBidsBoard = this.cols.map(r => r.title).filter(c => !["Name", "Last Updated"].includes(c));;
+      let colsInBidsBoard = this.cols.map(r => r.title).filter(c => !["Name", "Last Updated"].includes(c));
 
       // no way in monday api to delete columns
       // let colsToDel = colsInBidsBoard.filter(c => !rowsInReqBoard.includes(c));

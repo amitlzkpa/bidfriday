@@ -1,9 +1,32 @@
 <template>
   <div>    
     <button @click="refresh">Refresh</button>
-    <p v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
-      {{ row.name }}
-    </p>
+
+    <table>
+      <tr>
+        <td>Status</td>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Rate</th>
+        <th>Total</th>
+        <th>Bids</th>
+        <th>Lowest Bid</th>
+        <th>Highest Bid</th>
+        <th>Lowest Lead Time</th>
+        <th>Highest Lead Time</th>
+      </tr>
+
+      <tr v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
+        <td>{{ row.column_values[8].text }}</td>
+        <td>{{ row.name }}</td>
+        <td>{{ row.column_values[2].text }} {{ row.column_values[1].text }}</td>
+        <td>{{ row.column_values[3].text }}</td>
+        <td>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) }}</td>
+        <td>-</td>
+        <td>-</td><td>-</td> <td>-</td><td>-</td>
+      </tr>
+    </table>
+
   </div>
 </template>
 
@@ -38,11 +61,14 @@ export default {
       while(!ctx) await this.wait(200);
 
       let boardId = ctx.boardId;
-      let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name } } }`;
+      let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
       let res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
+
+      console.log(this.rows);
+      console.log(this.cols);
 
       await this.updateToBidsBoard();
     },
