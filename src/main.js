@@ -8,9 +8,6 @@ Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
-// Vue.prototype.BIDSERVER_URL="https://bidfriday.herokuapp.com";
-Vue.prototype.BIDSERVER_URL="http://localhost:7003";
-
 Vue.prototype.$api = axios.create();
 
 Vue.prototype.monday = mondaySdk();
