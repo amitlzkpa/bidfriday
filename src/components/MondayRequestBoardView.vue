@@ -18,7 +18,8 @@ export default {
       user: null,
       currBoardData: null,
       linkedBoardId: null,
-      rows: []
+      rows: [],
+      cols: []
     };
   },
   async mounted () {
@@ -37,14 +38,15 @@ export default {
       while(!ctx) await this.wait(200);
 
       let boardId = ctx.boardId;
-      let queryStr = `query { boards (ids: ${boardId}) { id name items { name } } }`;
+      let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name } } }`;
       let res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
       this.rows = this.currBoardData.items;
+      this.cols = this.currBoardData.columns;
 
-      await this.syncBidsBoard();
+      await this.updateToBidsBoard();
     },
-    async syncBidsBoard() {
+    async updateToBidsBoard() {
       while(!ctx) await this.wait(200);
 
       let res;
@@ -64,11 +66,11 @@ export default {
       res = await this.monday.api(queryStr);
 
       let colsInBidsBoard = res.data.boards[0].columns.map(c => c.title).filter(c => !["Name", "Last Updated"].includes(c));
-      let colsInReqBoard = this.rows.map(r => r.name);
+      let rowsInReqBoard = this.rows.map(r => r.name);
 
       // no way in monday api to delete columns
-      // let colsToDel = colsInBidsBoard.filter(c => !colsInReqBoard.includes(c));
-      let colsToAdd = colsInReqBoard.filter(c => !colsInBidsBoard.includes(c));
+      // let colsToDel = colsInBidsBoard.filter(c => !rowsInReqBoard.includes(c));
+      let colsToAdd = rowsInReqBoard.filter(c => !colsInBidsBoard.includes(c));
 
       let mutStr;
       // sync data across both boards

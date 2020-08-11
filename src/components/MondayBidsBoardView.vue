@@ -37,15 +37,15 @@ export default {
       while(!ctx) await this.wait(200);
 
       let boardId = ctx.boardId;
-      let queryStr = `query { boards (ids: ${boardId}) { id name columns { title id } items { name } } }`;
+      let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name } } }`;
       let res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
 
-      await this.updateWithDataFromReqBoard();
+      await this.updateFromReqBoard();
     },
-    async updateWithDataFromReqBoard() {
+    async updateFromReqBoard() {
       while(!ctx) await this.wait(200);
 
       let res;
