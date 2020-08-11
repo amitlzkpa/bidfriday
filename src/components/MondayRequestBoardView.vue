@@ -1,7 +1,7 @@
 <template>
   <div>    
     <button @click="refresh">Refresh</button>
-    <p v-for="row in rows" :key="row.name">
+    <p v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
       {{ row.name }}
     </p>
   </div>
@@ -79,6 +79,9 @@ export default {
         res = await this.monday.api(mutStr);
       }
 
+    },
+    async openItemCard(itemId) {
+      this.monday.execute('openItemCard', { itemId: itemId });
     }
   }
 }
