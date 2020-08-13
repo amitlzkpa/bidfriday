@@ -4,6 +4,7 @@ import About from '@/components/About.vue';
 import MondayRequestBoardView from '@/components/MondayRequestBoardView.vue';
 import MondayRequestDashboardView from '@/components/MondayRequestDashboardView.vue';
 import MondayBidsBoardView from '@/components/MondayBidsBoardView.vue';
+import MondayOAuth from '@/components/MondayOAuth.vue';
 
 
 Vue.use(VueRouter);
@@ -32,6 +33,11 @@ export default new VueRouter({
       path: '/monday/boardview/bids',
       name: 'MondayBidsBoardView',
       component: MondayBidsBoardView
+    },
+    {
+      path: '/monday/connect',
+      name: 'MondayOAuth',
+      component: MondayOAuth
     }
   ]
 });
