@@ -8,6 +8,10 @@ const SlotSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  tender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tender'
+  },
   status: {
     type: String,
     default: "active"
