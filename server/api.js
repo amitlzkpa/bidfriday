@@ -119,7 +119,10 @@ router.post('/update-tender', async (req, res) => {
     });
     // a new line item - create a new slot
     if (!slot) {
-      slot = new Slot();
+      slot = new Slot({
+        mondayItemId: lineItem._id,
+        tender: tender
+      });
       slot = await slot.save();
       tender.slots.push(slot);
     }
