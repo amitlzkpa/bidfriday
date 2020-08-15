@@ -107,7 +107,7 @@ router.post('/update-tender', async (req, res) => {
   let boardInfo = tInfo.boards[0];
 
   let tender = await Tender.findOne({ _id: tId });
-  tender = await tender.populate('slots');
+  // tender = await tender.populate('slots');
 
   // keep check of the existing slots and new ones so that the rest can be marked inactive
   let activeSlots = [];
@@ -125,9 +125,10 @@ router.post('/update-tender', async (req, res) => {
       });
       slot = await slot.save();
       tender.slots.push(slot);
+      tender = await tender.save();
     }
     // add to array of active slots
-    activeSlots.push(slot);
+    activeSlots.push(slot._id);
 
     // get the key of the latest version of the tender item at this slot
     let latestTenderItemId = slot.tenderLineItems[slot.tenderLineItems.length - 1];
@@ -173,13 +174,16 @@ router.post('/update-tender', async (req, res) => {
       });
       item = await item.save();
       slot.tenderLineItems.push(item);
-         = await slot.save();
+      slot = await slot.save();
     }
-
   }
 
-  tender.slots = slots;
-  tender = await tender.save();
+  for(let slot in tender.slots) {
+    if(!activeSlots.includes(slot._id)) {
+      slot.status = "inactive";
+      slot = await slot.save();
+    }
+  }
 
   return res.json(tender);
 });
