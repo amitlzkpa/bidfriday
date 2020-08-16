@@ -8,20 +8,24 @@ Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
+Vue.prototype.isInMonday = false;
+
 async function main() {
 
   let $api = axios.create();
-  let monday = mondaySdk();
-  
-  
-  let res = await monday.api('query { me { id name email country_code location url account { id name } } }');
-  let user = res.data.me;
-  $api.defaults.headers.common['email'] = user.email;
-  
-  
-  Vue.prototype.user = user;
   Vue.prototype.$api = $api;
-  Vue.prototype.monday = monday;
+  
+  try {
+    let monday = mondaySdk();
+    let res = await monday.api('query { me { id name email country_code location url account { id name } } }');
+    let user = res.data.me;
+    $api.defaults.headers.common['email'] = user.email;
+    Vue.prototype.isInMonday = true;
+    Vue.prototype.monday = monday;
+    Vue.prototype.user = user;
+  } catch(excp) {
+    console.log('Not monday');
+  }
   
   Vue.config.productionTip = false;
   
