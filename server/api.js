@@ -140,20 +140,20 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     // a new line item - create a new slot
     if (!slot) {
       slot = new Slot({
-        mondayItemId: lineItem._id,
+        mondayItemId: lineItem.id,
         tender: tender
       });
       slot = await slot.save();
       tender.slots.push(slot._id);
     }
     // add to array of active slots
-    activeSlots.push(slot._id);
+    activeSlots.push(slot._id.toString());
 
     // only slots that've just been created will have an empty tenderLineItems array
     let latestTenderItemInSlot;
     if (slot.tenderLineItems.length < 1) {
       // if its a new lineItem set the latest var to an empty object to allow the checks for sameness below to work
-      latestTenderItemInSlot = {};
+      latestTenderItemInSlot = new TenderLineItem();
     } else {
       // if not fetch it from db
       latestTenderItemInSlot = await TenderLineItem.findOne({ _id: slot.tenderLineItems[slot.tenderLineItems.length - 1] });
@@ -197,9 +197,9 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     }
   }
 
-  for(let slotId of tender.slots) {
-    if(!activeSlots.includes(slotId)) {
-      let slt = await Slot.findOne({ _id: slotId });
+  for(let sl of tender.slots) {
+    if(!activeSlots.includes(sl._id.toString())) {
+      let slt = await Slot.findOne({ _id: sl._id });
       slt.status = "inactive";
       slt = await slt.save();
     }
