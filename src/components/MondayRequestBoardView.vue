@@ -34,7 +34,7 @@
 
 let ctx;
 let key_linkedBidBoard = "test3";
-// let key_linkedTenderId = "test_tenderId4";
+let key_linkedTenderId = "test_tenderId4";
 
 export default {
   data () {
@@ -74,6 +74,7 @@ export default {
 
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
+      await this.updateToTender();
     },
     async updateLinkedBidsBoard() {
 
@@ -109,6 +110,21 @@ export default {
         mutStr = `mutation { create_column (board_id: ${this.linkedBoardId}, title: "${colName}", column_type: long_text) { id } }`;
         res = await this.monday.api(mutStr);
       }
+
+    },
+    async updateToTender() {
+
+      let res;
+
+      res = await this.monday.storage.instance.getItem(key_linkedTenderId);
+      this.linkedTenderId = res.data.value;
+      let postData = {
+        requestBoardId: this.currBoardData.id,
+        tenderId: this.linkedTenderId
+      };
+      res = await this.$api.post('/api/create-or-update-tender', postData);
+      this.linkedTenderId = res.data._id;
+      res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
     },
     async openItemCard(itemId) {

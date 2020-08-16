@@ -54,8 +54,6 @@ export default {
       await this.updateLinkedReqBoard();
       await this.updateFromReqBoard();
       await this.updateToTender();
-      
-
     },
     async updateLinkedReqBoard() {
 
