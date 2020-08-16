@@ -115,9 +115,17 @@ router.post('/create-tender', async (req, res) => {
 
 router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let user = req.user;
-  
   let tId = req.body.tenderId;
-  let boardInfo = req.body.boardInfo.boards[0];
+  let requestBoardId = req.body.requestBoardId;
+
+  let tokens = JSON.parse(req.user.tokens);
+  let mondayToken = tokens.monday;
+  
+  monday.setToken(mondayToken);
+  let queryStr = `query { boards (ids: ${requestBoardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
+  let qRes = await monday.api(queryStr);
+
+  let boardInfo = qRes.data.boards[0];
   
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {

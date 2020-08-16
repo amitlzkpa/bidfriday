@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button @click="test">Test</button>
     <button @click="refresh">Refresh</button>
     <button @click="enableBidding">Enable Bidding</button>
     <p v-for="row in rows" :key="row.name">
@@ -20,7 +21,9 @@ export default {
       user: null,
       currBoardData: null,
       rows: [],
-      cols: []
+      cols: [],
+      linkedBoardId: null,
+      linkedTenderId: null
     };
   },
   async mounted () {
@@ -86,22 +89,22 @@ export default {
       let res;
       
       res = await this.monday.storage.instance.getItem(key_linkedTenderId);
-      let tenderId = res.data.value;
-      
-      let queryStr = `query { boards (ids: ${this.linkedBoardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
-      res = await this.monday.api(queryStr);
+      this.linkedTenderId = res.data.value;
+
       let postData = {
-        tenderId: tenderId,
-        boardInfo: res.data
+        requestBoardId: this.linkedBoardId,
+        tenderId: this.linkedTenderId
       };
 
-      console.log(postData);
       res = await this.$api.post('/api/create-or-update-tender', postData);
-      console.log(res.data);
 
-      tenderId = res.data._id;
-      res = await this.monday.storage.instance.setItem(key_linkedTenderId, tenderId);
+      this.linkedTenderId = res.data._id;
+      res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
+    },
+    async test() {
+      
+      let res = await this.$api.post('/api/test');
       console.log(res.data);
 
     }
