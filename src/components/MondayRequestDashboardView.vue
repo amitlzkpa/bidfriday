@@ -51,14 +51,17 @@ let bidToReq = new Map();
 export default {
   data () {
     return {
-      user: null,
       newBoardName: "My new request",
       rows: []
     };
   },
   async mounted () {
-    let res = await this.monday.api('query { me { id name country_code location url account { id name } } }');
-    this.user = res.data.me;
+
+    if (!this.isInMonday) {
+      this.$destroy();
+      this.$el.parentNode.removeChild(this.$el);
+      return;
+    }
 
     this.monday.listen("context", async (res) => {
       ctx = res.data;
