@@ -14,6 +14,7 @@ const TenderLineItem = require('./models/TenderLineItem');
 
 
 async function addUserToReq(req, res, next) {
+  if (req.user) next();
   let userEmail = req.headers.email;
   let user = await User.findOne({email: userEmail.toLowerCase()});
   if (user) {
@@ -167,12 +168,14 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       latestTenderItemInSlot = await TenderLineItem.findOne({ _id: slot.tenderLineItems[slot.tenderLineItems.length - 1] });
     }
 
+    let bidfridayName = latestTenderItemInSlot.name;
     let bidfridaySpecifications = latestTenderItemInSlot.specifications;
     let bidfridayUnits = latestTenderItemInSlot.units;
     let bidfridayQuantity = latestTenderItemInSlot.quantity;
     let bidfridayRate = latestTenderItemInSlot.rate;
     let bidfridayStatus = latestTenderItemInSlot.status;
 
+    let mondayName = lineItem.name;
     let mondaySpecifications = lineItem.column_values[0].text;
     let mondayUnits = lineItem.column_values[1].text;
     let mondayQuantity = parseFloat(lineItem.column_values[2].text);
@@ -180,7 +183,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     let mondayStatus = lineItem.column_values[8].text;
 
     let needsUpdate = 
-         (bidfridaySpecifications !== mondaySpecifications)
+         (bidfridayName !== mondayName)
+      || (bidfridaySpecifications !== mondaySpecifications)
       || (bidfridayUnits !== mondayUnits)
       || (bidfridayQuantity !== mondayQuantity)
       || (bidfridayRate !== mondayRate)
