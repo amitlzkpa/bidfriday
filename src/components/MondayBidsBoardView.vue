@@ -2,7 +2,7 @@
   <div>
     <button @click="test">Test</button>
     <button @click="refresh">Refresh</button>
-    <button @click="enableBidding">Enable Bidding</button>
+    <button @click="updateToTender">Update Tender</button>
     <p v-for="row in rows" :key="row.name">
       {{ row.name }}
     </p>
@@ -12,7 +12,7 @@
 <script>
 
 let ctx;
-let key_linkedBidBoard = "test3";
+let key_linkedReqBoard = "test3";
 let key_linkedTenderId = "test_tenderId4";
 
 export default {
@@ -21,7 +21,7 @@ export default {
       currBoardData: null,
       rows: [],
       cols: [],
-      linkedBoardId: null,
+      linkedReqBoardId: null,
       linkedTenderId: null
     };
   },
@@ -51,25 +51,31 @@ export default {
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
 
+      await this.updateLinkedReqBoard();
       await this.updateFromReqBoard();
+      await this.updateToTender();
+      
+
+    },
+    async updateLinkedReqBoard() {
+
+      let res;
+      res = await this.monday.storage.instance.getItem(key_linkedReqBoard);
+      this.linkedReqBoardId = res.data.value;
+      // if linkedReqBoardId is not set, fetch from db
+      if (!this.linkedReqBoardId) {
+        res = await this.$api.get(`/api/boardpair-from-bidsboard/${this.currBoardData.id}`);
+        this.linkedReqBoardId = res.data.requestBoard;
+      }
+      await this.monday.storage.instance.setItem(key_linkedReqBoard, this.linkedReqBoardId);
+
     },
     async updateFromReqBoard() {
       while(!ctx) await this.wait(200);
 
       let res;
       
-      res = await this.monday.storage.instance.getItem(key_linkedBidBoard);
-      this.linkedBoardId = res.data.value;
-
-      // if linkedBoardId is not set, fetch from db
-      if (!this.linkedBoardId) {
-        res = await this.$api.get(`/api/boardpair-from-bidsboard/${this.currBoardData.id}`);
-        this.linkedBoardId = res.data.requestBoard;
-      }
-
-      await this.monday.storage.instance.setItem(key_linkedBidBoard, this.linkedBoardId);
-      
-      let queryStr = `query { boards (ids: ${this.linkedBoardId}) { id name items { name } } }`;
+      let queryStr = `query { boards (ids: ${this.linkedReqBoardId}) { id name items { name } } }`;
       res = await this.monday.api(queryStr);
 
       let rowsInReqBoard = res.data.boards[0].items.map(c => c.name);
@@ -87,20 +93,17 @@ export default {
       }
 
     },
-    async enableBidding() {
+    async updateToTender() {
 
       let res;
-      
+
       res = await this.monday.storage.instance.getItem(key_linkedTenderId);
       this.linkedTenderId = res.data.value;
-
       let postData = {
-        requestBoardId: this.linkedBoardId,
+        requestBoardId: this.linkedReqBoardId,
         tenderId: this.linkedTenderId
       };
-
       res = await this.$api.post('/api/create-or-update-tender', postData);
-
       this.linkedTenderId = res.data._id;
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
