@@ -117,7 +117,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let user = req.user;
   
   let tId = req.body.tenderId;
-  let boardInfo = req.body.boards[0];
+  let boardInfo = req.body.boardInfo.boards[0];
   
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
@@ -134,7 +134,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   for(let lineItem of boardInfo.items) {
     let slot;
     slot = await Slot.findOne({
-      mondayItemId: lineItem.id
+      mondayItemId: lineItem.id,
+      tender: tender
     });
     // a new line item - create a new slot
     if (!slot) {
@@ -144,19 +145,18 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       });
       slot = await slot.save();
       tender.slots.push(slot._id);
-      tender = await tender.save();
     }
     // add to array of active slots
     activeSlots.push(slot._id);
 
-    // get the key of the latest version of the tender item at this slot
-    let latestTenderItemId = slot.tenderLineItems[slot.tenderLineItems.length - 1];
-    // get the tender line item from the db
-    let latestTenderItemInSlot = await TenderLineItem.findOne({ _id: latestTenderItemId });
-    // an empty slot (new lineItem) - add an empty tenderItem; will be updated after performing checks against lineItem
-    if (!latestTenderItemInSlot) {
-      latestTenderItemInSlot = new TenderLineItem();
-      latestTenderItemInSlot = await latestTenderItemInSlot.save();
+    // only slots that've just been created will have an empty tenderLineItems array
+    let latestTenderItemInSlot;
+    if (slot.tenderLineItems.length < 1) {
+      // if its a new lineItem set the latest var to an empty object to allow the checks for sameness below to work
+      latestTenderItemInSlot = {};
+    } else {
+      // if not fetch it from db
+      latestTenderItemInSlot = await TenderLineItem.findOne({ _id: slot.tenderLineItems[slot.tenderLineItems.length - 1] });
     }
 
     let bidfridaySpecifications = latestTenderItemInSlot.specifications;
@@ -171,14 +171,14 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     let mondayRate = parseFloat(lineItem.column_values[3].text);
     let mondayStatus = lineItem.column_values[8].text;
 
-    let isSame = 
-         (bidfridaySpecifications === mondaySpecifications)
-      && (bidfridayUnits === mondayUnits)
-      && (bidfridayQuantity === mondayQuantity)
-      && (bidfridayRate === mondayRate)
-      && (bidfridayStatus === mondayStatus);
+    let needsUpdate = 
+         (bidfridaySpecifications !== mondaySpecifications)
+      || (bidfridayUnits !== mondayUnits)
+      || (bidfridayQuantity !== mondayQuantity)
+      || (bidfridayRate !== mondayRate)
+      || (bidfridayStatus !== mondayStatus);
 
-    if (!isSame) {
+    if (needsUpdate) {
       latestTenderItemInSlot = new TenderLineItem({
         tender: tender,
         slot: slot,
@@ -197,12 +197,22 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     }
   }
 
-  for(let slot of tender.slots) {
-    if(!activeSlots.includes(slot._id)) {
-      slot.status = "inactive";
-      slot = await slot.save();
+  for(let slotId of tender.slots) {
+    if(!activeSlots.includes(slotId)) {
+      let slt = await Slot.findOne({ _id: slotId });
+      slt.status = "inactive";
+      slt = await slt.save();
     }
   }
+
+  tender = await tender.save();
+
+  tender = await tender.populate({
+    path: 'slots',
+    populate: {
+      path: 'tenderLineItems'
+    }
+  }).execPopulate();
 
   return res.json(tender);
 });
