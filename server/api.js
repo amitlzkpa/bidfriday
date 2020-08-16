@@ -107,7 +107,12 @@ router.post('/update-tender', async (req, res) => {
   let boardInfo = tInfo.boards[0];
 
   let tender = await Tender.findOne({ _id: tId });
-  // tender = await tender.populate('slots');
+  if (!tender) {
+    tender = new Tender({
+      name: boardInfo.name,
+    });
+    tender = await tender.save();
+  }
 
   // keep check of the existing slots and new ones so that the rest can be marked inactive
   let activeSlots = [];
@@ -210,7 +215,7 @@ router.post('/connect-monday-user', async (req, res) => {
     if (u) {
       let currTokens = JSON.parse(u.tokens);
       currTokens.monday = accessToken;
-      u.tokens = currTokens;
+      u.tokens = JSON.stringify(currTokens);
     } else {
       u = new User({
         name: uData.name,
