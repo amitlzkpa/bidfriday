@@ -67,53 +67,6 @@ router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
 
 
 
-router.post('/create-tender', async (req, res) => {
-  let user;
-  // fetch user
-  
-  let tInfo = req.body;
-  console.log(tInfo);
-  let boardInfo = tInfo.boards[0];
-
-  let tender = new Tender({
-    name: boardInfo.name,
-    createdBy: user
-  });
-  tender = await tender.save();
-
-  let slots = [];
-  
-  for(let lineItem of boardInfo.items) {
-    let slot = new Slot({
-      mondayItemId: lineItem.id
-    });
-    slot = await slot.save();
-    let item = new TenderLineItem({
-      tender: tender,
-      slot: slot,
-      name: lineItem.name,
-      description: "",
-      specifications: lineItem.column_values[0].text,
-      units: lineItem.column_values[1].text,
-      quantity: parseFloat(lineItem.column_values[2].text),
-      rate: parseFloat(lineItem.column_values[3].text),
-      status: lineItem.column_values[8].text,
-      createdBy: user
-    });
-    item = await item.save();
-    slot.tenderLineItems.push(item);
-    slot = await slot.save();
-    slots.push(slot);
-  }
-
-  tender.slots = slots;
-  tender = await tender.save();
-
-  return res.json(tender);
-});
-
-
-
 router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let user = req.user;
   let tId = req.body.tenderId;
@@ -127,7 +80,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let qRes = await monday.api(queryStr);
 
   let boardInfo = qRes.data.boards[0];
-  
+
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
     tender = new Tender({
@@ -228,7 +181,6 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
 
   return res.json(tender);
 });
-
 
 
 
