@@ -184,6 +184,20 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
 
 
 
+router.post('/get-tender', async (req, res) => {
+  let tId = req.body.tId;
+  let tender = await Tender.findOne({ _id: tId });
+  tender = await tender.populate({
+    path: 'slots',
+    populate: {
+      path: 'tenderLineItems'
+    }
+  }).execPopulate();
+  return res.json(tender);
+});
+
+
+
 router.post('/connect-monday-user', async (req, res) => {
   try {
     let code = req.body.code;
