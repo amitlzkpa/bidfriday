@@ -72,23 +72,26 @@ export default {
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
 
+      await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
     },
-    async updateToBidsBoard() {
-      while(!ctx) await this.wait(200);
+    async updateLinkedBidsBoard() {
 
       let res;
-      
       res = await this.monday.storage.instance.getItem(key_linkedBidBoard);
       this.linkedBoardId = res.data.value;
-
       // if linkedBoardId is not set, fetch from db
       if (!this.linkedBoardId) {
         res = await this.$api.get(`/api/boardpair-from-requestboard/${this.currBoardData.id}`);
         this.linkedBoardId = res.data.bidsBoard;
       }
-
       await this.monday.storage.instance.setItem(key_linkedBidBoard, this.linkedBoardId);
+
+    },
+    async updateToBidsBoard() {
+      while(!ctx) await this.wait(200);
+
+      let res;
       
       let queryStr = `query { boards (ids: ${this.linkedBoardId}) { id name columns { title id } items { name } } }`;
       res = await this.monday.api(queryStr);
