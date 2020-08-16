@@ -12,6 +12,7 @@
 
 let ctx;
 let key_linkedBidBoard = "test3";
+let key_linkedTenderId = "test_tenderId4";
 
 export default {
   data () {
@@ -81,14 +82,25 @@ export default {
 
     },
     async enableBidding() {
-      
+
       let res;
+      
+      res = await this.monday.storage.instance.getItem(key_linkedTenderId);
+      let tenderId = res.data.value;
+      
       let queryStr = `query { boards (ids: ${this.linkedBoardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
       res = await this.monday.api(queryStr);
+      let postData = {
+        tenderId: tenderId,
+        boardInfo: res.data
+      };
 
+      console.log(postData);
+      res = await this.$api.post('/api/create-or-update-tender', postData);
       console.log(res.data);
 
-      res = await this.$api.post('/api/create-or-update-tender', res.data);
+      tenderId = res.data._id;
+      res = await this.monday.storage.instance.setItem(key_linkedTenderId, tenderId);
 
       console.log(res.data);
 
