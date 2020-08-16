@@ -10,6 +10,22 @@ const Slot = require('./models/Slot');
 const TenderLineItem = require('./models/TenderLineItem');
 
 
+// ---------------------------------
+
+
+async function addUserToReq(req, res, next) {
+  let userEmail = req.headers.email;
+  let user = await User.findOne({email: userEmail.toLowerCase()});
+  if (user) {
+    req.user = user;
+  }
+  next();
+}
+
+
+// ---------------------------------
+
+
 router.get('/test', async (req, res) => {
   return res.send('Bidfriday backend test route');
 });
@@ -219,7 +235,7 @@ router.post('/connect-monday-user', async (req, res) => {
     } else {
       u = new User({
         name: uData.name,
-        email: uData.email,
+        email: uData.email.toLowerCase(),
         username: uData.account.name,
         tokens: `{ "monday": "${accessToken}" }`
       });
