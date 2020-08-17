@@ -42,12 +42,12 @@ const BidLineItemSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  discount: {
+    type: Number,
+    default: 0
+  },
   sampleImages: [],
   attachments: [],
-  notes: {
-    type: String,
-    default: ""
-  },
   status: {
     type: String,
     default: ""
