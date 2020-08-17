@@ -1,25 +1,50 @@
 <template>
   <div>
 
-    <h1>TenderView</h1>
-
     <button @click="refresh">Refresh</button>
 
-    <h2>{{ name }}</h2>
-    <p>{{ description }}</p>
-    <p>{{ priceRevealType }}</p>
-    <p>{{ mustBidOnAll }}</p>
+    <md-table v-model="searched" md-sort="index" md-sort-order="asc" md-card md-fixed-header>
+      <md-table-toolbar>
+        <div class="md-toolbar-section-start">
+          <h1 class="md-title">{{ name }}</h1>
+          <p>{{ description }}</p>
+        </div>
 
-    <hr />
+        <md-field md-clearable class="md-toolbar-section-end">
+          <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
+        </md-field>
+      </md-table-toolbar>
 
-    <p v-for="slot in slots" :key="slot._id">
-      {{ slot.tenderLineItems[slot.tenderLineItems.length - 1].name }}
-    </p>
+      <md-table-empty-state
+        md-label="No item found"
+        :md-description="`No item found for '${search}'.`">
+      </md-table-empty-state>
+
+      <md-table-row slot="md-table-row" slot-scope="{ item }">
+        <md-table-cell md-label="No" md-sort-by="index">{{ item.index }}</md-table-cell>
+        <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
+        <md-table-cell md-label="Unit" md-sort-by="units">{{ item.units }}</md-table-cell>
+        <md-table-cell md-label="Quantity" md-sort-by="quantity">{{ item.quantity }}</md-table-cell>
+        <md-table-cell md-label="Rate" md-sort-by="rate">{{ item.rate }}</md-table-cell>
+        <md-table-cell md-label="Total" md-sort-by="total">{{ item.total }}</md-table-cell>
+      </md-table-row>
+    </md-table>
 
   </div>
 </template>
 
 <script>
+
+const toLower = text => {
+  return text.toString().toLowerCase();
+}
+
+const searchByName = (items, term) => {
+  if (term) {
+    return items.filter(item => toLower(item).includes(toLower(term)));
+  }
+  return items
+}
 
 export default {
   props: ['tenderId'],
@@ -29,7 +54,11 @@ export default {
       description: null,
       priceRevealType: null,
       mustBidOnAll: false,
-      slots: []
+      slots: [],
+      tenderItems: [],
+      
+      search: null,
+      searched: [],
     };
   },
   async mounted () {
@@ -50,6 +79,18 @@ export default {
       this.priceRevealType = tData.data.priceRevealType;
       this.mustBidOnAll = tData.data.mustBidOnAll;
       this.slots = tData.data.slots;
+      this.tenderItems = this.slots.map((s, idx) => {
+        let ti = s.tenderLineItems[s.tenderLineItems.length - 1];
+        let ret = ti;
+        ret.index = idx + 1;
+        ret.total = ti.quantity * ti.rate;
+        ret.slot = s;
+        return ret;
+      });
+      this.searched = this.tenderItems;
+    },
+    searchOnTable () {
+      this.searched = searchByName(this.tenderItems, this.search);
     }
   }
 }
