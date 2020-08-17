@@ -1,11 +1,27 @@
 <template>
   <div>
-    <button @click="test">Test</button>
-    <button @click="refresh">Refresh</button>
-    <button @click="updateToTender">Update Tender</button>
-    <p v-for="row in rows" :key="row.name">
-      {{ row.name }}
-    </p>
+
+    <md-field>
+      <md-button @click="refresh">Refresh</md-button>
+    </md-field>
+
+    
+    <md-table>
+      <md-table-row>
+        <md-table-head>No</md-table-head>
+        <md-table-head>Vendor</md-table-head>
+        <md-table-head>Total</md-table-head>
+        <md-table-head>Benchmark</md-table-head>
+      </md-table-row>
+
+      <md-table-row v-for="(row, idx) in rows" :key="row.name">
+        <md-table-cell>{{ idx }}</md-table-cell>
+        <md-table-cell>{{ row.name }}</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+      </md-table-row>
+    </md-table>
+
   </div>
 </template>
 
@@ -104,12 +120,6 @@ export default {
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
-
-    },
-    async test() {
-      
-      let res = await this.$api.post('/api/test');
-      console.log(res.data);
 
     }
   }

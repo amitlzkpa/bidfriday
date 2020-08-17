@@ -13,40 +13,34 @@
           Bids Reveal
         </p>
         <p v-if="priceRevealType === 'lowest'">
-          <md-icon>visibility_off</md-icon>
+          <md-icon>gavel</md-icon>
           <md-tooltip md-delay="300">Lowest: Information from the lowest bids shown.</md-tooltip>
           Bids Reveal
         </p>
         <p v-if="priceRevealType === 'public'">
-          <md-icon>visibility_off</md-icon>
+          <md-icon>visibility</md-icon>
           <md-tooltip md-delay="300">Public: Information from all bids shown.</md-tooltip>
           Bids Reveal
         </p>
         
         <p v-if="mustBidOnAll">
           <md-icon>check_circle</md-icon>
-          <md-tooltip md-delay="300">All: Must bid for all items on tender.</md-tooltip>
+          <md-tooltip md-delay="300">Must bid for all items on tender.</md-tooltip>
           Complete Bids
         </p>
         <p v-else>
           <md-icon>remove_circle_outline</md-icon>
-          <md-tooltip md-delay="300">Choice: Bid on only interested items on tender.</md-tooltip>
-          Complete Bids
+          <md-tooltip md-delay="300">Choice to submit partial bids.</md-tooltip>
+          Partial Bids
         </p>
       </div>
     </div>
 
-    <md-table v-model="tenderItems" md-sort="index" md-sort-order="asc" md-card md-fixed-header>
-      <md-table-row slot="md-table-row" slot-scope="{ item }">
-        <md-table-cell md-label="No" md-sort-by="index">{{ item.index }}</md-table-cell>
-        <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
-        <md-table-cell md-label="Unit" md-sort-by="units">{{ item.units }}</md-table-cell>
-        <md-table-cell md-label="Quantity" md-sort-by="quantity">{{ item.quantity }}</md-table-cell>
-        <md-table-cell md-label="Rate" md-sort-by="rate">{{ item.rate }}</md-table-cell>
-        <md-table-cell md-label="Total" md-sort-by="total">{{ item.total }}</md-table-cell>
-      </md-table-row>
-    </md-table>
-
+    <md-list>
+      <md-list-item  v-for="tenderItem of tenderItems" :key="tenderItem._id">
+        {{ tenderItem.name }}
+      </md-list-item>
+    </md-list>
 
   </div>
 </template>

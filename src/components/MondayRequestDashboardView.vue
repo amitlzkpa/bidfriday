@@ -3,8 +3,8 @@
 
 
     <md-field>
+      <md-button class="primary" @click="onNewBoardClk">Create New Request</md-button>
       <md-input v-model="newBoardName"></md-input>
-      <md-button class="primary" @click="onNewBoardClk">Create</md-button>
     </md-field>
 
 

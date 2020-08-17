@@ -100,25 +100,25 @@
           Bids Reveal
         </p>
         <p v-if="priceRevealType === 'lowest'">
-          <md-icon>visibility_off</md-icon>
+          <md-icon>gavel</md-icon>
           <md-tooltip md-delay="300">Lowest: Information from the lowest bids shown.</md-tooltip>
           Bids Reveal
         </p>
         <p v-if="priceRevealType === 'public'">
-          <md-icon>visibility_off</md-icon>
+          <md-icon>visibility</md-icon>
           <md-tooltip md-delay="300">Public: Information from all bids shown.</md-tooltip>
           Bids Reveal
         </p>
         
         <p v-if="mustBidOnAll">
           <md-icon>check_circle</md-icon>
-          <md-tooltip md-delay="300">All: Must bid for all items on tender.</md-tooltip>
+          <md-tooltip md-delay="300">Must bid for all items on tender.</md-tooltip>
           Complete Bids
         </p>
         <p v-else>
           <md-icon>remove_circle_outline</md-icon>
-          <md-tooltip md-delay="300">Choice: Bid on only interested items on tender.</md-tooltip>
-          Complete Bids
+          <md-tooltip md-delay="300">Choice to submit partial bids.</md-tooltip>
+          Partial Bids
         </p>
       </div>
     </div>
