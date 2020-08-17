@@ -1,31 +1,37 @@
 <template>
   <div>
-    <button @click="refresh">Refresh</button>
 
-    <table>
-      <tr>
-        <td>Status</td>
-        <th>Name</th>
-        <th>Quantity</th>
-        <th>Rate</th>
-        <th>Total</th>
-        <th>Bids</th>
-        <th>Lowest Bid</th>
-        <th>Highest Bid</th>
-        <th>Lowest Lead Time</th>
-        <th>Highest Lead Time</th>
-      </tr>
+    <md-field>
+      <md-button class="primary" @click="refresh">Refresh</md-button>
+    </md-field>
 
-      <tr v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
-        <td>{{ row.column_values[8].text }}</td>
-        <td>{{ row.name }}</td>
-        <td>{{ row.column_values[2].text }} {{ row.column_values[1].text }}</td>
-        <td>{{ row.column_values[3].text }}</td>
-        <td>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) }}</td>
-        <td>-</td>
-        <td>-</td><td>-</td> <td>-</td><td>-</td>
-      </tr>
-    </table>
+    <md-table>
+      <md-table-row>
+        <md-table-head>Status</md-table-head>
+        <md-table-head>Name</md-table-head>
+        <md-table-head>Quantity</md-table-head>
+        <md-table-head>Rate</md-table-head>
+        <md-table-head>Total</md-table-head>
+        <md-table-head>Bids</md-table-head>
+        <md-table-head>Lowest Bid</md-table-head>
+        <md-table-head>Highest Bid</md-table-head>
+        <md-table-head>Lowest Lead Time</md-table-head>
+        <md-table-head>Highest Lead Time</md-table-head>
+      </md-table-row>
+
+      <md-table-row v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
+        <md-table-cell>{{ row.column_values[8].text }}</md-table-cell>
+        <md-table-cell>{{ row.name }}</md-table-cell>
+        <md-table-cell>{{ row.column_values[2].text }} {{ row.column_values[1].text }}</md-table-cell>
+        <md-table-cell>{{ row.column_values[3].text }}</md-table-cell>
+        <md-table-cell>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) }}</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+        <md-table-cell>-</md-table-cell>
+      </md-table-row>
+    </md-table>
 
   </div>
 </template>
