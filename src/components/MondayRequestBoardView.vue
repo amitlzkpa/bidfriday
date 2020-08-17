@@ -1,5 +1,5 @@
 <template>
-  <div>    
+  <div>
     <button @click="refresh">Refresh</button>
 
     <table>
