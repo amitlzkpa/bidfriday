@@ -87,14 +87,46 @@
     </md-dialog>
 
 
+
+    <div class="md-layout">
+      <div class="md-layout-item">
+        <h1 class="md-title">{{ name }}</h1>
+        <p class="md-caption" style="height: 4vh;">{{ description }}</p>
+      </div>
+      <div class="md-layout-item md-size-15">
+        <p v-if="priceRevealType === 'concealed'">
+          <md-icon>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Concealed: No information from other bids shown.</md-tooltip>
+          Bids Reveal
+        </p>
+        <p v-if="priceRevealType === 'lowest'">
+          <md-icon>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Lowest: Information from the lowest bids shown.</md-tooltip>
+          Bids Reveal
+        </p>
+        <p v-if="priceRevealType === 'public'">
+          <md-icon>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Public: Information from all bids shown.</md-tooltip>
+          Bids Reveal
+        </p>
+        
+        <p v-if="mustBidOnAll">
+          <md-icon>check_circle</md-icon>
+          <md-tooltip md-delay="300">All: Must bid for all items on tender.</md-tooltip>
+          Complete Bids
+        </p>
+        <p v-else>
+          <md-icon>remove_circle_outline</md-icon>
+          <md-tooltip md-delay="300">Choice: Bid on only interested items on tender.</md-tooltip>
+          Complete Bids
+        </p>
+      </div>
+    </div>
+
+
     <md-table v-model="searched" md-sort="index" md-sort-order="asc" md-card md-fixed-header>
       <md-table-toolbar>
-        <div class="md-toolbar-section-start">
-          <h1 class="md-title">{{ name }}</h1>
-          <p>{{ description }}</p>
-        </div>
-
-        <md-field md-clearable class="md-toolbar-section-end">
+        <md-field md-clearable class="md-toolbar-section-start">
           <md-input placeholder="Search by name..." v-model="search" @input="searchOnTable" />
         </md-field>
       </md-table-toolbar>
