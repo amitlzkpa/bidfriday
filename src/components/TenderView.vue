@@ -1,9 +1,5 @@
 <template>
   <div>
-
-
-    <button @click="refresh">Refresh</button>
-    
     
     <md-dialog :md-active.sync="showDetailsDialog">
       <md-dialog-title>Details</md-dialog-title>
@@ -47,7 +43,7 @@
           <div class="md-layout-item">
 
             <p>Specifications:</p>
-            <div style="height: 10vh; overflow-x: scroll; overflow-y: hidden;">
+            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
               <div style="width: 100%">
                 {{ detailsItem.specifications }}
               </div>
@@ -60,7 +56,7 @@
           <div class="md-layout-item">
 
             <p>Sample Images:</p>
-            <div style="height: 10vh; overflow-x: scroll; overflow-y: hidden;">
+            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
               <div style="width: 100%">
               
               </div>
@@ -73,7 +69,7 @@
           <div class="md-layout-item">
 
             <p>Attached Files:</p>
-            <div style="height: 3vh; overflow-x: scroll; overflow-y: hidden;">
+            <div style="height: 3vh; overflow-x: auto; overflow-y: hidden;">
               <div style="width: 100%">
               
               </div>
@@ -85,7 +81,7 @@
       </md-dialog-content>
 
       <md-dialog-actions>
-        <small>{{ detailsItem.updatedAt }}</small>
+        <span class="md-caption" style="flex: 1">{{ detailsItem.updatedAt }}</span>
         <md-button class="md-primary" @click="showDetailsDialog = false">Close</md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -118,6 +114,11 @@
       </md-table-row>
     </md-table>
 
+
+    <md-card-actions>
+      <md-button @click="refresh">Refresh</md-button>
+      <md-button :to="'/submit-bid/' + tenderId" class="md-primary">Submit Bid</md-button>
+    </md-card-actions>
 
   </div>
 </template>
