@@ -1,7 +1,95 @@
 <template>
   <div>
 
+
     <button @click="refresh">Refresh</button>
+    
+    
+    <md-dialog :md-active.sync="showDetailsDialog">
+      <md-dialog-title>Details</md-dialog-title>
+
+      <md-dialog-content class="dialog-size">
+
+        <div class="md-layout">
+          <div class="md-layout-item">
+            <h3>{{ detailsItem.name }}</h3>
+            <p>{{ detailsItem.description }}</p>
+          </div>
+          
+          <div class="md-layout-item md-size-40">
+
+            <md-table>
+              <md-table-row>
+                <md-table-cell>Units</md-table-cell>
+                <md-table-cell>{{ detailsItem.units }}</md-table-cell>
+              </md-table-row>
+              
+              <md-table-row>
+                <md-table-cell>Qty</md-table-cell>
+                <md-table-cell>{{ detailsItem.quantity }}</md-table-cell>
+              </md-table-row>
+              
+              <md-table-row>
+                <md-table-cell>Rate</md-table-cell>
+                <md-table-cell>{{ detailsItem.rate }}</md-table-cell>
+              </md-table-row>
+              
+              <md-table-row>
+                <md-table-cell>Total</md-table-cell>
+                <md-table-cell>{{ detailsItem.total }}</md-table-cell>
+              </md-table-row>
+            </md-table>
+
+          </div>
+        </div>
+
+        <div class="md-layout">
+          <div class="md-layout-item">
+
+            <p>Specifications:</p>
+            <div style="height: 10vh; overflow-x: scroll; overflow-y: hidden;">
+              <div style="width: 100%">
+                {{ detailsItem.specifications }}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="md-layout">
+          <div class="md-layout-item">
+
+            <p>Sample Images:</p>
+            <div style="height: 10vh; overflow-x: scroll; overflow-y: hidden;">
+              <div style="width: 100%">
+              
+              </div>
+            </div>
+          
+          </div>
+        </div>
+
+        <div class="md-layout">
+          <div class="md-layout-item">
+
+            <p>Attached Files:</p>
+            <div style="height: 3vh; overflow-x: scroll; overflow-y: hidden;">
+              <div style="width: 100%">
+              
+              </div>
+            </div>
+
+          </div>
+        </div>
+        
+      </md-dialog-content>
+
+      <md-dialog-actions>
+        <small>{{ detailsItem.updatedAt }}</small>
+        <md-button class="md-primary" @click="showDetailsDialog = false">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
 
     <md-table v-model="searched" md-sort="index" md-sort-order="asc" md-card md-fixed-header>
       <md-table-toolbar>
@@ -20,7 +108,7 @@
         :md-description="`No item found for '${search}'.`">
       </md-table-empty-state>
 
-      <md-table-row slot="md-table-row" slot-scope="{ item }">
+      <md-table-row slot="md-table-row" slot-scope="{ item }" @click="showDetails(item)">
         <md-table-cell md-label="No" md-sort-by="index">{{ item.index }}</md-table-cell>
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
         <md-table-cell md-label="Unit" md-sort-by="units">{{ item.units }}</md-table-cell>
@@ -29,6 +117,7 @@
         <md-table-cell md-label="Total" md-sort-by="total">{{ item.total }}</md-table-cell>
       </md-table-row>
     </md-table>
+
 
   </div>
 </template>
@@ -59,6 +148,9 @@ export default {
       
       search: null,
       searched: [],
+
+      showDetailsDialog: false,
+      detailsItem: {}
     };
   },
   async mounted () {
@@ -91,10 +183,19 @@ export default {
     },
     searchOnTable () {
       this.searched = searchByName(this.tenderItems, this.search);
+    },
+    showDetails(item) {
+      console.log(item);
+      this.detailsItem = item;
+      this.showDetailsDialog = true;
     }
   }
 }
 </script>
 
 <style scoped>
+.dialog-size {
+  width: 60vw;
+  height: 70vh;
+}
 </style>
