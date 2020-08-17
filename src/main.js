@@ -4,6 +4,12 @@ import router from '@/router';
 import mondaySdk from 'monday-sdk-js';
 import axios from 'axios';
 
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import 'vue-material/dist/theme/default.css';
+
+Vue.use(VueMaterial)
+
 Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
