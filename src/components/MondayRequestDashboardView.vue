@@ -2,41 +2,38 @@
   <div>
 
 
-    <input type="text" v-model="newBoardName" />
-    <button @click="onNewBoardClk">Create</button>
+    <md-field>
+      <md-input v-model="newBoardName"></md-input>
+      <md-button class="primary" @click="onNewBoardClk">Create</md-button>
+    </md-field>
 
-    <hr />
 
-    <h4>Active Requests</h4>
+    <md-table>
 
-    <table style="width:100%">
+      <md-table-row>
+        <md-table-head>Name</md-table-head>
+        <md-table-head>Total Budget</md-table-head>
+        <md-table-head>Best Budget</md-table-head>
+        <md-table-head>Total Items</md-table-head>
+        <md-table-head>Items totalOrdered</md-table-head>
+        <md-table-head>Items Delivered</md-table-head>
+        <md-table-head>Bid Received</md-table-head>
+        <md-table-head>Vendor Pool</md-table-head>
+      </md-table-row>
 
-      <tr>
-        <th>Name</th>
-        <th>Total Budget</th>
-        <th>Best Budget</th>
-        <th>Total Items</th>
-        <th>Items totalOrdered</th>
-        <th>Items Delivered</th>
-        <th>Bid Received</th>
-        <th>Vendor Pool</th>
-      </tr>
-
-      <tr v-for="row in rows" :key="row.name">
-        <td>{{ row.name }}</td>
-        <td>${{ row.totalBudget }}</td>
-        <td>$32</td>
-        <td>{{ row.totalItems }}</td>
-        <td>{{ row.totalOrdered }}</td>
-        <td>{{ row.totalDelivered }}</td>
-        <td>6</td>
-        <td>+</td>
-      </tr>
+      <md-table-row v-for="row in rows" :key="row.name">
+        <md-table-cell>{{ row.name }}</md-table-cell>
+        <md-table-cell>${{ row.totalBudget }}</md-table-cell>
+        <md-table-cell>$32</md-table-cell>
+        <md-table-cell>{{ row.totalItems }}</md-table-cell>
+        <md-table-cell>{{ row.totalOrdered }}</md-table-cell>
+        <md-table-cell>{{ row.totalDelivered }}</md-table-cell>
+        <md-table-cell>6</md-table-cell>
+        <md-table-cell>+</md-table-cell>
+      </md-table-row>
       
-    </table>
+    </md-table>
 
-
-    <br /><br />
 
   </div>
 </template>
