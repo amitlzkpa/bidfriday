@@ -123,12 +123,14 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       latestTenderItemInSlot = await TenderLineItem.findOne({ _id: slot.tenderLineItems[slot.tenderLineItems.length - 1] });
     }
 
+    
     let bidfridayName = latestTenderItemInSlot.name;
     let bidfridaySpecifications = latestTenderItemInSlot.specifications;
     let bidfridayUnits = latestTenderItemInSlot.units;
     let bidfridayQuantity = latestTenderItemInSlot.quantity;
     let bidfridayRate = latestTenderItemInSlot.rate;
     let bidfridayStatus = latestTenderItemInSlot.status;
+    let bidfridayImageData = latestTenderItemInSlot.sampleImages;
 
     let mondayName = lineItem.name;
     let mondaySpecifications = lineItem.column_values[0].text;
@@ -136,6 +138,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     let mondayQuantity = parseFloat(lineItem.column_values[2].text);
     let mondayRate = parseFloat(lineItem.column_values[3].text);
     let mondayStatus = lineItem.column_values[8].text;
+    let mondayImageData = JSON.stringify(lineItem.column_values[6]);
 
     let needsUpdate = 
          (bidfridayName !== mondayName)
@@ -143,7 +146,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       || (bidfridayUnits !== mondayUnits)
       || (bidfridayQuantity !== mondayQuantity)
       || (bidfridayRate !== mondayRate)
-      || (bidfridayStatus !== mondayStatus);
+      || (bidfridayStatus !== mondayStatus)
+      || (bidfridayImageData !== mondayImageData);
 
     if (needsUpdate) {
       latestTenderItemInSlot = new TenderLineItem({
@@ -155,6 +159,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
         units: mondayUnits,
         quantity: mondayQuantity,
         rate: mondayRate,
+        sampleImages: mondayImageData,
         status: mondayStatus,
         createdBy: user
       });

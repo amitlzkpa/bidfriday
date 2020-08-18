@@ -38,7 +38,10 @@ const TenderLineItemSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  sampleImages: [],
+  sampleImages: {
+    type: String,
+    default: "{\"text\":\"\",\"value\":null}"
+  },
   attachments: [],
   status: {
     type: String,
