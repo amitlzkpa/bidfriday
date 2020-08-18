@@ -198,16 +198,6 @@ export default {
 
   },
   methods: {
-    async dlFile(asssetId, creatorEmail) {
-      let postData = {
-        assetId: asssetId,
-        creatorEmail: creatorEmail
-      }
-      let postURL = `/api/asset`;
-      let res = await this.$api.post(postURL, postData);
-      let dlURL = res.data.assets[0].public_url;
-      window.location = dlURL;
-    },
     async refresh() {
       let tId = this.tenderId;
       let postData = {
@@ -237,9 +227,19 @@ export default {
     showDetails(item) {
       console.log(item);
       this.detailsItem = item;
-      this.detailsItem.attachments = JSON.parse(this.detailsItem.attachments);
-      this.detailsItem.attachmentFiles = JSON.parse(this.detailsItem.attachments.value)
+      let att = JSON.parse(this.detailsItem.attachments);
+      this.detailsItem.attachmentFiles = JSON.parse(att.value)
       this.showDetailsDialog = true;
+    },
+    async dlFile(asssetId, creatorEmail) {
+      let postData = {
+        assetId: asssetId,
+        creatorEmail: creatorEmail
+      }
+      let postURL = `/api/asset`;
+      let res = await this.$api.post(postURL, postData);
+      let dlURL = res.data.assets[0].public_url;
+      window.location = dlURL;
     }
   }
 }
