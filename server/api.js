@@ -204,7 +204,9 @@ router.post('/get-tender', async (req, res) => {
     populate: {
       path: 'tenderLineItems'
     }
-  }).execPopulate();
+  })
+  .populate('createdBy')
+  .execPopulate();
   return res.json(tender);
 });
 
@@ -246,6 +248,21 @@ router.post('/connect-monday-user', async (req, res) => {
   }
 });
 
+
+
+router.post('/asset', async (req, res) => {
+  let assetId = req.body.assetId;
+  let user = await User.findOne({ email: req.body.creatorEmail.toLowerCase() });
+
+  let tokens = JSON.parse(user.tokens);
+  let mondayToken = tokens.monday;
+  monday.setToken(mondayToken);
+  
+  let queryStr = `query { assets (ids: [${assetId}]) { id name url public_url } }`;
+  let qRes = await monday.api(queryStr);
+
+  return res.json(qRes.data);
+});
 
 
 module.exports = router;

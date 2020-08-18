@@ -69,9 +69,15 @@
           <div class="md-layout-item">
 
             <p>Attached Files:</p>
-            <div style="height: 3vh; overflow-x: auto; overflow-y: hidden;">
+            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
               <div style="width: 100%">
-              
+
+                <span v-if="detailsItem.attachmentFiles">
+                  <span v-for="file in detailsItem.attachmentFiles.files" :key="file.assetId">
+                    <md-chip @click="dlFile(file.assetId, createdBy.email)" style="margin-right: 2px;" md-clickable>{{ file.name }}</md-chip>
+                  </span>
+                </span>
+                
               </div>
             </div>
 
@@ -192,6 +198,16 @@ export default {
 
   },
   methods: {
+    async dlFile(asssetId, creatorEmail) {
+      let postData = {
+        assetId: asssetId,
+        creatorEmail: creatorEmail
+      }
+      let postURL = `/api/asset`;
+      let res = await this.$api.post(postURL, postData);
+      let dlURL = res.data.assets[0].public_url;
+      window.location = dlURL;
+    },
     async refresh() {
       let tId = this.tenderId;
       let postData = {
@@ -200,6 +216,7 @@ export default {
       let tData = await this.$api.post('/api/get-tender', postData);
       console.log(tData.data);
       this.name = tData.data.name;
+      this.createdBy = tData.data.createdBy;
       this.description = tData.data.description;
       this.priceRevealType = tData.data.priceRevealType;
       this.mustBidOnAll = tData.data.mustBidOnAll;
@@ -220,6 +237,8 @@ export default {
     showDetails(item) {
       console.log(item);
       this.detailsItem = item;
+      this.detailsItem.attachments = JSON.parse(this.detailsItem.attachments);
+      this.detailsItem.attachmentFiles = JSON.parse(this.detailsItem.attachments.value)
       this.showDetailsDialog = true;
     }
   }
