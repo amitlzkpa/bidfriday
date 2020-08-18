@@ -36,11 +36,40 @@
       </div>
     </div>
 
-    <md-list>
-      <md-list-item  v-for="tenderItem of tenderItems" :key="tenderItem._id">
-        {{ tenderItem.name }}
-      </md-list-item>
-    </md-list>
+
+    <md-card v-for="slotData of slots" :key="slotData.index">
+      <md-card-header>
+        
+        <md-card-expand-trigger>
+          <md-button class="md-icon-button">
+            <md-icon>keyboard_arrow_down</md-icon>
+          </md-button>
+        </md-card-expand-trigger>
+        
+        {{ slotData.index }}.
+        <span class="md-title">{{ slotData.tenderLineItem.name }}</span>
+        &nbsp;&nbsp;
+        <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} @ {{ slotData.tenderLineItem.rate }}</span>
+        
+      </md-card-header>
+
+      <md-card-expand>
+
+        <md-card-expand-content>
+          <md-card-content>
+            
+            <div class="md-layout">
+              <div class="md-layout-item">
+                {{ slotData.tenderLineItem.specifications }}
+              </div>
+              <div class="md-layout-item"></div>
+              <div class="md-layout-item"></div>
+            </div>
+
+          </md-card-content>
+        </md-card-expand-content>
+      </md-card-expand>
+    </md-card>
 
   </div>
 </template>
@@ -75,14 +104,17 @@ export default {
       this.description = tData.data.description;
       this.priceRevealType = tData.data.priceRevealType;
       this.mustBidOnAll = tData.data.mustBidOnAll;
-      this.slots = tData.data.slots;
-      this.tenderItems = this.slots.map((s, idx) => {
+      this.slots = tData.data.slots.map((s, idx) => {
+        let slotData = {};
+        slotData.slot = s;
         let ti = s.tenderLineItems[s.tenderLineItems.length - 1];
-        let ret = ti;
-        ret.index = idx + 1;
-        ret.total = ti.quantity * ti.rate;
-        ret.slot = s;
-        return ret;
+        ti.total = ti.quantity * ti.rate;
+        ti.slot = s;
+        slotData.tenderLineItem = ti;
+        slotData.index = idx + 1;
+        slotData.bidLineItem = {};
+        slotData.isOpen = false;
+        return slotData;
       });
     }
   }
