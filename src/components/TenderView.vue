@@ -2,13 +2,12 @@
   <div>
     
     <md-dialog :md-active.sync="showDetailsDialog">
-      <md-dialog-title>Details</md-dialog-title>
+      <md-dialog-title>{{ detailsItem.name }}</md-dialog-title>
 
       <md-dialog-content class="dialog-size">
 
         <div class="md-layout">
           <div class="md-layout-item">
-            <h3>{{ detailsItem.name }}</h3>
             <p>{{ detailsItem.description }}</p>
           </div>
           
@@ -42,47 +41,43 @@
         <div class="md-layout">
           <div class="md-layout-item">
 
-            <p>Specifications:</p>
-            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
-              <div style="width: 100%">
-                {{ detailsItem.specifications }}
-              </div>
+            <b>Specifications:</b>
+            <div>
+              {{ detailsItem.specifications }}
             </div>
 
           </div>
         </div>
 
+        <br />
+
         <div class="md-layout">
           <div class="md-layout-item">
 
-            <p>Sample Images:</p>
-            <div style="overflow-x: auto; overflow-y: hidden;">
-              <div style="width: 100%">
-                
-                <a target="_blank" :href="url" v-for="(url, idx) in sampleImgURLS" :key="idx">
-                  <img :src="url" class="sample-image">
-                </a>
-
-              </div>
+            <b>Sample Images:</b>
+            <div>
+              <a target="_blank" :href="url" v-for="(url, idx) in sampleImgURLS" :key="idx">
+                <img :src="url" class="sample-image">
+              </a>
             </div>
           
           </div>
         </div>
 
+        <br />
+
         <div class="md-layout">
           <div class="md-layout-item">
 
-            <p>Attached Files:</p>
-            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
-              <div style="width: 100%">
+            <b>Attached Files:</b>
+            <div>
 
-                <span v-if="detailsItem.attachmentFiles">
-                  <span v-for="file in detailsItem.attachmentFiles.files" :key="file.assetId">
-                    <md-chip @click="dlFile(file.assetId, createdBy.email)" style="margin-right: 2px;" md-clickable>{{ file.name }}</md-chip>
-                  </span>
+              <span v-if="detailsItem.attachmentFiles">
+                <span v-for="file in detailsItem.attachmentFiles.files" :key="file.assetId">
+                  <md-chip @click="dlFile(file.assetId, createdBy.email)" style="margin-right: 2px;" md-clickable>{{ file.name }}</md-chip>
                 </span>
-                
-              </div>
+              </span>
+              
             </div>
 
           </div>
@@ -230,17 +225,18 @@ export default {
       this.searched = searchByName(this.tenderItems, this.search);
     },
     async showDetails(item) {
+      this.showDetailsDialog = true;
       this.detailsItem = item;
       let att = JSON.parse(this.detailsItem.attachments);
       this.detailsItem.attachmentFiles = JSON.parse(att.value);
       this.sampleImgURLS = [];
       let smp = JSON.parse(this.detailsItem.sampleImages);
       let fileData = JSON.parse(smp.value);
+      if (!fileData) return;
       for(let fd of fileData.files) {
         let d = await this.getAssetData(fd.assetId, this.createdBy.email);
         this.sampleImgURLS.push(d.assets[0].public_url);
       }
-      this.showDetailsDialog = true;
     },
     async dlFile(asssetId, creatorEmail) {
       let res = await this.getAssetData(asssetId, creatorEmail);
