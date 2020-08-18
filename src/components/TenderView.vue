@@ -56,9 +56,13 @@
           <div class="md-layout-item">
 
             <p>Sample Images:</p>
-            <div style="height: 10vh; overflow-x: auto; overflow-y: hidden;">
+            <div style="overflow-x: auto; overflow-y: hidden;">
               <div style="width: 100%">
-              
+                
+                <a target="_blank" :href="url" v-for="(url, idx) in sampleImgURLS" :key="idx">
+                  <img :src="url" class="sample-image">
+                </a>
+
               </div>
             </div>
           
@@ -189,7 +193,8 @@ export default {
       searched: [],
 
       showDetailsDialog: false,
-      detailsItem: {}
+      detailsItem: {},
+      sampleImgURLS: []
     };
   },
   async mounted () {
@@ -224,22 +229,32 @@ export default {
     searchOnTable () {
       this.searched = searchByName(this.tenderItems, this.search);
     },
-    showDetails(item) {
-      console.log(item);
+    async showDetails(item) {
       this.detailsItem = item;
       let att = JSON.parse(this.detailsItem.attachments);
-      this.detailsItem.attachmentFiles = JSON.parse(att.value)
+      this.detailsItem.attachmentFiles = JSON.parse(att.value);
+      this.sampleImgURLS = [];
+      let smp = JSON.parse(this.detailsItem.sampleImages);
+      let fileData = JSON.parse(smp.value);
+      for(let fd of fileData.files) {
+        let d = await this.getAssetData(fd.assetId, this.createdBy.email);
+        this.sampleImgURLS.push(d.assets[0].public_url);
+      }
       this.showDetailsDialog = true;
     },
     async dlFile(asssetId, creatorEmail) {
+      let res = await this.getAssetData(asssetId, creatorEmail);
+      let dlURL = res.assets[0].public_url;
+      window.location = dlURL;
+    },
+    async getAssetData(asssetId, creatorEmail) {
       let postData = {
         assetId: asssetId,
         creatorEmail: creatorEmail
       }
       let postURL = `/api/asset`;
       let res = await this.$api.post(postURL, postData);
-      let dlURL = res.data.assets[0].public_url;
-      window.location = dlURL;
+      return res.data;
     }
   }
 }
@@ -249,5 +264,12 @@ export default {
 .dialog-size {
   width: 60vw;
   height: 70vh;
+}
+
+.sample-image {
+  margin: 4px;
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
 }
 </style>
