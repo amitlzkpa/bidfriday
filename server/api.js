@@ -109,6 +109,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       tender.slots.push(slot._id);
     }
     // add to array of active slots
+    slot.status = "active";
+    slot = await slot.save();
     activeSlots.push(slot._id.toString());
 
     // only slots that've just been created will have an empty tenderLineItems array
@@ -189,6 +191,7 @@ router.post('/get-tender', async (req, res) => {
   let tender = await Tender.findOne({ _id: tId });
   tender = await tender.populate({
     path: 'slots',
+    match: { status: "active" },
     populate: {
       path: 'tenderLineItems'
     }
