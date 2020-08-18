@@ -1,6 +1,8 @@
 <template>
   <div>
 
+    <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
+
     <md-field>
       <md-button @click="refresh">Refresh</md-button>
     </md-field>
@@ -38,7 +40,9 @@ export default {
       rows: [],
       cols: [],
       linkedReqBoardId: null,
-      linkedTenderId: null
+      linkedTenderId: null,
+
+      isProcessing: false
     };
   },
   async mounted () {
@@ -60,6 +64,8 @@ export default {
     async refresh() {
       while(!ctx) await this.wait(200);
 
+      this.isProcessing = true;
+
       let boardId = ctx.boardId;
       let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name } } }`;
       let res = await this.monday.api(queryStr);
@@ -70,6 +76,9 @@ export default {
       await this.updateLinkedReqBoard();
       await this.updateFromReqBoard();
       await this.updateToTender();
+
+      this.isProcessing = false;
+
     },
     async updateLinkedReqBoard() {
 
