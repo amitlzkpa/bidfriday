@@ -42,7 +42,10 @@ const TenderLineItemSchema = new mongoose.Schema({
     type: String,
     default: "{\"text\":\"\",\"value\":null}"
   },
-  attachments: [],
+  attachments: {
+    type: String,
+    default: "{\"text\":\"\",\"value\":null}"
+  },
   status: {
     type: String,
     default: ""

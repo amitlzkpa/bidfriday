@@ -131,6 +131,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     let bidfridayRate = latestTenderItemInSlot.rate;
     let bidfridayStatus = latestTenderItemInSlot.status;
     let bidfridayImageData = latestTenderItemInSlot.sampleImages;
+    let bidfridayAttachmentData = latestTenderItemInSlot.attachments;
 
     let mondayName = lineItem.name;
     let mondaySpecifications = lineItem.column_values[0].text;
@@ -139,6 +140,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     let mondayRate = parseFloat(lineItem.column_values[3].text);
     let mondayStatus = lineItem.column_values[8].text;
     let mondayImageData = JSON.stringify(lineItem.column_values[6]);
+    let mondayAttachmentData = JSON.stringify(lineItem.column_values[7]);
 
     let needsUpdate = 
          (bidfridayName !== mondayName)
@@ -147,7 +149,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
       || (bidfridayQuantity !== mondayQuantity)
       || (bidfridayRate !== mondayRate)
       || (bidfridayStatus !== mondayStatus)
-      || (bidfridayImageData !== mondayImageData);
+      || (bidfridayImageData !== mondayImageData)
+      || (bidfridayAttachmentData !== mondayAttachmentData);
 
     if (needsUpdate) {
       latestTenderItemInSlot = new TenderLineItem({
@@ -160,6 +163,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
         quantity: mondayQuantity,
         rate: mondayRate,
         sampleImages: mondayImageData,
+        attachments: mondayAttachmentData,
         status: mondayStatus,
         createdBy: user
       });
