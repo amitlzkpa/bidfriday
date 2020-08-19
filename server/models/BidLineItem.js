@@ -30,19 +30,7 @@ const BidLineItemSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  units: {
-    type: String,
-    default: ""
-  },
-  quantity: {
-    type: Number,
-    default: 1
-  },
   rate: {
-    type: Number,
-    default: 0
-  },
-  discount: {
     type: Number,
     default: 0
   },
