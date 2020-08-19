@@ -5,6 +5,7 @@
       <div class="md-layout-item">
         <h1 class="md-title">{{ name }}</h1>
         <p class="md-caption" style="height: 4vh;">{{ description }}</p>
+        <md-button @click="toggleAll">Toggle All</md-button>
       </div>
       <div class="md-layout-item md-size-15">
         <p v-if="priceRevealType === 'concealed'">
@@ -40,7 +41,7 @@
     <md-card v-for="slotData of slots" :key="slotData.index">
       <md-card-header>
         
-        <md-card-expand-trigger>
+        <md-card-expand-trigger :ref="'tglBtn-' + slotData.index">
           <md-button class="md-icon-button">
             <md-icon>keyboard_arrow_down</md-icon>
           </md-button>
@@ -155,6 +156,12 @@ export default {
         };
         return slotData;
       });
+    },
+    toggleAll() {
+      let rs = this.$refs;
+      Object.keys(rs).filter(k => k.startsWith('tglBtn-')).forEach(k => {
+        rs[k][0].$el.click();
+      })
     }
   }
 }
