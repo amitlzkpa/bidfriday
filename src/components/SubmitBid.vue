@@ -58,18 +58,51 @@
         <md-card-expand-content>
           <md-card-content>
             
-            <div class="md-layout">
+            <div class="md-layout md-gutter">
+
               <div class="md-layout-item">
-                {{ slotData.tenderLineItem.specifications }}
+
+                <md-field>
+                  <label>Name</label>
+                  <md-input v-model="slotData.bid.name"></md-input>
+                </md-field>
+                <md-field>
+                  <label>Specifications</label>
+                  <md-textarea v-model="slotData.bid.specifications" md-autogrow></md-textarea>
+                </md-field>
+                
               </div>
-              <div class="md-layout-item"></div>
-              <div class="md-layout-item"></div>
+
+              <div class="md-layout-item">
+
+                <md-field>
+                  <label>Rate</label>
+                  <md-input v-model="slotData.bid.rate" type="number"></md-input>
+                </md-field>
+                <md-field>
+                  <label>Description</label>
+                  <md-textarea v-model="slotData.bid.description" md-autogrow></md-textarea>
+                </md-field>
+
+              </div>
+
+              <div class="md-layout-item">
+                <p>Total</p>
+                <p class="md-display-2">{{ slotData.bid.rate * slotData.tenderLineItem.quantity }}</p>
+              </div>
+
             </div>
 
           </md-card-content>
         </md-card-expand-content>
       </md-card-expand>
     </md-card>
+
+
+    <md-card-actions>
+      <md-button @click="refresh">Refresh</md-button>
+      <md-button :to="'/submit-bid/' + tenderId" class="md-primary">Submit</md-button>
+    </md-card-actions>
 
   </div>
 </template>
@@ -114,6 +147,12 @@ export default {
         slotData.index = idx + 1;
         slotData.bidLineItem = {};
         slotData.isOpen = false;
+        slotData.bid = {
+          name: "",
+          rate: "",
+          specifications: "",
+          description: ""
+        };
         return slotData;
       });
     }
