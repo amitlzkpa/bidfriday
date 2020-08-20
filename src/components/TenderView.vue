@@ -151,6 +151,24 @@
       </md-table-row>
     </md-table>
 
+    
+    <md-table>
+      <md-table-row>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell></md-table-cell>
+        <md-table-cell>Total:</md-table-cell>
+        <md-table-cell><span class="md-headline">{{ totalAmount }}</span></md-table-cell>
+      </md-table-row>
+    </md-table>
 
     <md-card-actions>
       <md-button @click="refresh">Refresh</md-button>
@@ -183,6 +201,7 @@ export default {
       mustBidOnAll: false,
       slots: [],
       tenderItems: [],
+      totalAmount: null,
       
       search: null,
       searched: [],
@@ -216,6 +235,7 @@ export default {
         let ret = ti;
         ret.index = idx + 1;
         ret.total = ti.quantity * ti.rate;
+        this.totalAmount += ret.total;
         ret.slot = s;
         return ret;
       });
