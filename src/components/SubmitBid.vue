@@ -223,6 +223,7 @@ export default {
   props: ['tenderId'],
   data () {
     return {
+      bidId: "5f3e9ebc9becc53164b53ea9",
       name: null,
       description: null,
       priceRevealType: null,
