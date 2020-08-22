@@ -94,9 +94,24 @@
 
     <div class="md-layout">
       <div class="md-layout-item">
-        <h1 class="md-title">{{ name }}</h1>
-        <p class="md-caption" style="height: 4vh;">{{ description }}</p>
-        <md-button @click="toggleAll">Toggle All</md-button>
+
+        <div class="md-layout md-gutter">
+
+          <div class="md-layout-item">
+            <h1 class="md-title">{{ name }}</h1>
+            <p class="md-caption" style="height: 4vh;">{{ description }}</p>
+            <md-button @click="toggleAll">Toggle All</md-button>
+          </div>
+
+          <div class="md-layout-item">
+            <md-field>
+              <label>Description</label>
+              <md-textarea v-model="bidDescription" md-autogrow></md-textarea>
+            </md-field>
+          </div>
+
+        </div>
+
       </div>
       <div class="md-layout-item md-size-15">
         <p v-if="priceRevealType === 'concealed'">
@@ -197,7 +212,7 @@
 
     <md-card-actions>
       <md-button @click="refresh">Refresh</md-button>
-      <md-button :to="'/submit-bid/' + tenderId" class="md-primary">Submit</md-button>
+      <md-button @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
   </div>
@@ -215,6 +230,7 @@ export default {
       slots: [],
       tenderItems: [],
       tenderCreatedBy: null,
+      bidDescription: "",
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -249,14 +265,43 @@ export default {
         slotData.index = idx + 1;
         slotData.bidLineItem = {};
         slotData.isOpen = false;
+        // slotData.bid = {
+        //   name: "",
+        //   rate: "",
+        //   specifications: "",
+        //   description: ""
+        // };
         slotData.bid = {
-          name: "",
-          rate: "",
-          specifications: "",
-          description: ""
+          name: `${idx}${idx}`,
+          rate: `${(idx+1) * 10}`,
+          specifications: String.fromCharCode(78 + idx),
+          description: String.fromCharCode(65 + idx)
         };
         return slotData;
       });
+    },
+    async submitBid() {
+      let slotData = this.slots.map(s => {
+        let slotBidData = {};
+        slotBidData.slotId = s.slot._id;
+        slotBidData.tenderLineItemId = s.tenderLineItem._id;
+        slotBidData.name = s.bid.name;
+        slotBidData.rate = parseFloat(s.bid.rate);
+        slotBidData.specifications = s.bid.specifications;
+        slotBidData.description = s.bid.description;
+        return slotBidData;
+      });
+      let bidData = {
+        slotData: slotData,
+        bidId: this.bidId,
+        bidDescription: this.bidDescription,
+        tenderId: this.tenderId
+      };
+      let postData = { bidData: bidData }
+      console.log(postData);
+      let r = await this.$api.post('/api/create-bid', postData);
+      console.log(r.data);
+      this.bidId = r.data._id;
     },
     toggleAll() {
       let rs = this.$refs;
