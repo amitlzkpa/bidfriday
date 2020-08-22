@@ -9,22 +9,13 @@ const BidSchema = new mongoose.Schema({
     ref: 'Tender',
     default: null
   },
-  name: {
-    type: String,
-    index: true,
-    default: ""
-  },
   description: {
     type: String,
     default: ""
   },
-  notes: {
-    type: String,
-    default: ""
-  },
-  items: [{
+  slots: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'BidLineItem'
+    ref: 'Slots'
   }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
