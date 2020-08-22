@@ -8,6 +8,8 @@ const User = require('./models/User');
 const Tender = require('./models/Tender');
 const Slot = require('./models/Slot');
 const TenderLineItem = require('./models/TenderLineItem');
+const Bid = require('./models/Bid');
+const BidLineItem = require('./models/BidLineItem');
 
 
 // ---------------------------------
@@ -212,6 +214,59 @@ router.post('/get-tender', async (req, res) => {
 
 
 
+router.post('/create-bid', async (req, res) => {
+  let bidData = req.body.bidData;
+  let bidfridayBid = await Bid.findOne({ _id: bidData.bidId });
+  if (!bidfridayBid) {
+    bidfridayBid = new Bid({
+      tender: bidData.tenderId
+    });
+    bidfridayBid = await bidfridayBid.save();
+  }
+  bidfridayBid.description = bidData.bidDescription;
+  for(let slotData of bidData.slotData) {
+    let slot = await Slot.findOne({ _id: slotData.slotId });
+    if (!bidfridayBid.slots.includes(slotData.slotId)) {
+      bidfridayBid.slots.push(slotData.slotId);
+    }
+    let assocTenderLineItem = await TenderLineItem.findOne({ _id: slotData.tenderLineItemId });
+    let latestBidLineItem = await BidLineItem.findOne({ _id: slot.bidLineItems[slot.bidLineItems.length - 1] });
+    if (!latestBidLineItem) {
+      latestBidLineItem = new BidLineItem();
+    }
+    let needsUpdate = (latestBidLineItem.name !== slotData.name)
+                    ||(latestBidLineItem.rate !== slotData.rate)
+                    ||(latestBidLineItem.description !== slotData.description)
+                    ||(latestBidLineItem.specification !== slotData.specification);
+    // console.log(slotData);
+    // console.log(needsUpdate);
+    // console.log(latestBidLineItem.name, slotData.name);
+    // console.log(latestBidLineItem.rate, slotData.rate);
+    // console.log(latestBidLineItem.description, slotData.description);
+    // console.log(latestBidLineItem.specification, slotData.specification);
+    // console.log('------------------');
+    if (needsUpdate) {
+      latestBidLineItem = new BidLineItem({
+        bid: bidfridayBid,
+        slot: slot,
+        tenderLineItem: assocTenderLineItem,
+        name: slotData.name,
+        rate: slotData.rate,
+        specifications: slotData.specifications,
+        description: slotData.description,
+      });
+      latestBidLineItem = await latestBidLineItem.save();
+      slot.bidLineItems.push(latestBidLineItem);
+      slot = await slot.save();
+    }
+  }
+  bidfridayBid = await bidfridayBid.save();
+  console.log(bidfridayBid);
+  return res.json(bidfridayBid);
+});
+
+
+
 router.post('/connect-monday-user', async (req, res) => {
   try {
     let code = req.body.code;
@@ -263,6 +318,7 @@ router.post('/asset', async (req, res) => {
 
   return res.json(qRes.data);
 });
+
 
 
 module.exports = router;
