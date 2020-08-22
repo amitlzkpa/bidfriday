@@ -284,7 +284,7 @@ router.post('/connect-monday-user', async (req, res) => {
     let uData = qRes.data.me;
     let u = await User.findOne({ email: uData.email });
     if (u) {
-      let currTokens = JSON.parse(u.tokens);
+      let currTokens = (u.tokens === "") ? {} : JSON.parse(u.tokens);
       currTokens.monday = accessToken;
       u.tokens = JSON.stringify(currTokens);
     } else {
