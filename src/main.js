@@ -8,6 +8,8 @@ import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
+import { Auth0Plugin } from "./auth";
+
 Vue.use(VueMaterial)
 
 Vue.prototype.wait = async function(ms) {
@@ -20,6 +22,21 @@ async function main() {
 
   let $api = axios.create();
   Vue.prototype.$api = $api;
+
+  let domain = process.env.VUE_APP_AUTH0_DOMAIN;
+  let clientId = process.env.VUE_APP_AUTH0_CLIENT_ID;
+  
+  Vue.use(Auth0Plugin, {
+    domain,
+    clientId,
+    onRedirectCallback: appState => {
+      router.push(
+        appState && appState.targetUrl
+          ? appState.targetUrl
+          : window.location.pathname
+      );
+    }
+  });
   
   try {
     let monday = mondaySdk();

@@ -320,5 +320,24 @@ router.post('/asset', async (req, res) => {
 });
 
 
+router.post('/users', async (req, res) => {
+  const u = req.body;
+  if (!u || u === {}) {
+    return res.status(400).send();
+  }
+  let user = await User.findOne({ email: u.email });
+  if (user) {
+    return res.json(user);
+  }
+  user = new User({
+    username: u.nickname,
+    name: u.name,
+    email: u.email
+  });
+  user = await user.save();
+  return res.json(user);
+});
+
+
 
 module.exports = router;
