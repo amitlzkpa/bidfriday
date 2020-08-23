@@ -74,6 +74,7 @@ export const useAuth0 = ({
           this.token = await this.auth0Client.getTokenSilently();
           this.jwt = await this.auth0Client.getIdTokenClaims();
           this.$api.defaults.headers.common["Authorization"] = `Bearer ${this.jwt.__raw}`;
+          this.$api.defaults.headers.common["email"] = this.user.email;
         } else {
           this.token = null;
           this.jwt = null;

@@ -218,15 +218,16 @@ router.post('/get-tender', async (req, res) => {
 
 
 
-router.post('/create-bid', async (req, res) => {
+router.post('/create-or-update-bid', [addUserToReq], async (req, res) => {
+  let user = req.user;
   let bidData = req.body.bidData;
   let tId = bidData.tenderId;
   let bId = bidData.bidId;
-  // return res.json(bidData);
   let bidfridayBid = await Bid.findOne({ _id: bId });
   if (!bidfridayBid) {
     bidfridayBid = new Bid({
-      tender: tId
+      tender: tId,
+      createdBy: user
     });
     bidfridayBid = await bidfridayBid.save();
   }
@@ -252,7 +253,8 @@ router.post('/create-bid', async (req, res) => {
         name: slotData.name,
         rate: slotData.rate,
         description: slotData.description,
-        specifications: slotData.specifications
+        specifications: slotData.specifications,
+        createdBy: user
       });
       latestBidLineItem = await latestBidLineItem.save();
       bidSlot.bidLineItems.push(latestBidLineItem._id);
@@ -269,7 +271,8 @@ router.post('/create-bid', async (req, res) => {
         name: slotData.name,
         rate: slotData.rate,
         description: slotData.description,
-        specifications: slotData.specifications
+        specifications: slotData.specifications,
+        createdBy: user
       });
       latestBidLineItem = await latestBidLineItem.save();
       bidSlot.bidLineItems.push(latestBidLineItem._id);
@@ -286,7 +289,6 @@ router.post('/create-bid', async (req, res) => {
   })
   .populate('createdBy')
   .execPopulate();
-  console.log(bidfridayBid);
   return res.json(bidfridayBid);
 });
 

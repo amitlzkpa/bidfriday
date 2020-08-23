@@ -223,7 +223,7 @@ export default {
   props: ['tenderId'],
   data () {
     return {
-      bidId: "5f3e9ebc9becc53164b53ea9",
+      bidId: "5f429f9b5336913934c47777",
       name: null,
       description: null,
       priceRevealType: null,
@@ -266,12 +266,6 @@ export default {
         slotData.index = idx + 1;
         slotData.bidLineItem = {};
         slotData.isOpen = false;
-        // slotData.bid = {
-        //   name: "",
-        //   rate: "",
-        //   specifications: "",
-        //   description: ""
-        // };
         slotData.bid = {
           name: `${idx}${idx}`,
           rate: `${(idx+1) * 10}`,
@@ -300,7 +294,7 @@ export default {
       };
       let postData = { bidData: bidData }
       console.log(postData);
-      let r = await this.$api.post('/api/create-bid', postData);
+      let r = await this.$api.post('/api/create-or-update-bid', postData);
       console.log(r.data);
       this.bidId = r.data._id;
     },
