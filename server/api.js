@@ -200,6 +200,9 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
 router.post('/get-tender', async (req, res) => {
   let tId = req.body.tId;
   let tender = await Tender.findOne({ _id: tId });
+  if (!tender) {
+    return res.json({});
+  }
   tender = await tender.populate({
     path: 'slots',
     match: { status: "active" },
