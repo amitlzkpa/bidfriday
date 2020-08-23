@@ -6,8 +6,8 @@ import MondayRequestDashboardView from '@/components/MondayRequestDashboardView.
 import MondayBidsBoardView from '@/components/MondayBidsBoardView.vue';
 import MondayOAuth from '@/components/MondayOAuth.vue';
 import TenderView from '@/components/TenderView.vue';
-import SubmitBid from '@/components/SubmitBid.vue';
 import BidView from '@/components/BidView.vue';
+import BidSubmit from '@/components/BidSubmit.vue';
 
 
 Vue.use(VueRouter);
@@ -22,6 +22,7 @@ export default new VueRouter({
       name: 'about',
       component: About
     },
+    
     {
       path: '/tender-view/:tenderId',
       name: 'tender-view',
@@ -29,9 +30,9 @@ export default new VueRouter({
       props: true
     },
     {
-      path: '/submit-bid/:tenderId',
-      name: 'submit-bid',
-      component: SubmitBid,
+      path: '/bid-submit/:tenderId',
+      name: 'bid-submit',
+      component: BidSubmit,
       props: true
     },
     {
@@ -40,6 +41,7 @@ export default new VueRouter({
       component: BidView,
       props: true
     },
+
     {
       path: '/monday/boardview/dashboard',
       name: 'MondayRequestDashboardView',
