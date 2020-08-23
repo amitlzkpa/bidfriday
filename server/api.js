@@ -70,6 +70,10 @@ router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
 
 
 
+// ---------------------------------
+
+
+
 router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let user = req.user;
   let tId = req.body.tenderId;
@@ -290,6 +294,32 @@ router.post('/create-or-update-bid', [addUserToReq], async (req, res) => {
   .populate('createdBy')
   .execPopulate();
   return res.json(bidfridayBid);
+});
+
+
+
+router.post('/get-bid', async (req, res) => {
+  let bId = req.body.bId;
+  let bid = await Bid.findOne({ _id: bId });
+  if (!bid) {
+    return res.json({});
+  }
+  bid = await bid.populate({
+    path: 'slots',
+    match: { status: "active" },
+    populate: [{
+      path: 'bidLineItems'
+    }, {
+      path: 'tenderSlot',
+      populate: {
+        path: 'tenderLineItems'
+      }
+    }]
+  })
+  .populate('tender')
+  .populate('createdBy')
+  .execPopulate();
+  return res.json(bid);
 });
 
 
