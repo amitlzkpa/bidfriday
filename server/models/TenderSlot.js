@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 
 
-const SlotSchema = new mongoose.Schema({
+const TenderSlotSchema = new mongoose.Schema({
   mondayItemId: {
     type: String,
     default: ""
@@ -19,14 +19,10 @@ const SlotSchema = new mongoose.Schema({
   tenderLineItems: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'TenderLineItem'
-  }],
-  bidLineItems: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'BidLineItem',
   }]
 },
 {timestamps: true});
 
 
 
-module.exports = mongoose.model('Slot', SlotSchema);
+module.exports = mongoose.model('TenderSlot', TenderSlotSchema);

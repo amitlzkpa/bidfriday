@@ -11,7 +11,7 @@ const TenderLineItemSchema = new mongoose.Schema({
   },
   slot: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Slot'
+    ref: 'TenderSlot'
   },
   name: {
     type: String,

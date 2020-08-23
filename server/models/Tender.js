@@ -23,7 +23,7 @@ const TenderSchema = new mongoose.Schema({
   },
   slots: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Slot'
+    ref: 'TenderSlot'
   }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

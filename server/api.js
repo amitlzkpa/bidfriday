@@ -6,7 +6,7 @@ const monday = require('monday-sdk-js')();
 const BoardPair = require('./models/BoardPair');
 const User = require('./models/User');
 const Tender = require('./models/Tender');
-const Slot = require('./models/Slot');
+const TenderSlot = require('./models/TenderSlot');
 const TenderLineItem = require('./models/TenderLineItem');
 const Bid = require('./models/Bid');
 const BidLineItem = require('./models/BidLineItem');
@@ -97,13 +97,13 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   
   for(let lineItem of boardInfo.items) {
     let slot;
-    slot = await Slot.findOne({
+    slot = await TenderSlot.findOne({
       mondayItemId: lineItem.id,
       tender: tender
     });
     // a new line item - create a new slot
     if (!slot) {
-      slot = new Slot({
+      slot = new TenderSlot({
         mondayItemId: lineItem.id,
         tender: tender
       });
@@ -177,7 +177,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
 
   for(let sl of tender.slots) {
     if(!activeSlots.includes(sl._id.toString())) {
-      let slt = await Slot.findOne({ _id: sl._id });
+      let slt = await TenderSlot.findOne({ _id: sl._id });
       slt.status = "inactive";
       slt = await slt.save();
     }
@@ -225,7 +225,7 @@ router.post('/create-bid', async (req, res) => {
   }
   bidfridayBid.description = bidData.bidDescription;
   for(let slotData of bidData.slotData) {
-    let slot = await Slot.findOne({ _id: slotData.slotId });
+    let slot = await TenderSlot.findOne({ _id: slotData.slotId });
     if (!bidfridayBid.slots.includes(slotData.slotId)) {
       bidfridayBid.slots.push(slotData.slotId);
     }
