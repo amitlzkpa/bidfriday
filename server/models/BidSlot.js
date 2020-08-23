@@ -4,13 +4,9 @@ const mongoose = require('mongoose');
 
 
 const BidSlotSchema = new mongoose.Schema({
-  mondayItemId: {
-    type: String,
-    default: ""
-  },
-  tender: {
+  bid: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tender'
+    ref: 'Bid'
   },
   status: {
     type: String,
@@ -20,9 +16,9 @@ const BidSlotSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'BidLineItem'
   }],
-  tenderLineItem: {
+  tenderSlot: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'TenderLineItem'
+    ref: 'TenderSlot'
   }
 },
 {timestamps: true});

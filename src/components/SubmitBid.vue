@@ -284,7 +284,7 @@ export default {
     async submitBid() {
       let slotData = this.slots.map(s => {
         let slotBidData = {};
-        slotBidData.slotId = s.slot._id;
+        slotBidData.tenderSlotId = s.slot._id;
         slotBidData.tenderLineItemId = s.tenderLineItem._id;
         slotBidData.name = s.bid.name;
         slotBidData.rate = parseFloat(s.bid.rate);

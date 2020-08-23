@@ -15,7 +15,7 @@ const BidSchema = new mongoose.Schema({
   },
   slots: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Slots'
+    ref: 'BidSlot'
   }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,

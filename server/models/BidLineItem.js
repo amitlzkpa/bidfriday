@@ -11,7 +11,7 @@ const BidLineItemSchema = new mongoose.Schema({
   },
   slot: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Slot',
+    ref: 'BidSlot',
   },
   tenderLineItem: {
     type: mongoose.Schema.Types.ObjectId,

@@ -10,6 +10,7 @@ const TenderSlot = require('./models/TenderSlot');
 const TenderLineItem = require('./models/TenderLineItem');
 const Bid = require('./models/Bid');
 const BidLineItem = require('./models/BidLineItem');
+const BidSlot = require('./models/BidSlot');
 
 
 // ---------------------------------
@@ -219,51 +220,72 @@ router.post('/get-tender', async (req, res) => {
 
 router.post('/create-bid', async (req, res) => {
   let bidData = req.body.bidData;
-  let bidfridayBid = await Bid.findOne({ _id: bidData.bidId });
+  let tId = bidData.tenderId;
+  let bId = bidData.bidId;
+  // return res.json(bidData);
+  let bidfridayBid = await Bid.findOne({ _id: bId });
   if (!bidfridayBid) {
     bidfridayBid = new Bid({
-      tender: bidData.tenderId
+      tender: tId
     });
     bidfridayBid = await bidfridayBid.save();
   }
   bidfridayBid.description = bidData.bidDescription;
   for(let slotData of bidData.slotData) {
-    let slot = await TenderSlot.findOne({ _id: slotData.slotId });
-    if (!bidfridayBid.slots.includes(slotData.slotId)) {
-      bidfridayBid.slots.push(slotData.slotId);
+    let tenderSlot = await TenderSlot.findOne({ _id: slotData.tenderSlotId });
+    let tenderLineItem = await TenderLineItem.findOne({ _id: slotData.tenderLineItemId });
+    let bidSlot = await BidSlot.findOne({ bid: bidfridayBid, tenderSlot: tenderSlot });
+    if (!bidSlot) {
+      bidSlot = new BidSlot({
+        bid: bidfridayBid._id,
+        tenderSlot: tenderSlot._id
+      });
+      bidSlot = await bidSlot.save();
+      bidfridayBid.slots.push(bidSlot._id);
     }
-    let assocTenderLineItem = await TenderLineItem.findOne({ _id: slotData.tenderLineItemId });
-    let latestBidLineItem = await BidLineItem.findOne({ _id: slot.bidLineItems[slot.bidLineItems.length - 1] });
+    let latestBidLineItem = await BidLineItem.findOne({ _id: bidSlot.bidLineItems[bidSlot.bidLineItems.length - 1] });
     if (!latestBidLineItem) {
-      latestBidLineItem = new BidLineItem();
+      latestBidLineItem = new BidLineItem({
+        bid: bidfridayBid,
+        slot: bidSlot._id,
+        tenderLineItem: tenderLineItem._id,
+        name: slotData.name,
+        rate: slotData.rate,
+        description: slotData.description,
+        specifications: slotData.specifications
+      });
+      latestBidLineItem = await latestBidLineItem.save();
+      bidSlot.bidLineItems.push(latestBidLineItem._id);
     }
     let needsUpdate = (latestBidLineItem.name !== slotData.name)
                     ||(latestBidLineItem.rate !== slotData.rate)
                     ||(latestBidLineItem.description !== slotData.description)
                     ||(latestBidLineItem.specification !== slotData.specification);
-    // console.log(slotData);
-    // console.log(needsUpdate);
-    // console.log(latestBidLineItem.name, slotData.name);
-    // console.log(latestBidLineItem.rate, slotData.rate);
-    // console.log(latestBidLineItem.description, slotData.description);
-    // console.log(latestBidLineItem.specification, slotData.specification);
-    // console.log('------------------');
     if (needsUpdate) {
       latestBidLineItem = new BidLineItem({
         bid: bidfridayBid,
-        slot: slot,
-        tenderLineItem: assocTenderLineItem,
+        slot: bidSlot._id,
+        tenderLineItem: tenderLineItem._id,
         name: slotData.name,
         rate: slotData.rate,
-        specifications: slotData.specifications,
         description: slotData.description,
+        specifications: slotData.specifications
       });
       latestBidLineItem = await latestBidLineItem.save();
-      slot.bidLineItems.push(latestBidLineItem);
-      slot = await slot.save();
+      bidSlot.bidLineItems.push(latestBidLineItem._id);
     }
+    await bidSlot.save();
   }
   bidfridayBid = await bidfridayBid.save();
+  bidfridayBid = await bidfridayBid.populate({
+    path: 'slots',
+    match: { status: "active" },
+    populate: {
+      path: 'bidLineItems'
+    }
+  })
+  .populate('createdBy')
+  .execPopulate();
   console.log(bidfridayBid);
   return res.json(bidfridayBid);
 });
