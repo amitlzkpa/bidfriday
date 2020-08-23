@@ -316,11 +316,18 @@ router.post('/get-bid', async (req, res) => {
       }
     }]
   })
-  .populate('tender')
+  .populate({
+    path: 'tender',
+    populate: 'createdBy'
+  })
   .populate('createdBy')
   .execPopulate();
   return res.json(bid);
 });
+
+
+
+// ---------------------------------
 
 
 

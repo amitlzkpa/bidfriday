@@ -7,6 +7,7 @@ import MondayBidsBoardView from '@/components/MondayBidsBoardView.vue';
 import MondayOAuth from '@/components/MondayOAuth.vue';
 import TenderView from '@/components/TenderView.vue';
 import SubmitBid from '@/components/SubmitBid.vue';
+import BidView from '@/components/BidView.vue';
 
 
 Vue.use(VueRouter);
@@ -31,6 +32,12 @@ export default new VueRouter({
       path: '/submit-bid/:tenderId',
       name: 'submit-bid',
       component: SubmitBid,
+      props: true
+    },
+    {
+      path: '/bid-view/:bidId',
+      name: 'bid-view',
+      component: BidView,
       props: true
     },
     {
