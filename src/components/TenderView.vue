@@ -172,7 +172,7 @@
 
     <md-card-actions>
       <md-button @click="refresh">Refresh</md-button>
-      <md-button :to="'/submit-bid/' + tenderId" class="md-primary">Submit Bid</md-button>
+      <md-button :to="'/bid-edit/' + tenderId" class="md-primary">Submit Bid</md-button>
     </md-card-actions>
 
   </div>

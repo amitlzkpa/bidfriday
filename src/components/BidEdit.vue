@@ -220,10 +220,10 @@
 
 <script>
 export default {
-  props: ['tenderId'],
+  props: ['tenderId', 'bidId'],
   data () {
     return {
-      bidId: "5f429f9b5336913934c47777",
+      bId: null,
       name: null,
       description: null,
       priceRevealType: null,
@@ -237,6 +237,11 @@ export default {
       detailsItem: {},
       sampleImgURLS: []
     };
+  },
+  created() {
+    if (this.bidId && this.bidId !== "") {
+      this.bId = this.bidId;
+    }
   },
   async mounted() {
 
@@ -288,15 +293,14 @@ export default {
       });
       let bidData = {
         slotData: slotData,
-        bidId: this.bidId,
+        bidId: this.bId,
         bidDescription: this.bidDescription,
         tenderId: this.tenderId
       };
       let postData = { bidData: bidData }
-      console.log(postData);
       let r = await this.$api.post('/api/create-or-update-bid', postData);
       console.log(r.data);
-      this.bidId = r.data._id;
+      this.bId = r.data._id;
     },
     toggleAll() {
       let rs = this.$refs;

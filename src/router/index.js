@@ -30,7 +30,7 @@ export default new VueRouter({
       props: true
     },
     {
-      path: '/bid-edit/:tenderId',
+      path: '/bid-edit/:tenderId/:bidId?',
       name: 'bid-edit',
       component: BidEdit,
       props: true
