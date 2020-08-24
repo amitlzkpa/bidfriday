@@ -224,14 +224,15 @@ export default {
   data () {
     return {
       bId: null,
+      bidDescription: null,
+      bidCreatedBy: null,
+
       tenderName: null,
       tenderDescription: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
-      tenderItems: [],
       tenderCreatedBy: null,
-      bidDescription: null,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -308,12 +309,12 @@ export default {
     async submitBid() {
       let slotData = this.slots.map(s => {
         let slotBidData = {};
-        slotBidData.tenderSlotId = s.slot._id;
+        slotBidData.tenderSlotId = s.tenderLineItem.slot;
         slotBidData.tenderLineItemId = s.tenderLineItem._id;
-        slotBidData.name = s.bid.name;
-        slotBidData.rate = parseFloat(s.bid.rate);
-        slotBidData.specifications = s.bid.specifications;
-        slotBidData.description = s.bid.description;
+        slotBidData.name = s.bidLineItem.name;
+        slotBidData.rate = parseFloat(s.bidLineItem.rate);
+        slotBidData.specifications = s.bidLineItem.specifications;
+        slotBidData.description = s.bidLineItem.description;
         return slotBidData;
       });
       let bidData = {
@@ -322,10 +323,11 @@ export default {
         bidDescription: this.bidDescription,
         tenderId: this.tenderId
       };
-      let postData = { bidData: bidData }
+      let postData = { bidData: bidData };
       let r = await this.$api.post('/api/create-or-update-bid', postData);
       console.log(r.data);
       this.bId = r.data._id;
+      this.$router.push({ path: `/bid-edit/${this.tenderId}/${this.bidId}` });
     },
     toggleAll() {
       let rs = this.$refs;
