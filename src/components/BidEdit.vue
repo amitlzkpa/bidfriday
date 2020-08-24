@@ -327,7 +327,7 @@ export default {
       let r = await this.$api.post('/api/create-or-update-bid', postData);
       console.log(r.data);
       this.bId = r.data._id;
-      this.$router.push({ path: `/bid-edit/${this.tenderId}/${this.bidId}` });
+      this.refresh();
     },
     toggleAll() {
       let rs = this.$refs;
