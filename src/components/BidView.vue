@@ -256,7 +256,7 @@ export default {
 
       this.slots = bData.slots.map((s, idx) => {
         let slotData = {};
-        slotData.index = idx;
+        slotData.index = idx + 1;
         let tis = s.tenderSlot.tenderLineItems;
         let bis = s.bidLineItems;
         slotData.tenderLineItem = tis[tis.length - 1];

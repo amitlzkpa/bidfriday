@@ -98,8 +98,8 @@
         <div class="md-layout md-gutter">
 
           <div class="md-layout-item">
-            <h1 class="md-title">{{ name }}</h1>
-            <p class="md-caption" style="height: 4vh;">{{ description }}</p>
+            <h1 class="md-title">{{ tenderName }}</h1>
+            <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
             <md-button @click="toggleAll">Toggle All</md-button>
           </div>
 
@@ -175,11 +175,11 @@
 
                 <md-field>
                   <label>Name</label>
-                  <md-input v-model="slotData.bid.name"></md-input>
+                  <md-input v-model="slotData.bidLineItem.name"></md-input>
                 </md-field>
                 <md-field>
                   <label>Specifications</label>
-                  <md-textarea v-model="slotData.bid.specifications" md-autogrow></md-textarea>
+                  <md-textarea v-model="slotData.bidLineItem.specifications" md-autogrow></md-textarea>
                 </md-field>
                 
               </div>
@@ -188,18 +188,18 @@
 
                 <md-field>
                   <label>Rate</label>
-                  <md-input v-model="slotData.bid.rate" type="number"></md-input>
+                  <md-input v-model="slotData.bidLineItem.rate" type="number"></md-input>
                 </md-field>
                 <md-field>
                   <label>Description</label>
-                  <md-textarea v-model="slotData.bid.description" md-autogrow></md-textarea>
+                  <md-textarea v-model="slotData.bidLineItem.description" md-autogrow></md-textarea>
                 </md-field>
 
               </div>
 
               <div class="md-layout-item">
                 <p>Total</p>
-                <p class="md-display-2">{{ slotData.bid.rate * slotData.tenderLineItem.quantity }}</p>
+                <p class="md-display-2">{{ slotData.bidLineItem.rate * slotData.tenderLineItem.quantity }}</p>
               </div>
 
             </div>
@@ -224,14 +224,14 @@ export default {
   data () {
     return {
       bId: null,
-      name: null,
-      description: null,
+      tenderName: null,
+      tenderDescription: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
       tenderItems: [],
       tenderCreatedBy: null,
-      bidDescription: "",
+      bidDescription: null,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -239,7 +239,7 @@ export default {
     };
   },
   created() {
-    if (this.bidId && this.bidId !== "") {
+    if (this.bidId) {
       this.bId = this.bidId;
     }
   },
@@ -250,33 +250,42 @@ export default {
   },
   methods: {
     async refresh() {
-      let tId = this.tenderId;
-      let postData = {
-        tId: tId,
-      };
-      let tData = await this.$api.post('/api/get-tender', postData);
-      console.log(tData.data);
-      this.name = tData.data.name;
-      this.description = tData.data.description;
-      this.priceRevealType = tData.data.priceRevealType;
-      this.mustBidOnAll = tData.data.mustBidOnAll;
-      this.tenderCreatedBy = tData.data.createdBy;
-      this.slots = tData.data.slots.map((s, idx) => {
+      let postData;
+      let res;
+      let bData;
+      let tData;
+      
+      let isNewBid = !(this.bidId);
+      if (isNewBid) {
+        postData = { tId: this.tenderId };
+        res = await this.$api.post('/api/get-tender', postData);
+        tData = res.data;
+      } else {
+        postData = { bId: this.bId };
+        res = await this.$api.post('/api/get-bid', postData);
+        bData = res.data;
+        tData = bData.tender;
+      }
+
+      this.tenderName = tData.name;
+      this.tenderDescription = tData.description;
+      this.priceRevealType = tData.priceRevealType;
+      this.mustBidOnAll = tData.mustBidOnAll;
+      this.tenderCreatedBy = tData.createdBy;
+
+      this.bidDescription = (isNewBid) ? null : bData.description;
+      this.bidCreatedBy = (isNewBid) ? null : bData.createdBy;
+
+      this.slots = bData.slots.map((s, idx) => {
         let slotData = {};
-        slotData.slot = s;
-        let ti = s.tenderLineItems[s.tenderLineItems.length - 1];
-        ti.total = ti.quantity * ti.rate;
-        ti.slot = s;
-        slotData.tenderLineItem = ti;
         slotData.index = idx + 1;
-        slotData.bidLineItem = {};
-        slotData.isOpen = false;
-        slotData.bid = {
-          name: `${idx}${idx}`,
-          rate: `${(idx+1) * 10}`,
-          specifications: String.fromCharCode(78 + idx),
-          description: String.fromCharCode(65 + idx)
-        };
+        let tis = s.tenderSlot.tenderLineItems;
+        slotData.tenderLineItem = tis[tis.length - 1];
+        if (!isNewBid) {
+          let bis = s.bidLineItems;
+          slotData.bidLineItem = bis[bis.length - 1];
+          slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+        }
         return slotData;
       });
     },
