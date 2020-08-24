@@ -276,18 +276,34 @@ export default {
       this.bidDescription = (isNewBid) ? null : bData.description;
       this.bidCreatedBy = (isNewBid) ? null : bData.createdBy;
 
-      this.slots = bData.slots.map((s, idx) => {
-        let slotData = {};
-        slotData.index = idx + 1;
-        let tis = s.tenderSlot.tenderLineItems;
-        slotData.tenderLineItem = tis[tis.length - 1];
-        if (!isNewBid) {
+      if (isNewBid) {
+        this.slots = tData.slots.map((s, idx) => {
+          let slotData = {};
+          slotData.index = idx + 1;
+          let tis = s.tenderLineItems;
+          slotData.tenderLineItem = tis[tis.length - 1];
+          let bidLineItem = {
+            name: null,
+            specifications: null,
+            description: null,
+            rate: 0
+          };
+          slotData.bidLineItem = bidLineItem;
+          return slotData;
+        });
+      } else {
+        this.slots = bData.slots.map((s, idx) => {
+          let slotData = {};
+          slotData.index = idx + 1;
+          let tis = s.tenderSlot.tenderLineItems;
+          slotData.tenderLineItem = tis[tis.length - 1];
           let bis = s.bidLineItems;
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
-        }
-        return slotData;
-      });
+          return slotData;
+        });
+      }
+      
     },
     async submitBid() {
       let slotData = this.slots.map(s => {
