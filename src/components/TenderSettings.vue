@@ -16,12 +16,12 @@
       Bids Reveal
     </p>
     
-    <p v-if="mustBidOnAll">
+    <p v-if="mustBidOnAll === true">
       <md-icon>check_circle</md-icon>
       <md-tooltip md-delay="300">Must bid for all items on tender.</md-tooltip>
       Complete Bids
     </p>
-    <p v-else>
+    <p v-if="mustBidOnAll === false">
       <md-icon>remove_circle_outline</md-icon>
       <md-tooltip md-delay="300">Choice to submit partial bids.</md-tooltip>
       Partial Bids
