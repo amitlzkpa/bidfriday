@@ -3,8 +3,6 @@
     
     <LineItemDetails ref="itemDetails" />
 
-
-
     <div class="md-layout">
       <div class="md-layout-item">
         <h1 class="md-title">{{ name }}</h1>
@@ -137,8 +135,8 @@ export default {
     searchOnTable () {
       this.searched = searchByName(this.tenderItems, this.search);
     },
-    showDetails(info) {
-      this.$refs.itemDetails.showDetails(info, this.createdBy);
+    showDetails(item) {
+      this.$refs.itemDetails.showDetails(item, this.createdBy);
     }
   }
 }
