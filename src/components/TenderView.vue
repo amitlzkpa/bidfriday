@@ -54,7 +54,7 @@
         <md-table-cell></md-table-cell>
         <md-table-cell></md-table-cell>
         <md-table-cell>Total:</md-table-cell>
-        <md-table-cell><span class="md-headline">{{ totalAmount }}</span></md-table-cell>
+        <md-table-cell><span class="md-headline">{{ totalAmount | currency }}</span></md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -76,7 +76,7 @@ const toLower = text => {
 
 const searchByName = (items, term) => {
   if (term) {
-    return items.filter(item => toLower(item).includes(toLower(term)));
+    return items.filter(item => toLower(item.name).includes(toLower(term)));
   }
   return items
 }
@@ -134,6 +134,8 @@ export default {
     },
     searchOnTable () {
       this.searched = searchByName(this.tenderItems, this.search);
+      this.totalAmount = 0;
+      this.searched.forEach(i => this.totalAmount += i.total);
     },
     showDetails(item) {
       this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
