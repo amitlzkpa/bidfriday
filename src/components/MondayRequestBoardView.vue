@@ -3,9 +3,20 @@
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
-    <md-field>
-      <md-button class="primary" @click="refresh">Refresh</md-button>
-    </md-field>
+    <p style="display: flex; justify-content: space-between;">
+      <span>
+        <md-button class="primary" @click="refresh">Refresh</md-button>
+      </span>
+      <span>
+        <md-field>
+          <md-select v-model="priceRevealType" placeholder="Price Reveal" name="priceRevealType" id="priceRevealType" md-dense>
+            <md-option value="concealed">Concealed</md-option>
+            <md-option value="lowest">Lowest</md-option>
+            <md-option value="public">Public</md-option>
+          </md-select>
+        </md-field>
+      </span>
+    </p>
 
     <md-table>
       <md-table-row>
@@ -43,6 +54,7 @@
 let ctx;
 let key_linkedBidBoard = "test3";
 let key_linkedTenderId = "test_tenderId4";
+let key_priceRevealType = "test_priceRevealType";
 
 export default {
   data () {
@@ -52,6 +64,8 @@ export default {
       cols: [],
       linkedBoardId: null,
       linkedTenderId: null,
+
+      priceRevealType: 'concealed',
 
       isProcessing: false
     };
@@ -68,6 +82,9 @@ export default {
       ctx = res.data;
     });
 
+    let res = await this.monday.storage.instance.getItem(key_priceRevealType);
+    this.priceRevealType = res.data.value || this.priceRevealType;
+
     this.refresh();
 
   },
@@ -83,6 +100,8 @@ export default {
       this.currBoardData = res.data.boards[0];
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
+
+      res = await this.monday.storage.instance.setItem(key_priceRevealType, this.priceRevealType);
 
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
@@ -134,7 +153,8 @@ export default {
       this.linkedTenderId = res.data.value;
       let postData = {
         requestBoardId: this.currBoardData.id,
-        tenderId: this.linkedTenderId
+        tenderId: this.linkedTenderId,
+        priceRevealType: this.priceRevealType
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
