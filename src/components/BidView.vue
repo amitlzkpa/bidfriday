@@ -86,7 +86,10 @@
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
-            <span class="md-subhead">{{ slotData.tenderLineItem.rate | currency }}</span>
+            <span class="md-subhead">
+              <span v-if="slotData.tenderLineItem.rate === -1">-</span>
+              <span v-else>{{ slotData.tenderLineItem.rate | currency }}</span>
+            </span>
           </div>
 
           <div class="md-layout-item md-size-15" style="text-align: right;">

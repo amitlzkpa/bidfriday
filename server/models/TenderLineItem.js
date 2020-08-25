@@ -36,7 +36,7 @@ const TenderLineItemSchema = new mongoose.Schema({
   },
   rate: {
     type: Number,
-    default: 0
+    default: -1
   },
   sampleImages: {
     type: String,

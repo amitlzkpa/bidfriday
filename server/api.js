@@ -169,7 +169,7 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
         specifications: mondaySpecifications,
         units: mondayUnits,
         quantity: mondayQuantity,
-        rate: mondayRate,
+        rate: isNaN(mondayRate) ? -1 : mondayRate,
         sampleImages: mondayImageData,
         attachments: mondayAttachmentData,
         status: mondayStatus,

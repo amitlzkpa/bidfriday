@@ -34,8 +34,14 @@
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
         <md-table-cell md-label="Unit" md-sort-by="units">{{ item.units }}</md-table-cell>
         <md-table-cell md-label="Quantity" md-sort-by="quantity">{{ item.quantity }}</md-table-cell>
-        <md-table-cell md-label="Rate" md-sort-by="rate">{{ item.rate }}</md-table-cell>
-        <md-table-cell md-label="Total" md-sort-by="total">{{ item.total }}</md-table-cell>
+        <md-table-cell md-label="Rate" md-sort-by="rate">
+          <span v-if="item.rate === -1">-</span>
+          <span v-else>{{ item.rate | currency }}</span>
+        </md-table-cell>
+        <md-table-cell md-label="Total" md-sort-by="total">
+          <span v-if="item.rate === -1">-</span>
+          <span v-else>{{ item.total | currency }}</span>
+        </md-table-cell>
       </md-table-row>
     </md-table>
 
