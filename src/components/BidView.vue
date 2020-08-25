@@ -30,23 +30,73 @@
     </div>
 
 
+    <md-card>
+      <div class="md-layout" style="padding: 10px 0px 10px 0px;">
+
+        <div class="md-layout-item md-size-10">
+        </div>
+        
+        <div class="md-layout-item md-size-40">
+          <span class="md-subtitle">Item</span>
+        </div>
+        
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span class="md-subtitle">Quantity</span>
+        </div>
+        
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span class="md-subtitle">Reference</span>
+        </div>
+        
+        <div class="md-layout-item md-size-10" style="text-align: right;">
+          <span class="md-subtitle">Quote</span>
+        </div>
+        
+        <div class="md-layout-item md-size-20" style="text-align: right;">
+          <span class="md-subtitle">Total</span>
+        </div>
+
+      </div>
+    </md-card>
+
     <md-card v-for="slotData of slots" :key="slotData.index">
       <md-card-header>
-
-        <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
-          <md-icon>info</md-icon>
-        </md-button>
-
-        <md-card-expand-trigger :ref="'tglBtn-' + slotData.index">
-          <md-button class="md-icon-button">
-            <md-icon>keyboard_arrow_down</md-icon>
-          </md-button>
-        </md-card-expand-trigger>
         
-        {{ slotData.index }}.
-        <span class="md-title">{{ slotData.tenderLineItem.name }}</span>
-        &nbsp;&nbsp;
-        <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
+        <div class="md-layout">
+
+          <div class="md-layout-item md-size-10">
+            <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
+              <md-icon>info</md-icon>
+            </md-button>
+
+            <md-card-expand-trigger :ref="'tglBtn-' + slotData.index">
+              <md-button class="md-icon-button">
+                <md-icon>keyboard_arrow_down</md-icon>
+              </md-button>
+            </md-card-expand-trigger>
+          </div>
+
+          <div class="md-layout-item md-size-40">
+            {{ slotData.index }}.
+            <span class="md-title">{{ slotData.tenderLineItem.name }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+            <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+            <span class="md-subhead">{{ slotData.tenderLineItem.rate }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-10" style="text-align: right;">
+            <span class="md-display-1">{{ slotData.bidLineItem.rate }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-20" style="text-align: right;">
+            <span class="md-display-1">{{ slotData.bidLineItem.rate * slotData.tenderLineItem.quantity }}</span>
+          </div>
+        </div>
         
       </md-card-header>
 
@@ -58,29 +108,28 @@
             <div class="md-layout md-gutter">
 
               <div class="md-layout-item">
-
                 <p class="md-title">
                   {{ slotData.bidLineItem.name }}
                 </p>
+              </div>
+
+            </div>
+            
+            
+            <div class="md-layout md-gutter">
+
+              <div class="md-layout-item">
                 <p>Specifications</p>
                 <p class="md-body-1">
                   {{ slotData.bidLineItem.specifications }}
                 </p>
-                
               </div>
 
               <div class="md-layout-item">
-
-                <p>Quote</p>
-                <p class="md-display-1">
-                  {{ slotData.bidLineItem.rate }}
+                <p>Description</p>
+                <p class="md-body-1">
+                  {{ slotData.bidLineItem.description }}
                 </p>
-
-              </div>
-
-              <div class="md-layout-item">
-                <p>Total</p>
-                <p class="md-display-2">{{ slotData.bidLineItem.rate * slotData.tenderLineItem.quantity }}</p>
               </div>
 
             </div>
