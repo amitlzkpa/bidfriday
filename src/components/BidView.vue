@@ -139,6 +139,20 @@
       </md-card-expand>
     </md-card>
 
+    <md-card>
+      <div class="md-layout" style="padding: 10px 0px 10px 0px;">
+
+        <div class="md-layout-item md-size-70">
+        </div>
+        
+        <div class="md-layout-item md-size-30" style="text-align: right;">
+          <span class="md-subtitle">Total:</span>
+          &nbsp;&nbsp;
+          <span class="md-title">{{ bidTotal | currency }}</span>
+        </div>
+
+      </div>
+    </md-card>
 
     <md-card-actions>
       <md-button @click="refresh">Refresh</md-button>
@@ -168,6 +182,7 @@ export default {
 
       bidDescription: "",
       bidCreatedBy: null,
+      bidTotal: 0,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -207,6 +222,7 @@ export default {
         slotData.tenderLineItem = tis[tis.length - 1];
         slotData.bidLineItem = bis[bis.length - 1];
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+        this.bidTotal += slotData.tenderLineItem.total;
         return slotData;
       });
     },
