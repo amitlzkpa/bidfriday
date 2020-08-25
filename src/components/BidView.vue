@@ -48,11 +48,11 @@
           <span class="md-subtitle">Reference</span>
         </div>
         
-        <div class="md-layout-item md-size-10" style="text-align: right;">
+        <div class="md-layout-item md-size-15" style="text-align: right;">
           <span class="md-subtitle">Quote</span>
         </div>
         
-        <div class="md-layout-item md-size-20" style="text-align: right;">
+        <div class="md-layout-item md-size-15" style="text-align: right;">
           <span class="md-subtitle">Total</span>
         </div>
 
@@ -78,7 +78,7 @@
 
           <div class="md-layout-item md-size-40">
             {{ slotData.index }}.
-            <span class="md-title">{{ slotData.tenderLineItem.name }}</span>
+            <span class="md-headline">{{ slotData.tenderLineItem.name }}</span>
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
@@ -86,15 +86,15 @@
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
-            <span class="md-subhead">{{ slotData.tenderLineItem.rate }}</span>
+            <span class="md-subhead">{{ slotData.tenderLineItem.rate | currency }}</span>
           </div>
 
-          <div class="md-layout-item md-size-10" style="text-align: right;">
-            <span class="md-display-1">{{ slotData.bidLineItem.rate }}</span>
+          <div class="md-layout-item md-size-15" style="text-align: right;">
+            <span class="md-body-2">{{ slotData.bidLineItem.rate | currency }}</span>
           </div>
 
-          <div class="md-layout-item md-size-20" style="text-align: right;">
-            <span class="md-display-1">{{ slotData.bidLineItem.rate * slotData.tenderLineItem.quantity }}</span>
+          <div class="md-layout-item md-size-15" style="text-align: right;">
+            <span class="md-body-1">{{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
           </div>
         </div>
         
@@ -108,7 +108,7 @@
             <div class="md-layout md-gutter">
 
               <div class="md-layout-item">
-                <p class="md-title">
+                <p class="md-subheading">
                   {{ slotData.bidLineItem.name }}
                 </p>
               </div>
@@ -119,14 +119,14 @@
             <div class="md-layout md-gutter">
 
               <div class="md-layout-item">
-                <p>Specifications</p>
+                <p class="md-subhead">Specifications</p>
                 <p class="md-body-1">
                   {{ slotData.bidLineItem.specifications }}
                 </p>
               </div>
 
               <div class="md-layout-item">
-                <p>Description</p>
+                <p class="md-subhead">Description</p>
                 <p class="md-body-1">
                   {{ slotData.bidLineItem.description }}
                 </p>

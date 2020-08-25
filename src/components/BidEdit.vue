@@ -163,6 +163,8 @@ export default {
         bData = res.data;
         tData = bData.tender;
       }
+      console.log(tData);
+      console.log(bData);
 
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;

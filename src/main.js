@@ -8,9 +8,22 @@ import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
+import VueCurrencyFilter from 'vue-currency-filter';
+
 import { Auth0Plugin } from "./auth";
 
-Vue.use(VueMaterial)
+Vue.use(VueMaterial);
+
+Vue.use(VueCurrencyFilter,
+  {
+    symbol : '$',
+    thousandsSeparator: ',',
+    fractionCount: 2,
+    fractionSeparator: '.',
+    symbolPosition: 'front',
+    symbolSpacing: false
+  }
+);
 
 Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
