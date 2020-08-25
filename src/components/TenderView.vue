@@ -5,8 +5,8 @@
 
     <div class="md-layout">
       <div class="md-layout-item">
-        <h1 class="md-title">{{ name }}</h1>
-        <p class="md-caption" style="height: 4vh;">{{ description }}</p>
+        <h1 class="md-title">{{ tenderName }}</h1>
+        <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
       </div>
       <div class="md-layout-item md-size-15">
         <TenderSettings
@@ -89,9 +89,9 @@ export default {
   props: ['tenderId'],
   data () {
     return {
-      name: null,
-      description: null,
-      createdBy: null,
+      tenderName: null,
+      tenderDescription: null,
+      tenderCreatedBy: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
@@ -115,9 +115,9 @@ export default {
       };
       let tData = await this.$api.post('/api/get-tender', postData);
       console.log(tData.data);
-      this.name = tData.data.name;
-      this.createdBy = tData.data.createdBy;
-      this.description = tData.data.description;
+      this.tenderName = tData.data.name;
+      this.tenderDescription = tData.data.description;
+      this.tenderCreatedBy = tData.data.createdBy;
       this.priceRevealType = tData.data.priceRevealType;
       this.mustBidOnAll = tData.data.mustBidOnAll;
       this.slots = tData.data.slots || [];
@@ -136,7 +136,7 @@ export default {
       this.searched = searchByName(this.tenderItems, this.search);
     },
     showDetails(item) {
-      this.$refs.itemDetails.showDetails(item, this.createdBy);
+      this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
     }
   }
 }
