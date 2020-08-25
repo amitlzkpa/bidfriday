@@ -10,9 +10,15 @@
       <span>
         <md-field>
           <md-select v-model="priceRevealType" placeholder="Price Reveal" name="priceRevealType" id="priceRevealType" md-dense>
-            <md-option value="concealed">Concealed</md-option>
-            <md-option value="lowest">Lowest</md-option>
-            <md-option value="public">Public</md-option>
+            <md-option value="concealed">
+              <span @click="refresh">Concealed</span>
+            </md-option>
+            <md-option value="lowest">
+              <span @click="refresh">Lowest</span>
+            </md-option>
+            <md-option value="public">
+              <span @click="refresh">Public</span>
+            </md-option>
           </md-select>
         </md-field>
       </span>
