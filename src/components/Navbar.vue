@@ -2,8 +2,9 @@
   <div>
     <md-toolbar md-elevation="0">
       <span style="flex: 1">
-        <a href="https://bidfriday.herokuapp.com" target="_blank">
-          <img :src="require('@/assets/static/images/icon_128x128.png')" style="margin-right: 0px; margin-left: auto; width: 32px; height: 32px;" />
+        <a href="https://bidfriday.herokuapp.com" target="_blank" style="text-decoration: none !important;">
+          <img :src="require('@/assets/static/images/icon_64x64.png')" style="margin-right: 0px; margin-left: auto; width: 27px; height: 27px;" />
+          <span class="md-title">BidFriday</span>
         </a>
       </span>
 

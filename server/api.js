@@ -103,6 +103,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let tId = req.body.tenderId;
   let requestBoardId = req.body.requestBoardId;
   let priceRevealType = req.body.priceRevealType;
+  let mustBidOnAll = req.body.mustBidOnAll;
+  let description = req.body.description;
 
   let tokens = JSON.parse(req.user.tokens);
   let mondayToken = tokens.monday;
@@ -213,6 +215,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     }
   }
 
+  tender.description = description;
+  tender.mustBidOnAll = mustBidOnAll;
   tender.priceRevealType = priceRevealType;
 
   tender = await tender.save();
