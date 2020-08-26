@@ -1,11 +1,25 @@
 <template>
   <div>
 
+    <md-toolbar md-elevation="0">
+      <span style="flex: 1">
+        <a href="https://bidfriday.herokuapp.com" target="_blank">
+          <img :src="require('@/assets/static/images/icon_128x128.png')" style="margin-right: 0px; margin-left: auto; width: 48px; height: 48px;" />
+        </a>
+      </span>
 
-    <md-field>
-      <md-button class="primary" @click="onNewBoardClk">Create New Request</md-button>
-      <md-input v-model="newBoardName"></md-input>
-    </md-field>
+      <md-menu md-size="auto">
+        <md-button md-menu-trigger>New Request</md-button>
+        <md-menu-content>
+          <div style="padding: 12px;">
+            <md-field>
+              <md-input v-model="newBoardName"></md-input>
+            </md-field>
+            <md-button class="md-raised md-primary" @click="onNewBoardClk">Create</md-button>
+          </div>
+        </md-menu-content>
+      </md-menu>
+    </md-toolbar>
 
 
     <md-table>
@@ -28,7 +42,7 @@
         <md-table-cell>{{ row.totalItems }}</md-table-cell>
         <md-table-cell>{{ row.totalOrdered }}</md-table-cell>
         <md-table-cell>{{ row.totalDelivered }}</md-table-cell>
-        <md-table-cell>6</md-table-cell>
+        <md-table-cell>{{ Math.round(Math.random() * 6) }}</md-table-cell>
         <md-table-cell>+</md-table-cell>
       </md-table-row>
       
