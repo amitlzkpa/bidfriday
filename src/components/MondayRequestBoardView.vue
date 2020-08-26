@@ -75,7 +75,6 @@ import TenderSettings from '@/components/TenderSettings.vue';
 let ctx;
 let key_linkedBidBoard = "test3";
 let key_linkedTenderId = "test_tenderId4";
-let key_priceRevealType = "test_priceRevealType";
 
 export default {
   components: {
@@ -112,10 +111,9 @@ export default {
       ctx = res.data;
     });
 
-    let res = await this.monday.storage.instance.getItem(key_priceRevealType);
-    this.priceRevealType = res.data.value || this.priceRevealType;
+    await this.updateFromTender();
 
-    this.sync();
+    await this.sync();
 
   },
   methods: {
@@ -130,8 +128,6 @@ export default {
       this.currBoardData = res.data.boards[0];
       this.rows = this.currBoardData.items;
       this.cols = this.currBoardData.columns;
-
-      res = await this.monday.storage.instance.setItem(key_priceRevealType, this.priceRevealType);
 
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
@@ -181,6 +177,22 @@ export default {
       }
 
     },
+    async updateFromTender() {
+
+      let res;
+
+      res = await this.monday.storage.instance.getItem(key_linkedTenderId);
+      this.linkedTenderId = res.data.value;
+      let postData = {
+        tId: this.linkedTenderId
+      };
+      res = await this.$api.post('/api/get-tender', postData);
+      console.log(res.data);
+      this.description = res.data.description;
+      this.priceRevealType = res.data.priceRevealType;
+      this.mustBidOnAll = res.data.mustBidOnAll;
+
+    },
     async updateToTender() {
 
       let res;
@@ -196,8 +208,13 @@ export default {
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
+      this.description = res.data.description;
+      this.priceRevealType = res.data.priceRevealType;
+      this.mustBidOnAll = res.data.mustBidOnAll;
+
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
+    },
     },
     async openItemCard(itemId) {
       this.monday.execute('openItemCard', { itemId: itemId });
