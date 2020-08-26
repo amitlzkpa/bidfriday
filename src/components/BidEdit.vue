@@ -105,7 +105,8 @@
             &nbsp;
             <span contenteditable
             @focus="selectText"
-            @input="ev => contentUpdate(ev, slotData.bidLineItem, 'rate')"
+            style="width: 70%;"
+            @input="ev => contentUpdate(ev, slotData.bidLineItem, 'rate', true)"
             class="md-subheading content-editable">{{ slotData.bidLineItem.rate }}</span>
           </div>
 
@@ -121,12 +122,16 @@
         <md-card-expand-content>
           <md-card-content>
             
-            <div class="md-layout md-gutter">
+            <div class="md-layout md-gutter" style="margin-bottom: 8px;">
 
               <div class="md-layout-item">
-                <p class="md-subheading">
-                  {{ slotData.bidLineItem.name }}
+                <p class="md-subhead">
+                  Name
                 </p>
+                <span contenteditable
+                style="width: 100%;"
+                @input="ev => contentUpdate(ev, slotData.bidLineItem, 'name')"
+                class="md-subheading content-editable">{{ slotData.bidLineItem.name }}</span>
               </div>
 
             </div>
@@ -136,16 +141,18 @@
 
               <div class="md-layout-item">
                 <p class="md-subhead">Specifications</p>
-                <p class="md-body-1">
-                  {{ slotData.bidLineItem.specifications }}
-                </p>
+                <span contenteditable
+                style="width: 100%; min-height: 60px;"
+                @input="ev => contentUpdate(ev, slotData.bidLineItem, 'specifications')"
+                class="md-subheading content-editable">{{ slotData.bidLineItem.specifications }}</span>
               </div>
 
               <div class="md-layout-item">
                 <p class="md-subhead">Description</p>
-                <p class="md-body-1">
-                  {{ slotData.bidLineItem.description }}
-                </p>
+                <span contenteditable
+                style="width: 100%; min-height: 60px;"
+                @input="ev => contentUpdate(ev, slotData.bidLineItem, 'description')"
+                class="md-subheading content-editable">{{ slotData.bidLineItem.description }}</span>
               </div>
 
             </div>
@@ -213,16 +220,20 @@ export default {
 
   },
   methods: {
-    contentUpdate(e, ref, key) {
+    contentUpdate(e, ref, key, isNum=false) {
       e.target.focus();
       document.execCommand('selectAll', false, null);
       document.getSelection().collapseToEnd();
-      if (e.target.innerText === '') {
-        ref[key] = 0;
-        e.target.innerText = 0;
-        return;
+      if (isNum) {
+        if (e.target.innerText === '') {
+          ref[key] = 0;
+          e.target.innerText = 0;
+          return;
+        }
+        ref[key] = !isNaN(e.target.innerText) ? parseFloat(e.target.innerText) : ref[key];
+      } else {
+        ref[key] = e.target.innerText;
       }
-      ref[key] = !isNaN(e.target.innerText) ? parseFloat(e.target.innerText) : ref[key];
     },
     selectText(e) {
       let el = e.target;
@@ -334,6 +345,7 @@ export default {
   border: 1px solid #BBBBBB;
   padding: 3px 2px 1px 2px;
   min-width: 20px;
+  display:inline-block;
 }
 .content-editable:hover {
   background-color: #CCCCFF;

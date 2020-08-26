@@ -107,7 +107,7 @@
         <md-card-expand-content>
           <md-card-content>
             
-            <div class="md-layout md-gutter">
+            <div class="md-layout md-gutter" style="margin-bottom: 8px;">
 
               <div class="md-layout-item">
                 <p class="md-subheading">
@@ -141,7 +141,7 @@
       </md-card-expand>
     </md-card>
 
-    <md-card>
+    <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
         <div class="md-layout-item md-size-70">
