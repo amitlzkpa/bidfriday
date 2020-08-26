@@ -62,12 +62,6 @@
       </div>
     </md-card>
 
-
-
-
-
-
-
     <md-card v-for="slotData of slots" :key="slotData.index">
       <md-card-header>
         
@@ -162,17 +156,20 @@
       </md-card-expand>
     </md-card>
 
+    <md-card style="padding: 8px;">
+      <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
+        <div class="md-layout-item md-size-70">
+        </div>
+        
+        <div class="md-layout-item md-size-30" style="text-align: right;">
+          <span class="md-subtitle">Total:</span>
+          &nbsp;&nbsp;
+          <span class="md-title">{{ bidTotal | currency }}</span>
+        </div>
 
-
-
-
-
-
-
-
-
-
+      </div>
+    </md-card>
 
     <md-card-actions>
       <md-button @click="submitBid" class="md-primary">Submit</md-button>
@@ -193,16 +190,17 @@ export default {
   props: ['tenderId', 'bidId'],
   data () {
     return {
-      bId: null,
-      bidDescription: null,
-      bidCreatedBy: null,
-
       tenderName: null,
       tenderDescription: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
       tenderCreatedBy: null,
+
+      bId: null,
+      bidDescription: null,
+      bidCreatedBy: null,
+      bidTotal: 0,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -220,29 +218,6 @@ export default {
 
   },
   methods: {
-    contentUpdate(e, ref, key, isNum=false) {
-      e.target.focus();
-      document.execCommand('selectAll', false, null);
-      document.getSelection().collapseToEnd();
-      if (isNum) {
-        if (e.target.innerText === '') {
-          ref[key] = 0;
-          e.target.innerText = 0;
-          return;
-        }
-        ref[key] = !isNaN(e.target.innerText) ? parseFloat(e.target.innerText) : ref[key];
-      } else {
-        ref[key] = e.target.innerText;
-      }
-    },
-    selectText(e) {
-      let el = e.target;
-      let range = document.createRange();
-      range.selectNodeContents(el);
-      let sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    },
     async refresh() {
       let postData;
       let res;
@@ -299,7 +274,7 @@ export default {
           return slotData;
         });
       }
-      
+      this.updateBidTotal();
     },
     async submitBid() {
       let slotData = this.slots.map(s => {
@@ -332,6 +307,37 @@ export default {
     },
     showDetails(item) {
       this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
+    },
+    contentUpdate(e, ref, key, isNum=false) {
+      e.target.focus();
+      document.execCommand('selectAll', false, null);
+      document.getSelection().collapseToEnd();
+      if (isNum) {
+        if (e.target.innerText === '') {
+          ref[key] = 0;
+          e.target.innerText = 0;
+          this.updateBidTotal();
+          return;
+        }
+        ref[key] = !isNaN(e.target.innerText) ? parseFloat(e.target.innerText) : ref[key];
+        this.updateBidTotal();
+      } else {
+        ref[key] = e.target.innerText;
+      }
+    },
+    selectText(e) {
+      let el = e.target;
+      let range = document.createRange();
+      range.selectNodeContents(el);
+      let sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    },
+    updateBidTotal() {
+      this.bidTotal = 0;
+      this.slots.forEach(slotData => {
+        this.bidTotal += slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+      });
     }
   }
 }
