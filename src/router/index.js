@@ -9,6 +9,8 @@ import TenderView from '@/components/TenderView.vue';
 import BidView from '@/components/BidView.vue';
 import BidEdit from '@/components/BidEdit.vue';
 
+import { auth0Guard } from "@/auth/auth0Guard";
+import { mondayGuard } from "@/auth/mondayGuard";
 
 Vue.use(VueRouter);
 
@@ -33,40 +35,47 @@ export default new VueRouter({
       path: '/bid-edit/:tenderId/:bidId?',
       name: 'bid-edit',
       component: BidEdit,
-      props: true
+      props: true,
+      beforeEnter: auth0Guard
     },
     {
       path: '/bid-submit/:tenderId',
       name: 'bid-submit',
       component: BidEdit,
-      props: true
+      props: true,
+      beforeEnter: auth0Guard
     },
     {
       path: '/bid-view/:bidId',
       name: 'bid-view',
       component: BidView,
-      props: true
+      props: true,
+      beforeEnter: auth0Guard
     },
 
     {
       path: '/monday/boardview/dashboard',
       name: 'MondayRequestDashboardView',
-      component: MondayRequestDashboardView
+      component: MondayRequestDashboardView,
+      beforeEnter: mondayGuard
     },
     {
       path: '/monday/boardview/request',
       name: 'MondayRequestBoardView',
-      component: MondayRequestBoardView
+      component: MondayRequestBoardView,
+      beforeEnter: mondayGuard
     },
     {
       path: '/monday/boardview/bids',
       name: 'MondayBidsBoardView',
-      component: MondayBidsBoardView
+      component: MondayBidsBoardView,
+      beforeEnter: mondayGuard
     },
     {
       path: '/monday/connect',
       name: 'MondayOAuth',
-      component: MondayOAuth
+      component: MondayOAuth,
+      beforeEnter: mondayGuard
     }
   ]
 });

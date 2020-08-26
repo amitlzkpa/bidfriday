@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>BidFriday</h1>
-    <p>What do you wanna know?</p>
+    <p>Friendly way to manage bids for your jobs.</p>
   </div>
 </template>
 
