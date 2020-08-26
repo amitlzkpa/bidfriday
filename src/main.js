@@ -59,6 +59,10 @@ async function main() {
     Vue.prototype.isInMonday = true;
     Vue.prototype.monday = monday;
     Vue.prototype.mdUser = mdUser;
+
+    res = await $api.post('/api/has-monday-connected', { email: mdUser.email });
+    Vue.prototype.hasMondayConnected = res.data.isConnected;
+
   } catch(excp) {
     console.log('Not monday');
   }
