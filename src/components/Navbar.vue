@@ -9,7 +9,7 @@
 
       <span v-if="isInMonday">
         <span v-if="hasMondayConnected">
-          {{ mdUser.email }}
+          <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
         </span>
         <span v-else>
           <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
@@ -51,6 +51,9 @@ export default {
       this.$auth.logout({
         returnTo: window.location.origin
       });
+    },
+    sync() {
+      this.eventBus.$emit('sync');
     }
   }
 }

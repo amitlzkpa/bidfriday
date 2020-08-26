@@ -53,6 +53,10 @@ export default {
       return;
     }
 
+    this.eventBus.$on("sync", () => {
+      this.refresh();
+    });
+
     this.monday.listen("context", async (res) => {
       ctx = res.data;
     });

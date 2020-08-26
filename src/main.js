@@ -29,6 +29,8 @@ Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
+Vue.prototype.eventBus = new Vue();
+
 Vue.prototype.isInMonday = false;
 
 async function main() {

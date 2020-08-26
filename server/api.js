@@ -53,9 +53,9 @@ router.post('/has-monday-connected', async (req, res) => {
   if (!user) {
     return res.json({ isConnected: false });
   }
-  // let tokens = JSON.parse(user.tokens);
-  // let isConnected = tokens.monday && tokens.monday !== "";
-  return res.json({ isConnected: false });
+  let tokens = JSON.parse(user.tokens);
+  let isConnected = tokens.monday && tokens.monday !== "";
+  return res.json({ isConnected: isConnected });
 });
 
 
