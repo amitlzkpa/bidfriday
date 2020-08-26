@@ -89,6 +89,17 @@ router.get('/boardpair-from-bidsboard/:bidsBoard', [addUserToReq, authorizeUser]
 
 
 
+function average(arr){
+  var sum = 0;
+  for(var i in arr) {
+      sum += arr[i];
+  }
+  var numbersCnt = arr.length;
+  return (sum / numbersCnt);
+}
+
+
+
 router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (req, res) => {
   let user = req.user;
   let tId = req.body.tenderId;
@@ -256,7 +267,31 @@ router.post('/get-tender', async (req, res) => {
                         })
                         .populate('createdBy', ['name', 'email']);
     ret.bids = bids;
+
+    let bidStats = [];
+
+    for(let tSlot of tender.slots) {
+      let latestBLIsOnThisSlot = [];
+      for(let bid of bids) {
+        let bSlotFortSlot = bid.slots.filter(b => b.tenderSlot._id.equals(tSlot._id))[0];
+        if (bSlotFortSlot && bSlotFortSlot.bidLineItems && bSlotFortSlot.bidLineItems.length > 0){
+          latestBLIsOnThisSlot.push(bSlotFortSlot.bidLineItems[bSlotFortSlot.bidLineItems.length - 1]);
+        }
+      }
+      latestBLIsOnThisSlot = latestBLIsOnThisSlot.sort((a, b) => a.rate < b.rate ? -1 : 1);
+      bidStats.push({
+        tenderSlot: tSlot._id,
+        latestBids: latestBLIsOnThisSlot,
+        minBidRate: latestBLIsOnThisSlot[0].rate,
+        maxBidRate: latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate,
+        averageRate: average(latestBLIsOnThisSlot.map(b => b.rate)),
+        medianRate: (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2
+      });
+    }
+    ret.bidStats = bidStats;
+
   }
+
   return res.json(ret);
 });
 
