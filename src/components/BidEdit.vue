@@ -3,15 +3,14 @@
     
     <LineItemDetails ref="itemDetails" />
 
-    <div class="md-layout">
+    <div class="md-layout" style="padding: 8px;">
       <div class="md-layout-item">
 
-        <div class="md-layout md-gutter">
+        <div class="md-layout">
 
           <div class="md-layout-item">
             <h1 class="md-title">{{ tenderName }}</h1>
-            <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
-            <md-button @click="toggleAll">Toggle All</md-button>
+            <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
           </div>
 
           <div class="md-layout-item">
@@ -33,23 +32,87 @@
     </div>
 
 
+    <md-card style="padding: 8px;">
+      <div class="md-layout" style="padding: 10px 0px 10px 0px;">
+
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span style="cursor: pointer;" @click="toggleAll">Open All</span>
+        </div>
+        
+        <div class="md-layout-item md-size-40">
+          <span class="md-subtitle">Item</span>
+        </div>
+        
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span class="md-subtitle">Quantity</span>
+        </div>
+        
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span class="md-subtitle">Reference</span>
+        </div>
+        
+        <div class="md-layout-item md-size-15" style="text-align: right;">
+          <span class="md-subtitle">Quote</span>
+        </div>
+        
+        <div class="md-layout-item md-size-15" style="text-align: right;">
+          <span class="md-subtitle">Total</span>
+        </div>
+
+      </div>
+    </md-card>
+
+
+
+
+
+
+
     <md-card v-for="slotData of slots" :key="slotData.index">
       <md-card-header>
-
-        <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
-          <md-icon>info</md-icon>
-        </md-button>
-
-        <md-card-expand-trigger :ref="'tglBtn-' + slotData.index">
-          <md-button class="md-icon-button">
-            <md-icon>keyboard_arrow_down</md-icon>
-          </md-button>
-        </md-card-expand-trigger>
         
-        {{ slotData.index }}.
-        <span class="md-title">{{ slotData.tenderLineItem.name }}</span>
-        &nbsp;&nbsp;
-        <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} @ {{ slotData.tenderLineItem.rate }}</span>
+        <div class="md-layout">
+
+          <div class="md-layout-item md-size-10" style="text-align: center;">
+            <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
+              <md-icon>info</md-icon>
+            </md-button>
+
+            <md-card-expand-trigger :ref="'tglBtn-' + slotData.index">
+              <md-button class="md-icon-button">
+                <md-icon>keyboard_arrow_down</md-icon>
+              </md-button>
+            </md-card-expand-trigger>
+          </div>
+
+          <div class="md-layout-item md-size-40">
+            {{ slotData.index }}.
+            <span class="md-headline">{{ slotData.tenderLineItem.name }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+            <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+            <span class="md-subhead">
+              <span>{{ slotData.tenderLineItem.rate | currency }}</span>
+            </span>
+          </div>
+
+          <div class="md-layout-item md-size-15" style="text-align: right;">
+            <span class="md-body-2">$</span>
+            &nbsp;
+            <span contenteditable
+            @focus="selectText"
+            @input="ev => contentUpdate(ev, slotData.bidLineItem, 'rate')"
+            class="md-subheading content-editable">{{ slotData.bidLineItem.rate }}</span>
+          </div>
+
+          <div class="md-layout-item md-size-15" style="text-align: right;">
+            <span class="md-body-1">{{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
+          </div>
+        </div>
         
       </md-card-header>
 
@@ -61,34 +124,28 @@
             <div class="md-layout md-gutter">
 
               <div class="md-layout-item">
+                <p class="md-subheading">
+                  {{ slotData.bidLineItem.name }}
+                </p>
+              </div>
 
-                <md-field>
-                  <label>Name</label>
-                  <md-input v-model="slotData.bidLineItem.name"></md-input>
-                </md-field>
-                <md-field>
-                  <label>Specifications</label>
-                  <md-textarea v-model="slotData.bidLineItem.specifications" md-autogrow></md-textarea>
-                </md-field>
-                
+            </div>
+            
+            
+            <div class="md-layout md-gutter">
+
+              <div class="md-layout-item">
+                <p class="md-subhead">Specifications</p>
+                <p class="md-body-1">
+                  {{ slotData.bidLineItem.specifications }}
+                </p>
               </div>
 
               <div class="md-layout-item">
-
-                <md-field>
-                  <label>Rate</label>
-                  <md-input v-model="slotData.bidLineItem.rate" type="number"></md-input>
-                </md-field>
-                <md-field>
-                  <label>Description</label>
-                  <md-textarea v-model="slotData.bidLineItem.description" md-autogrow></md-textarea>
-                </md-field>
-
-              </div>
-
-              <div class="md-layout-item">
-                <p>Total</p>
-                <p class="md-display-2">{{ slotData.bidLineItem.rate * slotData.tenderLineItem.quantity }}</p>
+                <p class="md-subhead">Description</p>
+                <p class="md-body-1">
+                  {{ slotData.bidLineItem.description }}
+                </p>
               </div>
 
             </div>
@@ -97,6 +154,17 @@
         </md-card-expand-content>
       </md-card-expand>
     </md-card>
+
+
+
+
+
+
+
+
+
+
+
 
 
     <md-card-actions>
@@ -145,6 +213,25 @@ export default {
 
   },
   methods: {
+    contentUpdate(e, ref, key) {
+      e.target.focus();
+      document.execCommand('selectAll', false, null);
+      document.getSelection().collapseToEnd();
+      if (e.target.innerText === '') {
+        ref[key] = 0;
+        e.target.innerText = 0;
+        return;
+      }
+      ref[key] = !isNaN(e.target.innerText) ? parseFloat(e.target.innerText) : ref[key];
+    },
+    selectText(e) {
+      let el = e.target;
+      let range = document.createRange();
+      range.selectNodeContents(el);
+      let sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    },
     async refresh() {
       let postData;
       let res;
@@ -240,4 +327,15 @@ export default {
 </script>
 
 <style scoped>
+.content-editable {
+  background-color: #EEEEEE;
+  transition: background-color 0.3s;
+  border-radius: 3px;
+  border: 1px solid #BBBBBB;
+  padding: 3px 2px 1px 2px;
+  min-width: 20px;
+}
+.content-editable:hover {
+  background-color: #CCCCFF;
+}
 </style>

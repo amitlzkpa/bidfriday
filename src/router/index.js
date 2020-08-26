@@ -35,7 +35,9 @@ const routes =
     props: true
   },
   {
-    title: 'Update Bid',
+    meta: {
+      title: 'Update Bid',
+    },
     path: '/bid-edit/:tenderId/:bidId?',
     name: 'bid-edit',
     component: BidEdit,
@@ -43,7 +45,9 @@ const routes =
     beforeEnter: auth0Guard
   },
   {
-    title: 'Submit Bid',
+    meta: {
+      title: 'Submit Bid',
+    },
     path: '/bid-submit/:tenderId',
     name: 'bid-submit',
     component: BidEdit,

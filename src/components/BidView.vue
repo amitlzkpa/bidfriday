@@ -10,11 +10,11 @@
 
           <div class="md-layout-item">
             <h1 class="md-title">{{ tenderName }}</h1>
-            <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
+            <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
           </div>
 
           <div class="md-layout-item">
-            <p class="md-caption" style="height: 4vh;">{{ bidDescription }}</p>
+            <p class="md-caption" style="min-height: 4vh;">{{ bidDescription }}</p>
           </div>
 
         </div>
@@ -87,8 +87,7 @@
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
-              <span v-if="slotData.tenderLineItem.rate === -1">-</span>
-              <span v-else>{{ slotData.tenderLineItem.rate | currency }}</span>
+              <span>{{ slotData.tenderLineItem.rate | currency }}</span>
             </span>
           </div>
 
