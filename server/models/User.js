@@ -6,7 +6,6 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
-    required: true,
     index: true
   },
   name: {
@@ -17,6 +16,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     index: true,
+    required: true,
     default: ""
   },
   bio: {
@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
   },
   tokens: {
     type: String,
-    default: ""
+    default: "{}"
   },
 }, {timestamps: true});
 

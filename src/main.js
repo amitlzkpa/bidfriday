@@ -38,35 +38,45 @@ async function main() {
   let $api = axios.create();
   Vue.prototype.$api = $api;
 
-  let domain = process.env.VUE_APP_AUTH0_DOMAIN;
-  let clientId = process.env.VUE_APP_AUTH0_CLIENT_ID;
-  
-  Vue.use(Auth0Plugin, {
-    domain,
-    clientId,
-    onRedirectCallback: appState => {
-      router.push(
-        appState && appState.targetUrl
-          ? appState.targetUrl
-          : window.location.pathname
-      );
-    }
-  });
+  let res;
   
   try {
     let monday = mondaySdk();
-    let res = await monday.api('query { me { id name email country_code location url account { id name } } }');
+    res = await monday.api('query { me { id name email country_code location url account { id name } } }');
     let mdUser = res.data.me;
-    $api.defaults.headers.common['email'] = mdUser.email;
     Vue.prototype.isInMonday = true;
     Vue.prototype.monday = monday;
     Vue.prototype.mdUser = mdUser;
-
-    res = await $api.post('/api/has-monday-connected', { email: mdUser.email });
-    Vue.prototype.hasMondayConnected = res.data.isConnected;
-
   } catch(excp) {
     console.log('Not monday');
+  }
+  
+  if (Vue.prototype.isInMonday) {
+
+    Vue.prototype.$auth = {};
+    let resp = await Vue.prototype.$api.post('/api/users', Vue.prototype.mdUser);
+    Vue.prototype.bfUser = resp.data.user;
+    Vue.prototype.bftoken = resp.data.bftoken;
+    Vue.prototype.hasMondayConnected = resp.data.hasMondayConnected;
+    Vue.prototype.$api.defaults.headers.common["email"] = Vue.prototype.bfUser.email;
+    Vue.prototype.$api.defaults.headers.common["bftoken"] = Vue.prototype.bftoken;
+    
+  } else {
+
+    let domain = process.env.VUE_APP_AUTH0_DOMAIN;
+    let clientId = process.env.VUE_APP_AUTH0_CLIENT_ID;
+    Vue.use(Auth0Plugin, {
+      domain,
+      clientId,
+      onRedirectCallback: appState => {
+        router.push(
+          appState && appState.targetUrl
+            ? appState.targetUrl
+            : window.location.pathname
+        );
+      }
+    });
+
   }
   
   Vue.config.productionTip = false;

@@ -2,6 +2,7 @@ require('dotenv').config();
 const router = require('express').Router();
 const axios = require('axios');
 const monday = require('monday-sdk-js')();
+const jwt = require('jsonwebtoken');
 
 const BoardPair = require('./models/BoardPair');
 const User = require('./models/User');
@@ -17,6 +18,10 @@ const BidSlot = require('./models/BidSlot');
 
 
 
+let BIDFRIDAY_SECRET = process.env.BIDFRIDAY_SECRET;
+
+
+
 async function addUserToReq(req, res, next) {
   if (req.user) next();
   let userEmail = req.headers.email;
@@ -27,28 +32,26 @@ async function addUserToReq(req, res, next) {
 
 
 
-// function cleanUser(inUser) {
-//   let out = {
-//     name: inUser.name,
-//     email: inUser.email,
-//     _id: inUser._id,
-//     tokens: Object.keys(JSON.parse(inUser.tokens))
-//   };
-//   return out;
-// }
+async function authorizeUser(req, res, next) {
+  if (!req.user) return res.status(403).send();
+  let token = req.headers.bftoken;
+  let decoded = jwt.verify(token, BIDFRIDAY_SECRET);
+  if (decoded.email !== req.user.email) return res.status(403).send();
+  return next();
+}
 
 
 // ---------------------------------
 
 
 
-router.post('/test', [addUserToReq], async (req, res) => {
+router.post('/test', [addUserToReq, authorizeUser], async (req, res) => {
   return res.send('Bidfriday backend test route');
 });
 
 
 
-router.post('/sync-boardpairs', async (req, res) => {
+router.post('/sync-boardpairs', [addUserToReq, authorizeUser], async (req, res) => {
   let pairs = req.body;
   let r;
   let ret = [];
@@ -68,14 +71,14 @@ router.post('/sync-boardpairs', async (req, res) => {
 
 
 
-router.get('/boardpair-from-requestboard/:requestBoard', async (req, res) => {
+router.get('/boardpair-from-requestboard/:requestBoard', [addUserToReq, authorizeUser], async (req, res) => {
   let b = await BoardPair.findOne({ requestBoard: req.params.requestBoard })
   return res.send(b);
 });
 
 
 
-router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
+router.get('/boardpair-from-bidsboard/:bidsBoard', [addUserToReq, authorizeUser], async (req, res) => {
   let b = await BoardPair.findOne({ bidsBoard: req.params.bidsBoard })
   return res.send(b);
 });
@@ -86,7 +89,7 @@ router.get('/boardpair-from-bidsboard/:bidsBoard', async (req, res) => {
 
 
 
-router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
+router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (req, res) => {
   let user = req.user;
   let tId = req.body.tenderId;
   let requestBoardId = req.body.requestBoardId;
@@ -241,7 +244,7 @@ router.post('/get-tender', async (req, res) => {
 
 
 
-router.post('/create-or-update-bid', [addUserToReq], async (req, res) => {
+router.post('/create-or-update-bid', [addUserToReq, authorizeUser], async (req, res) => {
   let user = req.user;
   let bidData = req.body.bidData;
   let tId = bidData.tenderId;
@@ -346,6 +349,22 @@ router.post('/get-bid', async (req, res) => {
 
 
 
+router.post('/asset', [addUserToReq, authorizeUser], async (req, res) => {
+  let assetId = req.body.assetId;
+  let user = await User.findOne({ email: req.body.creatorEmail.toLowerCase() });
+
+  let tokens = JSON.parse(user.tokens);
+  let mondayToken = tokens.monday;
+  monday.setToken(mondayToken);
+  
+  let queryStr = `query { assets (ids: [${assetId}]) { id name url public_url } }`;
+  let qRes = await monday.api(queryStr);
+
+  return res.json(qRes.data);
+});
+
+
+
 // ---------------------------------
 
 
@@ -379,27 +398,22 @@ router.post('/connect-monday-user', async (req, res) => {
       });
     }
     u = await u.save();
-    return res.json(u);
+    let payload = {
+      email: u.email,
+    };
+    let bftoken = jwt.sign(payload, BIDFRIDAY_SECRET);
+    let tokens = JSON.parse(u.tokens);
+    let hasMondayConnected = tokens.monday && tokens.monday !== "";
+    let ret = {
+      user: u,
+      bftoken: bftoken,
+      hasMondayConnected: hasMondayConnected
+    };
+    return res.json(ret);
   } catch (excp) {
     console.log(excp);
     return res.status(500).send();
   }
-});
-
-
-
-router.post('/asset', async (req, res) => {
-  let assetId = req.body.assetId;
-  let user = await User.findOne({ email: req.body.creatorEmail.toLowerCase() });
-
-  let tokens = JSON.parse(user.tokens);
-  let mondayToken = tokens.monday;
-  monday.setToken(mondayToken);
-  
-  let queryStr = `query { assets (ids: [${assetId}]) { id name url public_url } }`;
-  let qRes = await monday.api(queryStr);
-
-  return res.json(qRes.data);
 });
 
 
@@ -410,29 +424,26 @@ router.post('/users', async (req, res) => {
     return res.status(400).send();
   }
   let user = await User.findOne({ email: u.email });
-  if (user) {
-    return res.json(user);
-  }
-  user = new User({
-    username: u.nickname,
-    name: u.name,
-    email: u.email
-  });
-  user = await user.save();
-  return res.json(user);
-});
-
-
-
-router.post('/has-monday-connected', async (req, res) => {
-  let userEmail = req.body.email;
-  let user = await User.findOne({email: userEmail.toLowerCase()});
   if (!user) {
-    return res.json({ isConnected: false });
+    user = new User({
+      username: u.nickname || '',
+      name: u.name || '',
+      email: u.email
+    });
+    user = await user.save();
   }
+  let payload = {
+    email: user.email,
+  };
+  let bftoken = jwt.sign(payload, BIDFRIDAY_SECRET);
   let tokens = JSON.parse(user.tokens);
-  let isConnected = tokens.monday && tokens.monday !== "";
-  return res.json({ isConnected: isConnected });
+  let hasMondayConnected = tokens.monday && tokens.monday !== "";
+  let ret = {
+    user: user,
+    bftoken: bftoken,
+    hasMondayConnected: hasMondayConnected
+  };
+  return res.json(ret);
 });
 
 

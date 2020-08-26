@@ -74,8 +74,7 @@ export default new VueRouter({
     {
       path: '/monday/connect',
       name: 'MondayOAuth',
-      component: MondayOAuth,
-      beforeEnter: mondayGuard
+      component: MondayOAuth
     }
   ]
 });

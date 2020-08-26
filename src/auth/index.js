@@ -26,7 +26,8 @@ export const useAuth0 = ({
         loading: true,
         isAuthenticated: false,
         auth0User: {},
-        dbUser: null,
+        bfUser: null,
+        bftoken: null,
         token: null,
         jwt: null,
         auth0Client: null,
@@ -73,16 +74,20 @@ export const useAuth0 = ({
         if (this.isAuthenticated) {
           this.token = await this.auth0Client.getTokenSilently();
           this.jwt = await this.auth0Client.getIdTokenClaims();
-          this.$api.defaults.headers.common["Authorization"] = `Bearer ${this.jwt.__raw}`;
+          let resp = await this.$api.post('/api/users', this.auth0User);
+          this.bfUser = resp.data.user;
+          this.bftoken = resp.data.bftoken;
           this.$api.defaults.headers.common["email"] = this.auth0User.email;
+          this.$api.defaults.headers.common["Authorization"] = `Bearer ${this.jwt.__raw}`;
+          this.$api.defaults.headers.common["bftoken"] = this.bftoken;
         } else {
           this.token = null;
           this.jwt = null;
+          this.bfUser = null;
+          this.bftoken = null;
+          this.$api.defaults.headers.common["email"] = null;
           this.$api.defaults.headers.common["Authorization"] = null;
-        }
-        if (this.isAuthenticated) {
-          let resp = await this.$api.post('/api/users', this.auth0User);
-          this.dbUser = resp.data;
+          this.$api.defaults.headers.common["bftoken"] = null;
         }
       },
       /** Authenticates the user using the redirect method */
@@ -108,7 +113,7 @@ export const useAuth0 = ({
       }
     },
     /** Use this lifecycle method to instantiate the SDK client */
-    async created() {
+    async created() {      
       // Create a new instance of the SDK client using members of the given options object
       this.auth0Client = await createAuth0Client({
         domain: options.domain,

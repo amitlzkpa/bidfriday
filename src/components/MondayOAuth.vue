@@ -1,7 +1,13 @@
 <template>
   <div>
-    Successfully connected!
-    <br />
+    <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        Successfully connected!
+        <br />
+        You can close this tab now.
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -15,8 +21,11 @@ export default {
   async mounted() {
     let code = this.$route.query.code;
     if (code) {
-      let r = await this.$api.post('/api/connect-monday-user', { code: code });
-      console.log(r);
+      let resp = await this.$api.post('/api/connect-monday-user', { code: code });
+      this.$auth.bfUser = resp.data.user;
+      this.$auth.bftoken = resp.data.bftoken;
+      this.$api.defaults.headers.common["email"] = this.$auth.bfUser.email;
+      this.$api.defaults.headers.common["bftoken"] = this.$auth.bftoken;
     }
   },
   methods: {

@@ -22,13 +22,7 @@
         <span v-if="!$auth.loading">
           
           <md-button v-if="!$auth.isAuthenticated" @click="login">LOG IN</md-button>
-            
-          <md-menu v-if="$auth.isAuthenticated" md-direction="bottom-start" md-align-trigger>
-            <md-button md-menu-trigger>{{ $auth.dbUser.username }}</md-button>
-            <md-menu-content>
-              <md-menu-item @click="logout">LOG OUT</md-menu-item>
-            </md-menu-content>
-          </md-menu>
+          <md-button v-else @click="logout">LOG OUT</md-button>
 
         </span>
       </span>
