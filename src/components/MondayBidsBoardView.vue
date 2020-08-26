@@ -88,6 +88,12 @@ export default {
       if (!this.linkedReqBoardId) {
         res = await this.$api.get(`/api/boardpair-from-bidsboard/${this.currBoardData.id}`);
         this.linkedReqBoardId = res.data.requestBoard;
+      } else {
+        let boardPair = [{
+          requestBoard: this.linkedReqBoardId,
+          bidsBoard: this.currBoardData.id
+        }];
+        await this.$api.post('/api/sync-boardpairs', boardPair);
       }
       await this.monday.storage.instance.setItem(key_linkedReqBoard, this.linkedReqBoardId);
 
