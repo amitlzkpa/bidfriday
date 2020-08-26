@@ -36,6 +36,12 @@ export default new VueRouter({
       props: true
     },
     {
+      path: '/bid-submit/:tenderId',
+      name: 'bid-submit',
+      component: BidEdit,
+      props: true
+    },
+    {
       path: '/bid-view/:bidId',
       name: 'bid-view',
       component: BidView,

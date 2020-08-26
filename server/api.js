@@ -47,19 +47,6 @@ router.post('/test', [addUserToReq], async (req, res) => {
 
 
 
-router.post('/has-monday-connected', async (req, res) => {
-  let userEmail = req.body.email;
-  let user = await User.findOne({email: userEmail.toLowerCase()});
-  if (!user) {
-    return res.json({ isConnected: false });
-  }
-  let tokens = JSON.parse(user.tokens);
-  let isConnected = tokens.monday && tokens.monday !== "";
-  return res.json({ isConnected: isConnected });
-});
-
-
-
 router.post('/sync-boardpairs', async (req, res) => {
   let pairs = req.body;
   let r;
@@ -431,6 +418,19 @@ router.post('/users', async (req, res) => {
   });
   user = await user.save();
   return res.json(user);
+});
+
+
+
+router.post('/has-monday-connected', async (req, res) => {
+  let userEmail = req.body.email;
+  let user = await User.findOne({email: userEmail.toLowerCase()});
+  if (!user) {
+    return res.json({ isConnected: false });
+  }
+  let tokens = JSON.parse(user.tokens);
+  let isConnected = tokens.monday && tokens.monday !== "";
+  return res.json({ isConnected: isConnected });
 });
 
 
