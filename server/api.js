@@ -217,7 +217,9 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
     populate: {
       path: 'tenderLineItems'
     }
-  }).execPopulate();
+  })
+  // .populate('createdBy', ['name', 'email'])
+  .execPopulate();
 
   return res.json(tender);
 });
@@ -237,7 +239,7 @@ router.post('/get-tender', async (req, res) => {
       path: 'tenderLineItems'
     }
   })
-  .populate('createdBy')
+  .populate('createdBy', ['name', 'email'])
   .execPopulate();
   return res.json(tender);
 });
@@ -313,7 +315,7 @@ router.post('/create-or-update-bid', [addUserToReq, authorizeUser], async (req, 
       path: 'bidLineItems'
     }
   })
-  .populate('createdBy')
+  .populate('createdBy', ['name', 'email'])
   .execPopulate();
   return res.json(bidfridayBid);
 });
@@ -340,9 +342,12 @@ router.post('/get-bid', async (req, res) => {
   })
   .populate({
     path: 'tender',
-    populate: 'createdBy'
+    populate: {
+      path: 'createdBy',
+      select: ['name', 'email']
+    }
   })
-  .populate('createdBy')
+  .populate('createdBy', ['name', 'email'])
   .execPopulate();
   return res.json(bid);
 });
