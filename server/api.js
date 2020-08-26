@@ -16,15 +16,15 @@ const BidSlot = require('./models/BidSlot');
 // ---------------------------------
 
 
+
 async function addUserToReq(req, res, next) {
   if (req.user) next();
   let userEmail = req.headers.email;
   let user = await User.findOne({email: userEmail.toLowerCase()});
-  if (user) {
-    req.user = user;
-  }
+  req.user = user;
   next();
 }
+
 
 
 // function cleanUser(inUser) {
@@ -39,6 +39,7 @@ async function addUserToReq(req, res, next) {
 
 
 // ---------------------------------
+
 
 
 router.post('/test', [addUserToReq], async (req, res) => {
@@ -400,6 +401,7 @@ router.post('/asset', async (req, res) => {
 
   return res.json(qRes.data);
 });
+
 
 
 router.post('/users', async (req, res) => {
