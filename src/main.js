@@ -29,6 +29,8 @@ Vue.prototype.wait = async function(ms) {
 	return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
+Vue.prototype.eventBus = new Vue();
+
 Vue.prototype.isInMonday = false;
 
 async function main() {
@@ -54,11 +56,15 @@ async function main() {
   try {
     let monday = mondaySdk();
     let res = await monday.api('query { me { id name email country_code location url account { id name } } }');
-    let user = res.data.me;
-    $api.defaults.headers.common['email'] = user.email;
+    let mdUser = res.data.me;
+    $api.defaults.headers.common['email'] = mdUser.email;
     Vue.prototype.isInMonday = true;
     Vue.prototype.monday = monday;
-    Vue.prototype.user = user;
+    Vue.prototype.mdUser = mdUser;
+
+    res = await $api.post('/api/has-monday-connected', { email: mdUser.email });
+    Vue.prototype.hasMondayConnected = res.data.isConnected;
+
   } catch(excp) {
     console.log('Not monday');
   }

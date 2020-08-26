@@ -27,11 +27,35 @@ async function addUserToReq(req, res, next) {
 }
 
 
+// function cleanUser(inUser) {
+//   let out = {
+//     name: inUser.name,
+//     email: inUser.email,
+//     _id: inUser._id,
+//     tokens: Object.keys(JSON.parse(inUser.tokens))
+//   };
+//   return out;
+// }
+
+
 // ---------------------------------
 
 
 router.post('/test', [addUserToReq], async (req, res) => {
   return res.send('Bidfriday backend test route');
+});
+
+
+
+router.post('/has-monday-connected', async (req, res) => {
+  let userEmail = req.body.email;
+  let user = await User.findOne({email: userEmail.toLowerCase()});
+  if (!user) {
+    return res.json({ isConnected: false });
+  }
+  let tokens = JSON.parse(user.tokens);
+  let isConnected = tokens.monday && tokens.monday !== "";
+  return res.json({ isConnected: isConnected });
 });
 
 
@@ -79,6 +103,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
   let tId = req.body.tenderId;
   let requestBoardId = req.body.requestBoardId;
   let priceRevealType = req.body.priceRevealType;
+  let mustBidOnAll = req.body.mustBidOnAll;
+  let description = req.body.description;
 
   let tokens = JSON.parse(req.user.tokens);
   let mondayToken = tokens.monday;
@@ -189,6 +215,8 @@ router.post('/create-or-update-tender', [addUserToReq], async (req, res) => {
     }
   }
 
+  tender.description = description;
+  tender.mustBidOnAll = mustBidOnAll;
   tender.priceRevealType = priceRevealType;
 
   tender = await tender.save();

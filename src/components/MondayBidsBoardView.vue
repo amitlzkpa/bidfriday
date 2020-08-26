@@ -2,11 +2,6 @@
   <div>
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
-
-    <md-field>
-      <md-button @click="refresh">Refresh</md-button>
-    </md-field>
-
     
     <md-table>
       <md-table-row>
@@ -53,15 +48,19 @@ export default {
       return;
     }
 
+    this.eventBus.$on("sync", () => {
+      this.sync();
+    });
+
     this.monday.listen("context", async (res) => {
       ctx = res.data;
     });
 
-    this.refresh();
+    this.sync();
 
   },
   methods: {
-    async refresh() {
+    async sync() {
       while(!ctx) await this.wait(200);
 
       this.isProcessing = true;

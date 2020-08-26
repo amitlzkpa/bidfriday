@@ -3,26 +3,40 @@
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
-    <p style="display: flex; justify-content: space-between;">
-      <span>
-        <md-button class="primary" @click="refresh">Refresh</md-button>
-      </span>
-      <span>
+    <div class="md-layout md-gutter">
+      
+      <div class="md-layout-item md-size-70">
         <md-field>
-          <md-select v-model="priceRevealType" placeholder="Price Reveal" name="priceRevealType" id="priceRevealType" md-dense>
-            <md-option value="concealed">
-              <span @click="refresh">Concealed</span>
-            </md-option>
-            <md-option value="lowest">
-              <span @click="refresh">Lowest</span>
-            </md-option>
-            <md-option value="public">
-              <span @click="refresh">Public</span>
-            </md-option>
-          </md-select>
+          <label>Description</label>
+          <md-textarea v-model="description"></md-textarea>
         </md-field>
-      </span>
-    </p>
+      </div>
+      
+      <div class="md-layout-item md-size-30">
+        <span class="md-caption">Price Reveal Type</span>
+        <br />
+        <md-menu md-size="medium" md-align-trigger>
+          <md-button md-menu-trigger>
+            <TenderSettings :mustBidOnAll="mustBidOnAll" :priceRevealType="priceRevealType" />
+          </md-button>
+          <md-menu-content>
+            <md-menu-item @click="priceRevealType = 'concealed';">
+              <md-icon>visibility_off</md-icon>
+              Concealed
+            </md-menu-item>
+            <md-menu-item @click="priceRevealType = 'lowest';">
+              <md-icon>gavel</md-icon>
+              Lowest
+            </md-menu-item>
+            <md-menu-item @click="priceRevealType = 'public';">
+              <md-icon>visibility</md-icon>
+              Public
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
+      </div>
+
+    </div>
 
     <md-table>
       <md-table-row>
@@ -42,8 +56,8 @@
         <md-table-cell>{{ row.column_values[8].text }}</md-table-cell>
         <md-table-cell>{{ row.name }}</md-table-cell>
         <md-table-cell>{{ row.column_values[2].text }} {{ row.column_values[1].text }}</md-table-cell>
-        <md-table-cell>{{ row.column_values[3].text }}</md-table-cell>
-        <md-table-cell>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) }}</md-table-cell>
+        <md-table-cell>{{ row.column_values[3].text | currency }}</md-table-cell>
+        <md-table-cell>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) | currency }}</md-table-cell>
         <md-table-cell>-</md-table-cell>
         <md-table-cell>-</md-table-cell>
         <md-table-cell>-</md-table-cell>
@@ -56,6 +70,7 @@
 </template>
 
 <script>
+import TenderSettings from '@/components/TenderSettings.vue';
 
 let ctx;
 let key_linkedBidBoard = "test3";
@@ -63,6 +78,9 @@ let key_linkedTenderId = "test_tenderId4";
 let key_priceRevealType = "test_priceRevealType";
 
 export default {
+  components: {
+    TenderSettings
+  },
   data () {
     return {
       currBoardData: null,
@@ -71,7 +89,9 @@ export default {
       linkedBoardId: null,
       linkedTenderId: null,
 
+      description: null,
       priceRevealType: 'concealed',
+      mustBidOnAll: false,
 
       isProcessing: false
     };
@@ -84,6 +104,10 @@ export default {
       return;
     }
 
+    this.eventBus.$on("sync", () => {
+      this.sync();
+    });
+
     this.monday.listen("context", async (res) => {
       ctx = res.data;
     });
@@ -91,11 +115,11 @@ export default {
     let res = await this.monday.storage.instance.getItem(key_priceRevealType);
     this.priceRevealType = res.data.value || this.priceRevealType;
 
-    this.refresh();
+    this.sync();
 
   },
   methods: {
-    async refresh() {
+    async sync() {
       while(!ctx) await this.wait(200);
 
       this.isProcessing = true;
@@ -160,7 +184,9 @@ export default {
       let postData = {
         requestBoardId: this.currBoardData.id,
         tenderId: this.linkedTenderId,
-        priceRevealType: this.priceRevealType
+        priceRevealType: this.priceRevealType,
+        mustBidOnAll: this.mustBidOnAll,
+        description: this.description
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
