@@ -25,7 +25,7 @@ export const useAuth0 = ({
       return {
         loading: true,
         isAuthenticated: false,
-        user: {},
+        auth0User: {},
         dbUser: null,
         token: null,
         jwt: null,
@@ -48,7 +48,7 @@ export const useAuth0 = ({
           this.popupOpen = false;
         }
 
-        this.user = await this.auth0Client.getUser();
+        this.auth0User = await this.auth0Client.getUser();
         this.isAuthenticated = true;
 
         await this.updateStateVars();
@@ -58,7 +58,7 @@ export const useAuth0 = ({
         this.loading = true;
         try {
           await this.auth0Client.handleRedirectCallback();
-          this.user = await this.auth0Client.getUser();
+          this.auth0User = await this.auth0Client.getUser();
           this.isAuthenticated = true;
         } catch (e) {
           this.error = e;
@@ -69,19 +69,19 @@ export const useAuth0 = ({
       /** Update state vars as per auth state */
       async updateStateVars() {
         this.isAuthenticated = await this.auth0Client.isAuthenticated();
-        this.user = await this.auth0Client.getUser();
+        this.auth0User = await this.auth0Client.getUser();
         if (this.isAuthenticated) {
           this.token = await this.auth0Client.getTokenSilently();
           this.jwt = await this.auth0Client.getIdTokenClaims();
           this.$api.defaults.headers.common["Authorization"] = `Bearer ${this.jwt.__raw}`;
-          this.$api.defaults.headers.common["email"] = this.user.email;
+          this.$api.defaults.headers.common["email"] = this.auth0User.email;
         } else {
           this.token = null;
           this.jwt = null;
           this.$api.defaults.headers.common["Authorization"] = null;
         }
         if (this.isAuthenticated) {
-          let resp = await this.$api.post('/api/users', this.user);
+          let resp = await this.$api.post('/api/users', this.auth0User);
           this.dbUser = resp.data;
         }
       },

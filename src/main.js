@@ -54,11 +54,11 @@ async function main() {
   try {
     let monday = mondaySdk();
     let res = await monday.api('query { me { id name email country_code location url account { id name } } }');
-    let user = res.data.me;
-    $api.defaults.headers.common['email'] = user.email;
+    let mdUser = res.data.me;
+    $api.defaults.headers.common['email'] = mdUser.email;
     Vue.prototype.isInMonday = true;
     Vue.prototype.monday = monday;
-    Vue.prototype.user = user;
+    Vue.prototype.mdUser = mdUser;
   } catch(excp) {
     console.log('Not monday');
   }

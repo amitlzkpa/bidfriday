@@ -8,7 +8,7 @@
       </span>
 
       <span v-if="isInMonday">
-        Monday
+        {{ mdUser.email }}
       </span>
 
       <span v-else>
