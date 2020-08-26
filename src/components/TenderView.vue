@@ -3,7 +3,7 @@
     
     <LineItemDetails ref="itemDetails" />
 
-    <div class="md-layout">
+    <div class="md-layout" style="padding: 8px;">
       <div class="md-layout-item">
         <h1 class="md-title">{{ tenderName }}</h1>
         <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
@@ -65,7 +65,6 @@
     </md-table>
 
     <md-card-actions>
-      <md-button @click="refresh">Refresh</md-button>
       <md-button :to="'/bid-submit/' + tenderId" class="md-primary">Submit Bid</md-button>
     </md-card-actions>
 

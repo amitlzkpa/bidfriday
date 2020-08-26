@@ -100,7 +100,6 @@
 
 
     <md-card-actions>
-      <md-button @click="refresh">Refresh</md-button>
       <md-button @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 

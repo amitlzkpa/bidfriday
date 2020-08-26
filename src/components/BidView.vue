@@ -3,15 +3,14 @@
     
     <LineItemDetails ref="itemDetails" />
 
-    <div class="md-layout">
+    <div class="md-layout" style="padding: 8px;">
       <div class="md-layout-item">
 
-        <div class="md-layout md-gutter">
+        <div class="md-layout">
 
           <div class="md-layout-item">
             <h1 class="md-title">{{ tenderName }}</h1>
             <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
-            <md-button @click="toggleAll">Toggle All</md-button>
           </div>
 
           <div class="md-layout-item">
@@ -30,10 +29,11 @@
     </div>
 
 
-    <md-card>
+    <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
-        <div class="md-layout-item md-size-10">
+        <div class="md-layout-item md-size-10" style="text-align: center;">
+          <span style="cursor: pointer;" @click="toggleAll">Open All</span>
         </div>
         
         <div class="md-layout-item md-size-40">
@@ -64,7 +64,7 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-10">
+          <div class="md-layout-item md-size-10" style="text-align: center;">
             <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
               <md-icon>info</md-icon>
             </md-button>
@@ -158,7 +158,6 @@
     </md-card>
 
     <md-card-actions>
-      <md-button @click="refresh">Refresh</md-button>
     </md-card-actions>
 
   </div>
