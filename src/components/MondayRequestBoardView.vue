@@ -184,7 +184,8 @@ export default {
       res = await this.monday.storage.instance.getItem(key_linkedTenderId);
       this.linkedTenderId = res.data.value;
       let postData = {
-        tId: this.linkedTenderId
+        tId: this.linkedTenderId,
+        getBids: true
       };
       res = await this.$api.post('/api/get-tender', postData);
       console.log(res.data);
@@ -207,6 +208,7 @@ export default {
         description: this.description
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
+      console.log(res.data);
       this.linkedTenderId = res.data._id;
       this.description = res.data.description;
       this.priceRevealType = res.data.priceRevealType;
@@ -214,7 +216,6 @@ export default {
 
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
-    },
     },
     async openItemCard(itemId) {
       this.monday.execute('openItemCard', { itemId: itemId });

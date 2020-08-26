@@ -228,7 +228,7 @@ export default {
       if (isNewBid) {
         postData = { tId: this.tenderId };
         res = await this.$api.post('/api/get-tender', postData);
-        tData = res.data;
+        tData = res.data.tender;
       } else {
         postData = { bId: this.bId };
         res = await this.$api.post('/api/get-bid', postData);

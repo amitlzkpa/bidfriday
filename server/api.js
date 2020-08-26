@@ -218,7 +218,7 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
       path: 'tenderLineItems'
     }
   })
-  // .populate('createdBy', ['name', 'email'])
+  .populate('createdBy', ['name', 'email'])
   .execPopulate();
 
   return res.json(tender);
@@ -228,6 +228,7 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
 
 router.post('/get-tender', async (req, res) => {
   let tId = req.body.tId;
+  let getBids = !!req.body.getBids;
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
     return res.json({});
@@ -241,7 +242,22 @@ router.post('/get-tender', async (req, res) => {
   })
   .populate('createdBy', ['name', 'email'])
   .execPopulate();
-  return res.json(tender);
+  let ret = {
+    tender: tender
+  }
+  if (getBids) {
+    let bids = await Bid.find({ tender: tender._id })
+                        .populate({
+                          path: 'slots',
+                          match: { status: "active" },
+                          populate: {
+                            path: 'bidLineItems'
+                          }
+                        })
+                        .populate('createdBy', ['name', 'email']);
+    ret.bids = bids;
+  }
+  return res.json(ret);
 });
 
 

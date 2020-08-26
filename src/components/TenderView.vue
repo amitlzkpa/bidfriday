@@ -118,14 +118,15 @@ export default {
       let postData = {
         tId: tId,
       };
-      let tData = await this.$api.post('/api/get-tender', postData);
-      console.log(tData.data);
-      this.tenderName = tData.data.name;
-      this.tenderDescription = tData.data.description;
-      this.tenderCreatedBy = tData.data.createdBy;
-      this.priceRevealType = tData.data.priceRevealType;
-      this.mustBidOnAll = tData.data.mustBidOnAll;
-      this.slots = tData.data.slots || [];
+      let res = await this.$api.post('/api/get-tender', postData);
+      let tData = res.data.tender;
+      console.log(tData);
+      this.tenderName = tData.name;
+      this.tenderDescription = tData.description;
+      this.tenderCreatedBy = tData.createdBy;
+      this.priceRevealType = tData.priceRevealType;
+      this.mustBidOnAll = tData.mustBidOnAll;
+      this.slots = tData.slots || [];
       this.tenderItems = this.slots.map((s, idx) => {
         let ti = s.tenderLineItems[s.tenderLineItems.length - 1];
         let ret = ti;
