@@ -419,16 +419,16 @@ router.post('/connect-monday-user', async (req, res) => {
 
 
 router.post('/users', async (req, res) => {
-  const u = req.body;
-  if (!u || u === {}) {
+  const uData = req.body;
+  if (!uData || uData === {}) {
     return res.status(400).send();
   }
-  let user = await User.findOne({ email: u.email });
+  let user = await User.findOne({ email: uData.email });
   if (!user) {
     user = new User({
-      username: u.nickname || '',
-      name: u.name || '',
-      email: u.email
+      username: uData.nickname || '',
+      name: uData.name || '',
+      email: uData.email.toLowerCase()
     });
     user = await user.save();
   }
@@ -436,7 +436,7 @@ router.post('/users', async (req, res) => {
     email: user.email,
   };
   let bftoken = jwt.sign(payload, BIDFRIDAY_SECRET);
-  let tokens = JSON.parse(user.tokens);
+  let tokens = (user.tokens === "") ? {} : JSON.parse(user.tokens);
   let hasMondayConnected = tokens.monday && tokens.monday !== "";
   let ret = {
     user: user,

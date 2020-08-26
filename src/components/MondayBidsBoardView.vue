@@ -2,8 +2,6 @@
   <div>
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
-
-    <md-button @click="click1">Click 1</md-button>
     
     <md-table>
       <md-table-row>
@@ -131,10 +129,6 @@ export default {
       this.linkedTenderId = res.data._id;
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
-    },
-    async click1() {
-      let res = await this.$api.post('/api/test', {});
-      console.log(res.data);
     }
   }
 }
