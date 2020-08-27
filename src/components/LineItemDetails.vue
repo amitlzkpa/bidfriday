@@ -85,7 +85,7 @@
       </md-dialog-content>
 
       <md-dialog-actions>
-        <span class="md-caption" style="flex: 1">{{ detailsItem.updatedAt }}</span>
+        <span class="md-caption" style="flex: 1">Last updated: {{ detailsItem.updatedAt | moment("calendar") }}</span>
         <md-button class="md-primary" @click="showDetailsDialog = false">Close</md-button>
       </md-dialog-actions>
     </md-dialog>

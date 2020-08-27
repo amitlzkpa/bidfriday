@@ -27,6 +27,7 @@
     "vue": "^2.6.11",
     "vue-currency-filter": "^5.1.1",
     "vue-material": "^1.0.0-beta-14",
+    "vue-moment": "^4.1.0",
     "vue-router": "^3.4.2"
   },
   "devDependencies": {

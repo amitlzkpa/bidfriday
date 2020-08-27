@@ -8,6 +8,7 @@ import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 
+Vue.use(require('vue-moment'));
 import VueCurrencyFilter from 'vue-currency-filter';
 
 import { Auth0Plugin } from "./auth";

@@ -43,7 +43,7 @@
 
                 <div class="md-layout">
                   <div class="md-layout-item">
-                    <span class="md-caption">Last updated: {{ bli.updatedAt }}</span><br />
+                    <span class="md-caption">Last updated: {{ bli.updatedAt | moment("calendar") }}</span><br />
                     <span class="md-caption">Submitted by: {{ bli.createdBy.name }}</span><br />
                   </div>
                 </div>
