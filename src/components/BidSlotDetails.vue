@@ -1,7 +1,14 @@
 <template>
   <div v-if="bids !== null">
     <md-dialog :md-active.sync="showDetailsDialog">
-      <md-dialog-title>{{ tenderLineItem.name }}</md-dialog-title>
+      <md-dialog-title>
+        
+        <div style="display: flex;">
+          <span class="md-title" style="flex: 1">{{ tenderLineItem.name }}</span>
+          <span>Qty: {{ tenderLineItem.quantity }}</span>
+        </div>
+
+      </md-dialog-title>
 
       <md-dialog-content class="dialog-size">
 
@@ -13,17 +20,22 @@
 
         <md-card v-for="bli in bids.latestBids" :key="bli._id" style="margin-bottom: 8px;">
           <md-card-header>
-            <span style="display: inline-block;">
-              <md-card-expand-trigger>
-                <md-button class="md-icon-button">
-                  <md-icon>keyboard_arrow_down</md-icon>
-                </md-button>
-              </md-card-expand-trigger>
-              <span class="md-subheading" style="margin-top: 20px;">
-                {{ bli.name }}
+
+            <div style="display: flex;">
+              <span style="flex: 1">
+                <md-card-expand-trigger>
+                  <md-button class="md-icon-button">
+                    <md-icon>keyboard_arrow_down</md-icon>
+                  </md-button>
+                </md-card-expand-trigger>
+                <span class="md-subheading" style="padding-top: 30px !important;">
+                  {{ bli.name }}
+                </span>
               </span>
-            </span>
-            <span class="md-subhead" style="display: inline-block; margin-right: 0px;">{{ bli.rate | currency }}</span>
+              &nbsp;
+              <span class="md-subhead">{{ bli.rate | currency }}</span>
+            </div>
+
           </md-card-header>
 
           <md-card-expand>
