@@ -14,6 +14,7 @@
           </div>
 
           <div class="md-layout-item">
+            <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
             <md-field>
               <label>Description</label>
               <md-textarea v-model="bidDescription" md-autogrow></md-textarea>
@@ -172,7 +173,7 @@
     </md-card>
 
     <md-card-actions>
-      <span class="md-caption">Last updated: &nbsp; {{ updatedAt | moment("calendar") }}</span>
+      <span v-if="bidLastUpdatedAt" class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
       <md-button :disabled="!hasAllFieldsPopulated" @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
@@ -197,12 +198,13 @@ export default {
       mustBidOnAll: false,
       slots: [],
       tenderCreatedBy: null,
-      updatedAt: null,
+      tenderLastUpdatedAt: null,
 
       bId: null,
       bidDescription: null,
       bidCreatedBy: null,
       bidTotal: 0,
+      bidLastUpdatedAt: null,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -253,10 +255,11 @@ export default {
       this.priceRevealType = tData.priceRevealType;
       this.mustBidOnAll = tData.mustBidOnAll;
       this.tenderCreatedBy = tData.createdBy;
-      this.updatedAt = tData.updatedAt;
+      this.tenderLastUpdatedAt = tData.updatedAt;
 
       this.bidDescription = (isNewBid) ? null : bData.description;
       this.bidCreatedBy = (isNewBid) ? null : bData.createdBy;
+      this.bidLastUpdatedAt = (isNewBid) ? null : bData.updatedAt;
 
       if (isNewBid) {
         this.slots = tData.slots.map((s, idx) => {

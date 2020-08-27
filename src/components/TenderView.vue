@@ -6,6 +6,7 @@
     <div class="md-layout" style="padding: 8px;">
       <div class="md-layout-item">
         <h1 class="md-title">{{ tenderName }}</h1>
+        <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
         <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
       </div>
       <div class="md-layout-item md-size-15">
@@ -97,6 +98,7 @@ export default {
       tenderName: null,
       tenderDescription: null,
       tenderCreatedBy: null,
+      tenderLastUpdatedAt: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
@@ -124,6 +126,7 @@ export default {
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;
       this.tenderCreatedBy = tData.createdBy;
+      this.tenderLastUpdatedAt = tData.updatedAt;
       this.priceRevealType = tData.priceRevealType;
       this.mustBidOnAll = tData.mustBidOnAll;
       this.slots = tData.slots || [];

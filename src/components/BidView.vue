@@ -10,10 +10,12 @@
 
           <div class="md-layout-item">
             <h1 class="md-title">{{ tenderName }}</h1>
+            <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
             <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
           </div>
 
           <div class="md-layout-item">
+            <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
             <p class="md-caption" style="min-height: 4vh;">{{ bidDescription }}</p>
           </div>
 
@@ -176,6 +178,7 @@ export default {
     return {
       tenderName: null,
       tenderDescription: null,
+      tenderLastUpdatedAt: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
@@ -184,6 +187,7 @@ export default {
       bidDescription: "",
       bidCreatedBy: null,
       bidTotal: 0,
+      bidLastUpdatedAt: null,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -208,12 +212,14 @@ export default {
 
       this.tenderName = bData.tender.name;
       this.tenderDescription = bData.tender.description;
+      this.tenderLastUpdatedAt = bData.tender.updatedAt;
       this.priceRevealType = bData.tender.priceRevealType;
       this.mustBidOnAll = bData.tender.mustBidOnAll;
       this.tenderCreatedBy = bData.tender.createdBy;
 
       this.bidDescription = bData.description;
       this.bidCreatedBy = bData.createdBy;
+      this.bidLastUpdatedAt = bData.updatedAt;
 
       this.slots = bData.slots.map((s, idx) => {
         let slotData = {};
