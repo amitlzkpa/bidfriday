@@ -3,6 +3,8 @@
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
+    <md-button @click="clickyy">Clickyy</md-button>
+
     <div class="md-layout md-gutter">
       
       <div class="md-layout-item md-size-70">
@@ -45,24 +47,16 @@
         <md-table-head>Quantity</md-table-head>
         <md-table-head>Rate</md-table-head>
         <md-table-head>Total</md-table-head>
-        <md-table-head>Bids</md-table-head>
-        <md-table-head>Lowest Bid</md-table-head>
-        <md-table-head>Highest Bid</md-table-head>
-        <md-table-head>Lowest Lead Time</md-table-head>
-        <md-table-head>Highest Lead Time</md-table-head>
+        <md-table-head>Bid Stats</md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="row in rows" :key="row.name" @click="openItemCard(row.id)">
-        <md-table-cell>{{ row.column_values[8].text }}</md-table-cell>
-        <md-table-cell>{{ row.name }}</md-table-cell>
-        <md-table-cell>{{ row.column_values[2].text }} {{ row.column_values[1].text }}</md-table-cell>
-        <md-table-cell>{{ row.column_values[3].text | currency }}</md-table-cell>
-        <md-table-cell>{{ parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text) | currency }}</md-table-cell>
-        <md-table-cell>-</md-table-cell>
-        <md-table-cell>-</md-table-cell>
-        <md-table-cell>-</md-table-cell>
-        <md-table-cell>-</md-table-cell>
-        <md-table-cell>-</md-table-cell>
+      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="openItemCard(tli.id)">
+        <md-table-cell>{{ tli.status }}</md-table-cell>
+        <md-table-cell>{{ tli.name }}</md-table-cell>
+        <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
+        <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
+        <md-table-cell>{{ tli.total | currency }}</md-table-cell>
+        <md-table-cell>{{ tli.bids.length }}</md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -83,7 +77,7 @@ export default {
   data () {
     return {
       currBoardData: null,
-      rows: [],
+      tenderLineItems: [],
       cols: [],
       linkedBoardId: null,
       linkedTenderId: null,
@@ -112,7 +106,6 @@ export default {
     });
 
     await this.updateFromTender();
-
     await this.sync();
 
   },
@@ -126,11 +119,24 @@ export default {
       let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
       let res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
-      this.rows = this.currBoardData.items;
+      this.tenderLineItems = this.currBoardData.items.map(row => {
+        return {
+          row: row,
+          id: row.id,
+          name: row.name,
+          status: row.column_values[8].text,
+          units: row.column_values[2].text,
+          quantity: row.column_values[1].text,
+          rate: row.column_values[3].text,
+          total: parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text),
+          bids: []
+        }
+      });
       this.cols = this.currBoardData.columns;
 
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
+      await this.updateFromBidsOnTender();
       await this.updateToTender();
 
       this.isProcessing = false;
@@ -163,7 +169,7 @@ export default {
       res = await this.monday.api(queryStr);
 
       let colsInBidsBoard = res.data.boards[0].columns.map(c => c.title).filter(c => !["Name", "Last Updated"].includes(c));
-      let rowsInReqBoard = this.rows.map(r => r.name);
+      let rowsInReqBoard = this.tenderLineItems.map(r => r.name);
 
       // no way in monday api to delete columns
       // let colsToDel = colsInBidsBoard.filter(c => !rowsInReqBoard.includes(c));
@@ -185,13 +191,33 @@ export default {
       this.linkedTenderId = res.data.value;
       let postData = {
         tId: this.linkedTenderId,
-        getBids: true
       };
       res = await this.$api.post('/api/get-tender', postData);
-      console.log(res.data);
       this.description = res.data.description;
       this.priceRevealType = res.data.priceRevealType;
       this.mustBidOnAll = res.data.mustBidOnAll;
+
+    },
+    async updateFromBidsOnTender() {
+
+      let res;
+
+      res = await this.monday.storage.instance.getItem(key_linkedTenderId);
+      this.linkedTenderId = res.data.value;
+      let postData = {
+        tId: this.linkedTenderId,
+        includeStaleBids: true
+      };
+      res = await this.$api.post('/api/get-tender-and-bids', postData);
+      
+      let bidStats = res.data.bidStats;
+      for(let bidStat of bidStats) {
+        let mdId = bidStat.mondayItemId;
+        let tli = this.tenderLineItems.filter(t => {
+          return t.id === mdId
+        })[0];
+        tli.bids = bidStat.latestBids;
+      }
 
     },
     async updateToTender() {
@@ -215,6 +241,15 @@ export default {
       this.mustBidOnAll = res.data.mustBidOnAll;
 
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
+
+    },
+    async clickyy() {
+
+      // let newNum = "684000881";
+      // let res = await this.monday.storage.instance.setItem(key_linkedBidBoard, newNum);
+      // console.log(res);
+      // res = await this.monday.storage.instance.getItem(key_linkedBidBoard);
+      // console.log(res);
 
     },
     async openItemCard(itemId) {

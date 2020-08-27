@@ -239,8 +239,6 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
 
 router.post('/get-tender', async (req, res) => {
   let tId = req.body.tId;
-  let getBids = !!req.body.getBids;
-  let includeStaleBids = !!req.body.includeStaleBids;
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
     return res.json({});
@@ -256,50 +254,70 @@ router.post('/get-tender', async (req, res) => {
   .execPopulate();
   let ret = {
     tender: tender
+  };
+  return res.json(ret);
+});
+
+
+
+router.post('/get-tender-and-bids', async (req, res) => {
+  let tId = req.body.tId;
+  let includeStaleBids = !!req.body.includeStaleBids;
+  let tender = await Tender.findOne({ _id: tId });
+  if (!tender) {
+    return res.json({});
   }
-  if (getBids) {
-    let bids = await Bid.find({ tender: tender._id })
-                        .populate({
-                          path: 'slots',
-                          match: { status: "active" },
-                          populate: {
-                            path: 'bidLineItems'
-                          }
-                        })
-                        .populate('createdBy', ['name', 'email']);
-    ret.bids = bids;
+  let ret = {};
+  tender = await tender.populate({
+    path: 'slots',
+    match: { status: "active" },
+    populate: {
+      path: 'tenderLineItems'
+    }
+  })
+  .populate('createdBy', ['name', 'email'])
+  .execPopulate();
+  ret.tender = tender;
+  
+  let bids = await Bid.find({ tender: tender._id })
+                      .populate({
+                        path: 'slots',
+                        match: { status: "active" },
+                        populate: {
+                          path: 'bidLineItems'
+                        }
+                      })
+                      .populate('createdBy', ['name', 'email']);
+  ret.bids = bids;
 
-    let bidStats = [];
-
-    for(let tSlot of tender.slots) {
-      let latestTLI = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
-      let latestBLIsOnThisSlot = [];
-      for(let bid of bids) {
-        let bSlotFortSlot = bid.slots.filter(b => b.tenderSlot._id.equals(tSlot._id))[0];
-        if (bSlotFortSlot && bSlotFortSlot.bidLineItems && bSlotFortSlot.bidLineItems.length > 0){
-          let latestBLI = bSlotFortSlot.bidLineItems[bSlotFortSlot.bidLineItems.length - 1];
-          if (includeStaleBids || latestBLI.tenderLineItem._id.equals(latestTLI._id)) {
-            latestBLI = await latestBLI.populate('createdBy', ['name', 'email'])
-                                      .populate('tenderLineItem')
-                                      .execPopulate();
-            latestBLIsOnThisSlot.push(latestBLI);
-          }
+  let bidStats = [];
+  for(let tSlot of tender.slots) {
+    let latestTLI = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
+    let latestBLIsOnThisSlot = [];
+    for(let bid of bids) {
+      let bSlotFortSlot = bid.slots.filter(b => b.tenderSlot._id.equals(tSlot._id))[0];
+      if (bSlotFortSlot && bSlotFortSlot.bidLineItems && bSlotFortSlot.bidLineItems.length > 0){
+        let latestBLI = bSlotFortSlot.bidLineItems[bSlotFortSlot.bidLineItems.length - 1];
+        if (includeStaleBids || latestBLI.tenderLineItem._id.equals(latestTLI._id)) {
+          latestBLI = await latestBLI.populate('createdBy', ['name', 'email'])
+                                    .populate('tenderLineItem')
+                                    .execPopulate();
+          latestBLIsOnThisSlot.push(latestBLI);
         }
       }
-      latestBLIsOnThisSlot = latestBLIsOnThisSlot.sort((a, b) => a.rate < b.rate ? -1 : 1);
-      bidStats.push({
-        tenderSlot: tSlot._id,
-        latestBids: latestBLIsOnThisSlot,
-        minBidRate: latestBLIsOnThisSlot[0].rate,
-        maxBidRate: latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate,
-        averageRate: average(latestBLIsOnThisSlot.map(b => b.rate)),
-        medianRate: (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2
-      });
     }
-    ret.bidStats = bidStats;
-
+    latestBLIsOnThisSlot = latestBLIsOnThisSlot.sort((a, b) => a.rate < b.rate ? -1 : 1);
+    bidStats.push({
+      tenderSlot: tSlot._id,
+      mondayItemId: tSlot.mondayItemId,
+      latestBids: latestBLIsOnThisSlot,
+      minBidRate: latestBLIsOnThisSlot[0].rate,
+      maxBidRate: latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate,
+      averageRate: average(latestBLIsOnThisSlot.map(b => b.rate)),
+      medianRate: (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2
+    });
   }
-
+  ret.bidStats = bidStats;
   return res.json(ret);
 });
 
