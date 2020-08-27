@@ -77,12 +77,14 @@
 
 
         <div v-for="histItem in bids.bidwiseBidsHistory" :key="histItem._id">
-          <span class="md-caption">Submitted by: {{ histItem.bid.createdBy.name }}</span><br />
+          <span class="md-caption">Bid by: {{ histItem.bid.createdBy.name }}</span><br />
 
-          <div style="max-width: 2000px; overflow-x: auto; overflow-x: hidden; padding: 12px 0px 12px 0px;">
+          <div style="max-width: 2000px; overflow-x: auto; overflow-x: hidden; padding: 8px 0px 12px 0px;">
             <div v-for="(hi, hiIdx) in histItem.history" :key="hiIdx" style="display: inline-block;">
-              {{ hi.rate | currency }}
-              <span style="margin: 0px 3px 0px 3px;" v-if="hiIdx !== histItem.history.length - 1">
+              <span style="display: inline-block; padding: 4px; background-color: #CCCCCC; border-radius: 4px;">
+                {{ hi.rate | currency }}
+              </span>
+              <span v-if="hiIdx !== histItem.history.length - 1">
                 <md-icon>keyboard_arrow_right</md-icon>
               </span>
               <md-tooltip md-direction="bottom">{{ hi.name }}</md-tooltip>
