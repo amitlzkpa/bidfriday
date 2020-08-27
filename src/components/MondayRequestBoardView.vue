@@ -47,7 +47,9 @@
         <md-table-head>Quantity</md-table-head>
         <md-table-head>Rate</md-table-head>
         <md-table-head>Total</md-table-head>
-        <md-table-head>Bid Stats</md-table-head>
+        <md-table-head>Bid Count</md-table-head>
+        <md-table-head>Bid Price Range</md-table-head>
+        <md-table-head>Bid Price Average/Median</md-table-head>
       </md-table-row>
 
       <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="openItemCard(tli.id)">
@@ -56,7 +58,9 @@
         <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
         <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
         <md-table-cell>{{ tli.total | currency }}</md-table-cell>
-        <md-table-cell>{{ tli.bids.length }}</md-table-cell>
+        <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
+        <md-table-cell>{{ tli.bids.minBidRate | currency }} - {{ tli.bids.maxBidRate | currency }}</md-table-cell>
+        <md-table-cell>{{ tli.bids.averageRate | currency }}/{{ tli.bids.medianRate | currency }}</md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -129,7 +133,7 @@ export default {
           quantity: row.column_values[1].text,
           rate: row.column_values[3].text,
           total: parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text),
-          bids: []
+          bids: {}
         }
       });
       this.cols = this.currBoardData.columns;
@@ -216,7 +220,7 @@ export default {
         let tli = this.tenderLineItems.filter(t => {
           return t.id === mdId
         })[0];
-        tli.bids = bidStat.latestBids;
+        tli.bids = bidStat;
       }
 
     },
