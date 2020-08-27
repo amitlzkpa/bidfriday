@@ -12,9 +12,9 @@
 
       <md-dialog-content class="dialog-size">
 
-        <span class="md-body-2">
+        <p class="md-body-2">
           Latest Bids:
-        </span>
+        </p>
 
         <br />
 
@@ -28,7 +28,7 @@
                     <md-icon>keyboard_arrow_down</md-icon>
                   </md-button>
                 </md-card-expand-trigger>
-                <span class="md-subheading" style="padding-top: 30px !important;">
+                <span class="md-subheading">
                   {{ bli.name }}
                 </span>
               </span>
@@ -64,6 +64,32 @@
             </md-card-expand-content>
           </md-card-expand>
         </md-card>
+
+
+        
+
+        <p class="md-body-2">
+          Bids Price History:
+        </p>
+
+        <div>
+        </div>
+
+
+        <div v-for="histItem in bids.bidwiseBidsHistory" :key="histItem._id">
+          <span class="md-caption">Submitted by: {{ histItem.bid.createdBy.name }}</span><br />
+
+          <div style="max-width: 2000px; overflow-x: auto; overflow-x: hidden; padding: 12px 0px 12px 0px;">
+            <div v-for="(hi, hiIdx) in histItem.history" :key="hiIdx" style="display: inline-block;">
+              {{ hi.rate | currency }}
+              <span style="margin: 0px 3px 0px 3px;" v-if="hiIdx !== histItem.history.length - 1">
+                <md-icon>keyboard_arrow_right</md-icon>
+              </span>
+              <md-tooltip md-direction="bottom">{{ hi.name }}</md-tooltip>
+            </div>
+          </div>
+          
+        </div>
 
         
       </md-dialog-content>
