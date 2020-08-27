@@ -172,7 +172,8 @@
     </md-card>
 
     <md-card-actions>
-      <md-button @click="submitBid" class="md-primary">Submit</md-button>
+      <span class="md-caption">Last updated: &nbsp; {{ updatedAt | moment("calendar") }}</span>
+      <md-button :disabled="!hasAllFieldsPopulated" @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
   </div>
@@ -196,6 +197,7 @@ export default {
       mustBidOnAll: false,
       slots: [],
       tenderCreatedBy: null,
+      updatedAt: null,
 
       bId: null,
       bidDescription: null,
@@ -216,6 +218,14 @@ export default {
 
     this.refresh();
 
+  },
+  computed:{
+    hasAllFieldsPopulated() {
+      for (let s of this.slots) {
+        if (!s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
+      }
+      return true;
+    }
   },
   methods: {
     async refresh() {
@@ -243,6 +253,7 @@ export default {
       this.priceRevealType = tData.priceRevealType;
       this.mustBidOnAll = tData.mustBidOnAll;
       this.tenderCreatedBy = tData.createdBy;
+      this.updatedAt = tData.updatedAt;
 
       this.bidDescription = (isNewBid) ? null : bData.description;
       this.bidCreatedBy = (isNewBid) ? null : bData.createdBy;
@@ -297,7 +308,7 @@ export default {
       let r = await this.$api.post('/api/create-or-update-bid', postData);
       console.log(r.data);
       this.bId = r.data._id;
-      this.refresh();
+      this.$router.push({ name: 'bid-edit', params: { tenderId: this.tenderId, bidId: this.bId } });
     },
     toggleAll() {
       let rs = this.$refs;

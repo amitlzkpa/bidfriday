@@ -6,8 +6,6 @@
     <LineItemDetails ref="itemDetails" />
     <BidSlotDetails ref="bidSlotDetails" />
 
-    <md-button @click="clickyy">Clickyy</md-button>
-
     <div class="md-layout md-gutter">
       
       <div class="md-layout-item md-size-70">
@@ -265,15 +263,6 @@ export default {
       this.mustBidOnAll = res.data.mustBidOnAll;
 
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
-
-    },
-    async clickyy() {
-
-      // let newNum = "684000881";
-      // let res = await this.monday.storage.instance.setItem(key_linkedBidBoard, newNum);
-      // console.log(res);
-      // res = await this.monday.storage.instance.getItem(key_linkedBidBoard);
-      // console.log(res);
 
     },
     async openItemCard(itemId) {
