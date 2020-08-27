@@ -33,7 +33,8 @@ const routes =
     path: '/my-bids',
     name: 'my-bids',
     component: MyBids,
-    props: true
+    props: true,
+    beforeEnter: auth0Guard
   },
   {
     meta: {

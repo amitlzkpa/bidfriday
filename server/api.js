@@ -438,6 +438,22 @@ router.post('/get-bid', async (req, res) => {
 
 
 
+router.post('/get-my-bids', [addUserToReq, authorizeUser], async (req, res) => {
+  let user = req.user;
+  let bids = await Bid.find({ createdBy: user._id })
+                      .populate('createdBy')
+                      .populate({
+                        path: 'tender',
+                        populate: {
+                          path: 'createdBy',
+                          select: ['name', 'email']
+                        }
+                      });
+  return res.json(bids);
+});
+
+
+
 router.post('/asset', [addUserToReq, authorizeUser], async (req, res) => {
   let assetId = req.body.assetId;
   let user = await User.findOne({ email: req.body.creatorEmail.toLowerCase() });
