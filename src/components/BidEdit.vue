@@ -232,7 +232,8 @@ export default {
   computed:{
     hasAllFieldsPopulated() {
       for (let s of this.slots) {
-        if (!s.deselected && !s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
+        if (s.deselected) continue;
+        if (!s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
       }
       return true;
     }
@@ -299,6 +300,10 @@ export default {
         });
       }
       this.updateBidTotal();
+      if (this.bidCreatedBy !== null
+      && this.bidCreatedBy.email !== this.$auth.bfUser.email) {
+        this.$router.push({ name: 'tender-view', params: { tenderId: this.tenderId } });
+      }
     },
     async submitBid() {
       let slotData = this.slots.filter(s => !s.deselected).map(s => {

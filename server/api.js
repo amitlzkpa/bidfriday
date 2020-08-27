@@ -297,6 +297,7 @@ router.post('/get-tender-and-bids', async (req, res) => {
     let bidwiseBidsHistory = [];
     for(let bid of bids) {
       let bSlotFortSlot = bid.slots.filter(b => b.tenderSlot._id.equals(tSlot._id))[0];
+      if (!bSlotFortSlot) continue;
       bidwiseBidsHistory.push({
         bid: bid,
         history: bSlotFortSlot.bidLineItems
