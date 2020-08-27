@@ -36,11 +36,11 @@
     <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-size-15" style="text-align: center;">
           <span style="cursor: pointer;" @click="toggleAll">Open All</span>
         </div>
         
-        <div class="md-layout-item md-size-40">
+        <div class="md-layout-item md-size-35">
           <span class="md-subtitle">Item</span>
         </div>
         
@@ -68,7 +68,13 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-10" style="text-align: center;">
+          <div class="md-layout-item md-size-15" style="text-align: center;">
+
+            <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
+              <md-icon v-if="!slotData.deselected">remove</md-icon>
+              <md-icon v-else>add</md-icon>
+            </md-button>
+            
             <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
               <md-icon>info</md-icon>
             </md-button>
@@ -78,11 +84,13 @@
                 <md-icon>keyboard_arrow_down</md-icon>
               </md-button>
             </md-card-expand-trigger>
+
           </div>
 
-          <div class="md-layout-item md-size-40">
+          <div class="md-layout-item md-size-35">
             {{ slotData.index }}.
-            <span class="md-headline">{{ slotData.tenderLineItem.name }}</span>
+            <span :style="slotData.deselected ? 'color: #BBBBBB' : 'color: #000000'"
+                  class="md-headline">{{ slotData.tenderLineItem.name }}</span>
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
@@ -98,15 +106,15 @@
           <div class="md-layout-item md-size-15" style="text-align: right;">
             <span class="md-body-2">$</span>
             &nbsp;
-            <span contenteditable
+            <span :contenteditable="!slotData.deselected"
+            :class="slotData.deselected ? 'md-subheading' : 'md-subheading content-editable'"
             @focus="selectText"
-            style="width: 70%;"
             @input="ev => contentUpdate(ev, slotData.bidLineItem, 'rate', true)"
-            class="md-subheading content-editable">{{ slotData.bidLineItem.rate }}</span>
+            style="width: 70%;">{{ slotData.deselected ? '-' : slotData.bidLineItem.rate }}</span>
           </div>
 
           <div class="md-layout-item md-size-15" style="text-align: right;">
-            <span class="md-body-1">{{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
+            <span class="md-body-1">{{ slotData.deselected ? '-' : (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
           </div>
         </div>
         
@@ -115,7 +123,7 @@
       <md-card-expand>
 
         <md-card-expand-content>
-          <md-card-content>
+          <md-card-content v-if="!slotData.deselected">
             
             <div class="md-layout md-gutter" style="margin-bottom: 8px;">
 
@@ -224,7 +232,7 @@ export default {
   computed:{
     hasAllFieldsPopulated() {
       for (let s of this.slots) {
-        if (!s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
+        if (!s.deselected && !s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
       }
       return true;
     }
@@ -274,6 +282,7 @@ export default {
             rate: 0
           };
           slotData.bidLineItem = bidLineItem;
+          slotData.deselected = false;
           return slotData;
         });
       } else {
@@ -285,13 +294,14 @@ export default {
           let bis = s.bidLineItems;
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+          slotData.deselected = false;
           return slotData;
         });
       }
       this.updateBidTotal();
     },
     async submitBid() {
-      let slotData = this.slots.map(s => {
+      let slotData = this.slots.filter(s => !s.deselected).map(s => {
         let slotBidData = {};
         slotBidData.tenderSlotId = s.tenderLineItem.slot;
         slotBidData.tenderLineItemId = s.tenderLineItem._id;
@@ -350,7 +360,7 @@ export default {
     updateBidTotal() {
       this.bidTotal = 0;
       this.slots.forEach(slotData => {
-        this.bidTotal += slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+        if (!slotData.deselected) this.bidTotal += slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
       });
     }
   }
