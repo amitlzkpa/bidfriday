@@ -22,7 +22,16 @@
         <span v-if="!$auth.loading">
           
           <md-button v-if="!$auth.isAuthenticated" @click="login">LOG IN</md-button>
-          <md-button v-else @click="logout">LOG OUT</md-button>
+          <span v-else>
+            <md-menu md-size="medium" md-align-trigger>
+              <md-button md-menu-trigger>{{ $auth.bfUser.email }}</md-button>
+
+              <md-menu-content>
+                <md-menu-item><router-link to="/my-bids">MY BIDS</router-link></md-menu-item>
+                <md-menu-item @click="logout">LOG OUT</md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </span>
 
         </span>
       </span>
