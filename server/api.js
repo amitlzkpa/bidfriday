@@ -294,8 +294,13 @@ router.post('/get-tender-and-bids', async (req, res) => {
   for(let tSlot of tender.slots) {
     let latestTLI = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
     let latestBLIsOnThisSlot = [];
+    let bidwiseBidsHistory = [];
     for(let bid of bids) {
       let bSlotFortSlot = bid.slots.filter(b => b.tenderSlot._id.equals(tSlot._id))[0];
+      bidwiseBidsHistory.push({
+        bid: bid,
+        history: bSlotFortSlot.bidLineItems
+      });
       if (bSlotFortSlot && bSlotFortSlot.bidLineItems && bSlotFortSlot.bidLineItems.length > 0){
         let latestBLI = bSlotFortSlot.bidLineItems[bSlotFortSlot.bidLineItems.length - 1];
         if (includeStaleBids || latestBLI.tenderLineItem._id.equals(latestTLI._id)) {
@@ -311,6 +316,7 @@ router.post('/get-tender-and-bids', async (req, res) => {
       tenderSlot: tSlot._id,
       mondayItemId: tSlot.mondayItemId,
       latestBids: latestBLIsOnThisSlot,
+      bidwiseBidsHistory: bidwiseBidsHistory,
       minBidRate: latestBLIsOnThisSlot[0].rate,
       maxBidRate: latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate,
       averageRate: average(latestBLIsOnThisSlot.map(b => b.rate)),

@@ -231,6 +231,7 @@ export default {
       res = await this.$api.post('/api/get-tender-and-bids', postData);
       
       let bidStats = res.data.bidStats;
+      console.log(bidStats);
       for(let bidStat of bidStats) {
         let mdId = bidStat.mondayItemId;
         let tli = this.tenderLineItems.filter(t => {
