@@ -55,7 +55,7 @@
         <md-table-head>Bid Price Average/Median</md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids)">
+      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids, tli.tenderLineItem)">
         <md-table-cell>{{ tli.status }}</md-table-cell>
         <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
         <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
@@ -282,8 +282,8 @@ export default {
     showDetails(item) {
       this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
     },
-    showBidSlotDetails(item) {
-      this.$refs.bidSlotDetails.showBidSlotDetails(item);
+    showBidSlotDetails(bids, tenderLineItem) {
+      this.$refs.bidSlotDetails.showBidSlotDetails(bids, tenderLineItem);
     }
   }
 }
