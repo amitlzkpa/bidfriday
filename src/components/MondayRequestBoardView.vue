@@ -3,6 +3,8 @@
 
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
+    <LineItemDetails ref="itemDetails" />
+
     <md-button @click="clickyy">Clickyy</md-button>
 
     <div class="md-layout md-gutter">
@@ -52,9 +54,9 @@
         <md-table-head>Bid Price Average/Median</md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="openItemCard(tli.id)">
+      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showDetails(tli.tenderLineItem)">
         <md-table-cell>{{ tli.status }}</md-table-cell>
-        <md-table-cell>{{ tli.name }}</md-table-cell>
+        <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
         <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
         <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
         <md-table-cell>{{ tli.total | currency }}</md-table-cell>
@@ -69,6 +71,7 @@
 
 <script>
 import TenderSettings from '@/components/TenderSettings.vue';
+import LineItemDetails from '@/components/LineItemDetails.vue';
 
 let ctx;
 let key_linkedBidBoard = "test3";
@@ -76,7 +79,8 @@ let key_linkedTenderId = "test_tenderId4";
 
 export default {
   components: {
-    TenderSettings
+    TenderSettings,
+    LineItemDetails
   },
   data () {
     return {
@@ -89,6 +93,7 @@ export default {
       description: null,
       priceRevealType: 'concealed',
       mustBidOnAll: false,
+      tenderCreatedBy: null,
 
       isProcessing: false
     };
@@ -109,7 +114,6 @@ export default {
       ctx = res.data;
     });
 
-    await this.updateFromTender();
     await this.sync();
 
   },
@@ -133,11 +137,13 @@ export default {
           quantity: row.column_values[1].text,
           rate: row.column_values[3].text,
           total: parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text),
-          bids: {}
+          bids: {},
+          tenderLineItem: {}
         }
       });
       this.cols = this.currBoardData.columns;
 
+      await this.updateFromTender();
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
       await this.updateFromBidsOnTender();
@@ -197,9 +203,19 @@ export default {
         tId: this.linkedTenderId,
       };
       res = await this.$api.post('/api/get-tender', postData);
-      this.description = res.data.description;
-      this.priceRevealType = res.data.priceRevealType;
-      this.mustBidOnAll = res.data.mustBidOnAll;
+      let tData = res.data.tender;
+      console.log(tData);
+      this.description = tData.description;
+      this.priceRevealType = tData.priceRevealType;
+      this.mustBidOnAll = tData.mustBidOnAll;
+      this.tenderCreatedBy = tData.createdBy;
+
+      for(let tSlot of tData.slots) {
+        let tli = this.tenderLineItems.filter(t => {
+          return t.id.toString() === tSlot.mondayItemId.toString();
+        })[0];
+        tli.tenderLineItem = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
+      }
 
     },
     async updateFromBidsOnTender() {
@@ -218,7 +234,7 @@ export default {
       for(let bidStat of bidStats) {
         let mdId = bidStat.mondayItemId;
         let tli = this.tenderLineItems.filter(t => {
-          return t.id === mdId
+          return t.id.toString() === mdId.toString()
         })[0];
         tli.bids = bidStat;
       }
@@ -258,7 +274,10 @@ export default {
     },
     async openItemCard(itemId) {
       this.monday.execute('openItemCard', { itemId: itemId });
-    }
+    },
+    showDetails(item) {
+      this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
+    },
   }
 }
 </script>
