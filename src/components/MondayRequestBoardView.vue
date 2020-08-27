@@ -4,6 +4,7 @@
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
     <LineItemDetails ref="itemDetails" />
+    <BidSlotDetails ref="bidSlotDetails" />
 
     <md-button @click="clickyy">Clickyy</md-button>
 
@@ -54,7 +55,7 @@
         <md-table-head>Bid Price Average/Median</md-table-head>
       </md-table-row>
 
-      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showDetails(tli.tenderLineItem)">
+      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids)">
         <md-table-cell>{{ tli.status }}</md-table-cell>
         <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
         <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
@@ -72,6 +73,7 @@
 <script>
 import TenderSettings from '@/components/TenderSettings.vue';
 import LineItemDetails from '@/components/LineItemDetails.vue';
+import BidSlotDetails from '@/components/BidSlotDetails.vue';
 
 let ctx;
 let key_linkedBidBoard = "test3";
@@ -80,7 +82,8 @@ let key_linkedTenderId = "test_tenderId4";
 export default {
   components: {
     TenderSettings,
-    LineItemDetails
+    LineItemDetails,
+    BidSlotDetails
   },
   data () {
     return {
@@ -279,6 +282,9 @@ export default {
     showDetails(item) {
       this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
     },
+    showBidSlotDetails(item) {
+      this.$refs.bidSlotDetails.showBidSlotDetails(item);
+    }
   }
 }
 </script>
