@@ -27,6 +27,7 @@
               <md-button md-menu-trigger>{{ $auth.bfUser.email }}</md-button>
 
               <md-menu-content>
+                <md-menu-item><router-link to="/my-profile">MY PROFILE</router-link></md-menu-item>
                 <md-menu-item><router-link to="/my-bids">MY BIDS</router-link></md-menu-item>
                 <md-menu-item @click="logout">LOG OUT</md-menu-item>
               </md-menu-content>

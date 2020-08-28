@@ -9,6 +9,7 @@ import TenderView from '@/components/TenderView.vue';
 import BidView from '@/components/BidView.vue';
 import BidEdit from '@/components/BidEdit.vue';
 import MyBids from '@/components/MyBids.vue';
+import MyProfile from '@/components/MyProfile.vue';
 
 import { auth0Guard } from "@/auth/auth0Guard";
 import { mondayGuard } from "@/auth/mondayGuard";
@@ -26,6 +27,16 @@ const routes =
     component: Home
   },
   
+  {
+    meta: {
+      title: 'My Profile',
+    },
+    path: '/my-profile',
+    name: 'my-profile',
+    component: MyProfile,
+    props: true,
+    beforeEnter: auth0Guard
+  },
   {
     meta: {
       title: 'My Bids',
