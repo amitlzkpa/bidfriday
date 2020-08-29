@@ -250,7 +250,7 @@ export default {
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
-      bidHasUpdates: false,
+      tenderHasUpdates: false,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -341,7 +341,7 @@ export default {
           slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
                                : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
-          if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
+          if (slotData.updateState !== 'unchanged') this.tenderHasUpdates = true;
           slotData.deselected = false;
           return slotData;
         });

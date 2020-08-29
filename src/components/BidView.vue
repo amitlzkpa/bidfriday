@@ -198,7 +198,7 @@
     </md-card>
 
     <md-card-actions>
-      <span class="md-caption" v-if="bidHasUpdates">
+      <span class="md-caption" v-if="tenderHasUpdates">
         Shows details as it was when the bid was submitted.
       </span>
       <md-button :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
@@ -233,7 +233,7 @@ export default {
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
-      bidHasUpdates: false,
+      tenderHasUpdates: false,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -286,7 +286,7 @@ export default {
         slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
         slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
                               : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
-        if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
+        if (slotData.updateState !== 'unchanged') this.tenderHasUpdates = true;
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
         return slotData;
       });
@@ -307,6 +307,7 @@ export default {
         slotData.updateState = 'new';
         this.slots.push(slotData);
       });
+      this.updateBidTotal();
     },
     toggleAll() {
       let rs = this.$refs;
