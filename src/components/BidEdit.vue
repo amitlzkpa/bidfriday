@@ -65,9 +65,17 @@
 
           <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
 
-            <md-button class="md-icon-button" v-if="slotData.isStale">
+            <md-button class="md-icon-button" v-if="slotData.updateState === 'updated'">
               <md-icon>new_releases</md-icon>
-              <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+              <md-tooltip md-direction="right">
+                The item has changed since the bid was submitted.
+              </md-tooltip>
+            </md-button>
+            <md-button class="md-icon-button" v-if="slotData.updateState === 'new'">
+              <md-icon>add_circle</md-icon>
+              <md-tooltip md-direction="right">
+                The item was added new after the bid was submitted.
+              </md-tooltip>
             </md-button>
 
             <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
@@ -90,28 +98,34 @@
           <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
             <span :style="slotData.deselected ? 'color: #BBBBBB' : 'color: #000000'"
-                  :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'isStale' : '' "
+                  :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'highlightUpdatedField' : '' "
                   class="md-headline"
             >
               {{ slotData.tenderLineItem.name }}
-              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.</md-tooltip>
+              <md-tooltip v-if="slotData.updateState === 'updated'">
+                Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.
+              </md-tooltip>
             </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead" :class="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
-                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'isStale' : '' "
+                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'highlightUpdatedField' : '' "
             >
               {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
-              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.</md-tooltip>
+              <md-tooltip v-if="slotData.updateState === 'updated'">
+                Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.
+              </md-tooltip>
             </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
-              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'isStale' : '' ">
+              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'highlightUpdatedField' : '' ">
                 {{ slotData.tenderLineItem.rate | currency }}
-                <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.</md-tooltip>
+                <md-tooltip v-if="slotData.updateState === 'updated'">
+                  Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.
+                </md-tooltip>
               </span>
             </span>
           </div>
@@ -226,7 +240,7 @@ export default {
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
-      isStale: false,
+      bidHasUpdates: false,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -259,7 +273,7 @@ export default {
       let bData;
       let tData;
       
-      this.isStale = false;
+      this.updateState = 'unchanged';
       let isNewBid = !(this.bidId);
       if (isNewBid) {
         postData = { tId: this.tenderId };
@@ -313,9 +327,9 @@ export default {
           slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
-          slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
+          slotData.updateState = (slotData.tenderLineItem._id !== slotData.latestTenderItem._id) ? 'updated' : 'unchanged';
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
-          if (slotData.isStale) this.isStale = true;
+          if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
           slotData.deselected = false;
           return slotData;
         });
@@ -333,7 +347,7 @@ export default {
             rate: 0
           };
           slotData.bidLineItem = bidLineItem;
-          slotData.isStale = true;
+          slotData.updateState = 'new';
           slotData.deselected = false;
           this.slots.push(slotData);
         });
@@ -427,7 +441,7 @@ export default {
   background-color: #CCCCFF;
 }
 
-.isStale {
+.highlightUpdatedField {
   background-color: lightsalmon;
   padding: 2px 6px 2px 6px;
   border-radius: 4px;
