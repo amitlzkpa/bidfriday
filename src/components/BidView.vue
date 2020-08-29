@@ -4,25 +4,19 @@
     <LineItemDetails ref="itemDetails" />
 
     <div class="md-layout" style="padding: 8px;">
-      <div class="md-layout-item">
 
-        <div class="md-layout">
-
-          <div class="md-layout-item">
-            <h1 class="md-title">{{ tenderName }}</h1>
-            <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
-            <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
-          </div>
-
-          <div class="md-layout-item">
-            <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
-            <p class="md-caption" style="min-height: 4vh;">{{ bidDescription }}</p>
-          </div>
-
-        </div>
-
+      <div class="md-layout-item md-large-size-50 md-small-size-100">
+        <h1 class="md-title">{{ tenderName }}</h1>
+        <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
+        <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
       </div>
-      <div class="md-layout-item md-size-15">
+
+      <div class="md-layout-item md-large-size-30 md-small-size-60">
+        <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
+        <p class="md-caption" style="min-height: 4vh;">{{ bidDescription }}</p>
+      </div>
+      
+      <div class="md-layout-item md-large-size-20 md-small-size-40">
         <TenderSettings
           :priceRevealType="priceRevealType"
           :mustBidOnAll="mustBidOnAll"
