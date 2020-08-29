@@ -63,7 +63,7 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
+          <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: right;">
 
             <md-button class="md-icon-button" v-if="slotData.updateState === 'updated'">
               <md-icon>new_releases</md-icon>
@@ -103,7 +103,7 @@
 
           <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
-            <span :style="slotData.deselected ? 'color: #BBBBBB' : 'color: #000000'"
+            <span :style="!slotData.deselected && slotData.updateState !== 'removed' ? 'color: #000000' : 'color: #BBBBBB'"
                   :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'highlightUpdatedField' : '' "
                   class="md-headline"
             >
@@ -139,16 +139,18 @@
           <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
             <span :class="(slotData.updateState !== 'removed') ? 'md-body-2' : 'md-caption'">$</span>
             &nbsp;
-            <span :contenteditable="!slotData.deselected && slotData.updateState !== 'removed'"
+            <span :contenteditable="!slotData.deselected"
             :class="((slotData.updateState !== 'removed') ? 'md-subheading' : 'md-caption') + ' ' + 
-                    ((!slotData.deselected && slotData.updateState !== 'removed') ? 'content-editable' : '')"
-            @focus="ev => { if (!slotData.deselected && slotData.updateState !== 'removed') selectText(ev) }"
-            @input="ev => { if (!slotData.deselected && slotData.updateState !== 'removed') contentUpdate(ev, slotData.bidLineItem, 'rate', true) }"
+                    ((!slotData.deselected) ? 'content-editable' : '')"
+            @focus="ev => { if (!slotData.deselected) selectText(ev) }"
+            @input="ev => { if (!slotData.deselected) contentUpdate(ev, slotData.bidLineItem, 'rate', true) }"
             style="width: 70%;">{{ slotData.deselected ? '-' : slotData.bidLineItem.rate }}</span>
           </div>
 
           <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
-            <span class="md-body-1">{{ slotData.deselected ? '-' : (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
+            <span :class="(slotData.updateState !== 'removed') ? 'md-body-1' : 'md-caption'">
+              {{ slotData.deselected ? '-' : (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}
+            </span>
           </div>
         </div>
         
@@ -334,8 +336,8 @@ export default {
           slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
-          slotData.updateState = (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' 
-                               : (s.tenderSlot.status === "inactive") ? 'removed' : 'updated';
+          slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
+                               : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
           if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
           slotData.deselected = false;
