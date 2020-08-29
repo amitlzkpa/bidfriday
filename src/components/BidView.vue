@@ -129,11 +129,13 @@
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
-            <span :class="(slotData.updateState !== 'removed') ? 'md-body-2' : 'md-caption'">{{ slotData.bidLineItem.rate | currency }}</span>
+            <span class="md-body-2" :style="(slotData.updateState !== 'removed') ? 'color: #000000;' : 'color: #BBBBBB;'">
+              {{ slotData.bidLineItem.rate | currency }}
+            </span>
           </div>
 
           <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
-            <span :class="(slotData.updateState !== 'removed') ? 'md-body-1' : 'md-caption'">
+            <span class="md-body-2" :style="(slotData.updateState !== 'removed') ? 'color: #000000;' : 'color: #BBBBBB;'">
               {{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}
             </span>
           </div>
@@ -284,6 +286,7 @@ export default {
         slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
         slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
                               : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
+        if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
         return slotData;
       });
