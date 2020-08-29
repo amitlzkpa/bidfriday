@@ -7,6 +7,14 @@
     <BidSlotDetails ref="bidSlotDetails" />
 
     <div class="md-layout md-gutter">
+      <div class="md-layout-item">
+        <span @click="copyToClipboard()">
+          Invite Link
+        </span>
+      </div>
+    </div>
+
+    <div class="md-layout md-gutter">
       
       <div class="md-layout-item md-size-70">
         <md-field>
@@ -119,6 +127,9 @@ export default {
 
   },
   methods: {
+    copyToClipboard() {
+      navigator.clipboard.writeText(`https://bidfriday.herokuapp.com/tender-view/${this.linkedTenderId}`);
+    },
     async sync() {
       while(!ctx) await this.wait(200);
 
