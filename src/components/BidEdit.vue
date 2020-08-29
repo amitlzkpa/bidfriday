@@ -65,23 +65,23 @@
 
           <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: right;">
 
-            <md-button class="md-icon-button" v-if="slotData.updateState === 'updated'">
-              <md-icon>new_releases</md-icon>
-              <md-tooltip md-direction="right">
-                The item has changed since the bid was submitted.
-              </md-tooltip>
-            </md-button>
-            <md-button class="md-icon-button" v-if="slotData.updateState === 'new'">
-              <md-icon>add_circle</md-icon>
-              <md-tooltip md-direction="right">
-                The item was added new after the bid was submitted.
-              </md-tooltip>
-            </md-button>
-            <md-button class="md-icon-button" v-if="slotData.updateState === 'removed'">
-              <md-icon>remove_circle</md-icon>
-              <md-tooltip md-direction="right">
-                The item has been removed since the bid was submitted.
-              </md-tooltip>
+            <md-button class="md-icon-button" v-if="slotData.updateState !== 'unchanged'">
+              
+              <span v-if="slotData.updateState === 'updated'">
+                <md-icon style="color: lightsalmon;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+              </span>
+              
+              <span v-if="slotData.updateState === 'new'">
+                <md-icon style="color: lightgreen;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item was added new after the bid was submitted.</md-tooltip>
+              </span>
+
+              <span v-if="slotData.updateState === 'removed'">
+                <md-icon style="color: lightcoral;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item has been removed since the bid was submitted.</md-tooltip>
+              </span>
+
             </md-button>
 
             <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
@@ -452,7 +452,7 @@ export default {
 }
 
 .highlightUpdatedField {
-  background-color: lightsalmon;
+  background-color: #CCCCFF;
   padding: 2px 6px 2px 6px;
   border-radius: 4px;
 }
