@@ -292,6 +292,7 @@ export default {
           slotData.index = idx + 1;
           let tis = s.tenderLineItems;
           slotData.tenderLineItem = tis[tis.length - 1];
+          slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           let bidLineItem = {
             name: null,
             specifications: null,
@@ -308,7 +309,7 @@ export default {
           slotData.index = idx + 1;
           let tis = s.tenderSlot.tenderLineItems;
           let bis = s.bidLineItems;
-          slotData.latestTenderItem = tis[tis.length - 1];
+          slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
           slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
