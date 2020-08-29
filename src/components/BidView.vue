@@ -34,27 +34,27 @@
     <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
-        <div class="md-layout-item md-size-15" style="text-align: center;">
+        <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
           <span style="cursor: pointer;" @click="toggleAll">Open All</span>
         </div>
         
-        <div class="md-layout-item md-size-35">
+        <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
           <span class="md-subtitle">Item</span>
         </div>
         
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="text-align: center;">
           <span class="md-subtitle">Quantity</span>
         </div>
         
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="text-align: center;">
           <span class="md-subtitle">Reference</span>
         </div>
         
-        <div class="md-layout-item md-size-15" style="text-align: right;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
           <span class="md-subtitle">Quote</span>
         </div>
         
-        <div class="md-layout-item md-size-15" style="text-align: right;">
+        <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
           <span class="md-subtitle">Total</span>
         </div>
 
@@ -66,7 +66,7 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-15" style="text-align: right;">
+          <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: right;">
 
             <md-button class="md-icon-button" v-if="slotData.isStale">
               <md-icon>new_releases</md-icon>
@@ -84,7 +84,7 @@
             </md-card-expand-trigger>
           </div>
 
-          <div class="md-layout-item md-size-35">
+          <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
             <span class="md-headline" :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'isStale' : '' ">
               {{ slotData.tenderLineItem.name }}
@@ -92,7 +92,7 @@
             </span>
           </div>
 
-          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead" :class="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
                                           || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'isStale' : '' ">
               {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
@@ -100,7 +100,7 @@
             </span>
           </div>
 
-          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
               <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'isStale' : '' ">
                 {{ slotData.tenderLineItem.rate | currency }}
@@ -109,11 +109,11 @@
             </span>
           </div>
 
-          <div class="md-layout-item md-size-15" style="text-align: right;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
             <span class="md-body-2">{{ slotData.bidLineItem.rate | currency }}</span>
           </div>
 
-          <div class="md-layout-item md-size-15" style="text-align: right;">
+          <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
             <span class="md-body-1">
               {{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}
             </span>
@@ -180,7 +180,7 @@
       <span class="md-caption" v-if="isStale">
         Shows details as it was when the bid was submitted.
       </span>
-      <md-button :to="'/bid-edit/' + bidId" class="md-primary">Update Bid</md-button>
+      <md-button :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
     </md-card-actions>
 
   </div>
@@ -198,6 +198,7 @@ export default {
   props: ['bidId'],
   data () {
     return {
+      tenderId: null,
       tenderName: null,
       tenderDescription: null,
       tenderLastUpdatedAt: null,
@@ -234,6 +235,7 @@ export default {
       let bData = res.data;
       console.log(bData);
 
+      this.tenderId = bData.tender._id;
       this.tenderName = bData.tender.name;
       this.tenderDescription = bData.tender.description;
       this.tenderLastUpdatedAt = bData.tender.updatedAt;

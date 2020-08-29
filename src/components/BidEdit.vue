@@ -36,27 +36,27 @@
     <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
-        <div class="md-layout-item md-size-15" style="text-align: center;">
+        <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
           <span style="cursor: pointer;" @click="toggleAll">Open All</span>
         </div>
         
-        <div class="md-layout-item md-size-35">
+        <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
           <span class="md-subtitle">Item</span>
         </div>
         
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="text-align: center;">
           <span class="md-subtitle">Quantity</span>
         </div>
         
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="text-align: center;">
           <span class="md-subtitle">Reference</span>
         </div>
         
-        <div class="md-layout-item md-size-15" style="text-align: right;">
+        <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
           <span class="md-subtitle">Quote</span>
         </div>
         
-        <div class="md-layout-item md-size-15" style="text-align: right;">
+        <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
           <span class="md-subtitle">Total</span>
         </div>
 
@@ -68,7 +68,7 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-15" style="text-align: center;">
+          <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
 
             <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
               <md-icon v-if="!slotData.deselected">remove</md-icon>
@@ -87,23 +87,23 @@
 
           </div>
 
-          <div class="md-layout-item md-size-35">
+          <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
             <span :style="slotData.deselected ? 'color: #BBBBBB' : 'color: #000000'"
                   class="md-headline">{{ slotData.tenderLineItem.name }}</span>
           </div>
 
-          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
           </div>
 
-          <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
               <span>{{ slotData.tenderLineItem.rate | currency }}</span>
             </span>
           </div>
 
-          <div class="md-layout-item md-size-15" style="text-align: right;">
+          <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
             <span class="md-body-2">$</span>
             &nbsp;
             <span :contenteditable="!slotData.deselected"
@@ -113,7 +113,7 @@
             style="width: 70%;">{{ slotData.deselected ? '-' : slotData.bidLineItem.rate }}</span>
           </div>
 
-          <div class="md-layout-item md-size-15" style="text-align: right;">
+          <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
             <span class="md-body-1">{{ slotData.deselected ? '-' : (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
           </div>
         </div>
@@ -213,6 +213,7 @@ export default {
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
+      isStale: false,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -245,6 +246,7 @@ export default {
       let bData;
       let tData;
       
+      this.isStale = false;
       let isNewBid = !(this.bidId);
       if (isNewBid) {
         postData = { tId: this.tenderId };
@@ -255,6 +257,7 @@ export default {
         res = await this.$api.post('/api/get-bid', postData);
         bData = res.data;
         tData = bData.tender;
+        console.log(res.data);
       }
       console.log(tData);
       console.log(bData);
@@ -291,10 +294,13 @@ export default {
           let slotData = {};
           slotData.index = idx + 1;
           let tis = s.tenderSlot.tenderLineItems;
-          slotData.tenderLineItem = tis[tis.length - 1];
           let bis = s.bidLineItems;
+          slotData.latestTenderItem = tis[tis.length - 1];
           slotData.bidLineItem = bis[bis.length - 1];
+          slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
+          slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+          if (slotData.isStale) this.isStale = true;
           slotData.deselected = false;
           return slotData;
         });
