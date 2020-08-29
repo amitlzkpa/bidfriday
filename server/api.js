@@ -432,6 +432,15 @@ router.post('/get-bid', async (req, res) => {
       select: ['name', 'email']
     }
   })
+  .populate({
+    path: 'tender',
+    populate: {
+      path: 'slots',
+      populate: {
+        path: 'tenderLineItems'
+      }
+    }
+  })
   .populate('createdBy', ['name', 'email'])
   .execPopulate();
   return res.json(bid);

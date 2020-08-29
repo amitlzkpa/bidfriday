@@ -305,7 +305,7 @@ export default {
       } else {
         let newSlots = tData.slots.map(s => s);
         this.slots = bData.slots.map((s, idx) => {
-          newSlots = newSlots.filter(ns => ns !== s.tenderSlot._id);
+          newSlots = newSlots.filter(ns => ns._id !== s.tenderSlot._id);
           let slotData = {};
           slotData.index = idx + 1;
           let tis = s.tenderSlot.tenderLineItems;
@@ -318,6 +318,24 @@ export default {
           if (slotData.isStale) this.isStale = true;
           slotData.deselected = false;
           return slotData;
+        });
+        let runningIdx = this.slots.length;
+        newSlots.forEach((ns, idx) => {
+          let slotData = {};
+          slotData.index = idx + runningIdx + 1;
+          let tis = ns.tenderLineItems;
+          slotData.tenderLineItem = tis[tis.length - 1];
+          slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
+          let bidLineItem = {
+            name: null,
+            specifications: null,
+            description: null,
+            rate: 0
+          };
+          slotData.bidLineItem = bidLineItem;
+          slotData.isStale = true;
+          slotData.deselected = false;
+          this.slots.push(slotData);
         });
         // TODO: NOT WORKING YET
         // let deletedSlots = bData.slots.filter(s => !tData.slots.includes(s.tenderSlot._id));
