@@ -34,11 +34,11 @@
     <md-card style="padding: 8px;">
       <div class="md-layout" style="padding: 10px 0px 10px 0px;">
 
-        <div class="md-layout-item md-size-10" style="text-align: center;">
+        <div class="md-layout-item md-size-15" style="text-align: center;">
           <span style="cursor: pointer;" @click="toggleAll">Open All</span>
         </div>
         
-        <div class="md-layout-item md-size-40">
+        <div class="md-layout-item md-size-35">
           <span class="md-subtitle">Item</span>
         </div>
         
@@ -66,9 +66,12 @@
         
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-10" style="text-align: center;">
+          <div class="md-layout-item md-size-15" style="text-align: right;">
 
-            <span v-if="slotData.isStale">*</span>
+            <md-button class="md-icon-button" v-if="slotData.isStale">
+              <md-icon>new_releases</md-icon>
+              <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+            </md-button>
             
             <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
               <md-icon>info</md-icon>
@@ -81,7 +84,7 @@
             </md-card-expand-trigger>
           </div>
 
-          <div class="md-layout-item md-size-40">
+          <div class="md-layout-item md-size-35">
             {{ slotData.index }}.
             <span class="md-headline">{{ slotData.tenderLineItem.name }}</span>
           </div>
