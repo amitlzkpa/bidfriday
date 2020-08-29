@@ -62,9 +62,23 @@
 
           <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: right;">
 
-            <md-button class="md-icon-button" v-if="slotData.isStale">
-              <md-icon>new_releases</md-icon>
-              <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+            <md-button class="md-icon-button" v-if="slotData.updateState !== 'unchanged'">
+              
+              <span v-if="slotData.updateState === 'updated'">
+                <md-icon style="color: lightsalmon;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+              </span>
+              
+              <span v-if="slotData.updateState === 'new'">
+                <md-icon style="color: lightgreen;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item was added new after the bid was submitted.</md-tooltip>
+              </span>
+
+              <span v-if="slotData.updateState === 'removed'">
+                <md-icon style="color: lightcoral;">published_with_changes</md-icon>
+                <md-tooltip md-direction="right">The item has been removed since the bid was submitted.</md-tooltip>
+              </span>
+
             </md-button>
             
             <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
@@ -80,35 +94,46 @@
 
           <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
-            <span class="md-headline" :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'isStale' : '' ">
+            <span :style="slotData.updateState !== 'removed' ? 'color: #000000' : 'color: #BBBBBB'"
+                  :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'highlightUpdatedField' : '' "
+                  class="md-headline"
+            >
               {{ slotData.tenderLineItem.name }}
-              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.</md-tooltip>
+              <md-tooltip v-if="slotData.tenderLineItem.name !== slotData.latestTenderItem.name">
+                Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.
+              </md-tooltip>
             </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead" :class="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
-                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'isStale' : '' ">
+                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'highlightUpdatedField' : '' "
+            >
               {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
-              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.</md-tooltip>
+              <md-tooltip v-if="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
+                             || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units)">
+                Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.
+              </md-tooltip>
             </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
-              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'isStale' : '' ">
+              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'highlightUpdatedField' : '' ">
                 {{ slotData.tenderLineItem.rate | currency }}
-                <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.</md-tooltip>
+                <md-tooltip v-if="slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate">
+                  Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.
+                </md-tooltip>
               </span>
             </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-30" style="text-align: right;">
-            <span class="md-body-2">{{ slotData.bidLineItem.rate | currency }}</span>
+            <span :class="(slotData.updateState !== 'removed') ? 'md-body-2' : 'md-caption'">{{ slotData.bidLineItem.rate | currency }}</span>
           </div>
 
           <div class="md-layout-item md-large-size-15 md-xsmall-size-30" style="text-align: right;">
-            <span class="md-body-1">
+            <span :class="(slotData.updateState !== 'removed') ? 'md-body-1' : 'md-caption'">
               {{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}
             </span>
           </div>
@@ -171,7 +196,7 @@
     </md-card>
 
     <md-card-actions>
-      <span class="md-caption" v-if="isStale">
+      <span class="md-caption" v-if="bidHasUpdates">
         Shows details as it was when the bid was submitted.
       </span>
       <md-button :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
@@ -195,22 +220,28 @@ export default {
       tenderId: null,
       tenderName: null,
       tenderDescription: null,
-      tenderLastUpdatedAt: null,
       priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
       tenderCreatedBy: null,
+      tenderLastUpdatedAt: null,
 
+      bId: null,
       bidDescription: "",
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
-      isStale: false,
+      bidHasUpdates: false,
       
       showDetailsDialog: false,
       detailsItem: {},
       sampleImgURLS: []
     };
+  },
+  created() {
+    if (this.bidId) {
+      this.bId = this.bidId;
+    }
   },
   async mounted() {
 
@@ -219,41 +250,59 @@ export default {
   },
   methods: {
     async refresh() {
-      this.isStale = false;
-      let bId = this.bidId;
+      this.updateState = 'unchanged';
       let postData = {
-        bId: bId,
+        bId: this.bId,
       };
       // console.log(postData);
       let res = await this.$api.post('/api/get-bid', postData);
       let bData = res.data;
+      let tData = bData.tender;
       console.log(bData);
 
-      this.tenderId = bData.tender._id;
-      this.tenderName = bData.tender.name;
-      this.tenderDescription = bData.tender.description;
-      this.tenderLastUpdatedAt = bData.tender.updatedAt;
-      this.priceRevealType = bData.tender.priceRevealType;
-      this.mustBidOnAll = bData.tender.mustBidOnAll;
-      this.tenderCreatedBy = bData.tender.createdBy;
+      this.tenderId = tData._id;
+      this.tenderName = tData.name;
+      this.tenderDescription = tData.description;
+      this.priceRevealType = tData.priceRevealType;
+      this.mustBidOnAll = tData.mustBidOnAll;
+      this.tenderCreatedBy = tData.createdBy;
+      this.tenderLastUpdatedAt = tData.updatedAt;
 
       this.bidDescription = bData.description;
       this.bidCreatedBy = bData.createdBy;
       this.bidLastUpdatedAt = bData.updatedAt;
 
+      let newSlots = tData.slots.map(s => s);
       this.slots = bData.slots.map((s, idx) => {
+        newSlots = newSlots.filter(ns => ns._id !== s.tenderSlot._id);
         let slotData = {};
         slotData.index = idx + 1;
         let tis = s.tenderSlot.tenderLineItems;
         let bis = s.bidLineItems;
-        slotData.latestTenderItem = tis[tis.length - 1];
+        slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
         slotData.bidLineItem = bis[bis.length - 1];
         slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
-        slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
+        slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
+                              : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
-        this.bidTotal += slotData.tenderLineItem.total;
-        if (slotData.isStale) this.isStale = true;
         return slotData;
+      });
+      let runningIdx = this.slots.length;
+      newSlots.forEach((ns, idx) => {
+        let slotData = {};
+        slotData.index = idx + runningIdx + 1;
+        let tis = ns.tenderLineItems;
+        slotData.tenderLineItem = tis[tis.length - 1];
+        slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
+        let bidLineItem = {
+          name: null,
+          specifications: null,
+          description: null,
+          rate: 0
+        };
+        slotData.bidLineItem = bidLineItem;
+        slotData.updateState = 'new';
+        this.slots.push(slotData);
       });
     },
     toggleAll() {
@@ -264,14 +313,20 @@ export default {
     },
     showDetails(item) {
       this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
+    },
+    updateBidTotal() {
+      this.bidTotal = 0;
+      this.slots.forEach(slotData => {
+        if (!slotData.deselected && slotData.updateState !== 'removed') this.bidTotal += slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
+      });
     }
   }
 }
 </script>
 
 <style scoped>
-.isStale {
-  background-color: lightsalmon;
+.highlightUpdatedField {
+  background-color: #CCCCFF;
   padding: 2px 6px 2px 6px;
   border-radius: 4px;
 }

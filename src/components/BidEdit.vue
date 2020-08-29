@@ -108,7 +108,7 @@
                   class="md-headline"
             >
               {{ slotData.tenderLineItem.name }}
-              <md-tooltip v-if="slotData.updateState === 'updated'">
+              <md-tooltip v-if="slotData.tenderLineItem.name !== slotData.latestTenderItem.name">
                 Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.
               </md-tooltip>
             </span>
@@ -119,7 +119,8 @@
                                           || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'highlightUpdatedField' : '' "
             >
               {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
-              <md-tooltip v-if="slotData.updateState === 'updated'">
+              <md-tooltip v-if="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
+                             || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units)">
                 Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.
               </md-tooltip>
             </span>
@@ -129,7 +130,7 @@
             <span class="md-subhead">
               <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'highlightUpdatedField' : '' ">
                 {{ slotData.tenderLineItem.rate | currency }}
-                <md-tooltip v-if="slotData.updateState === 'updated'">
+                <md-tooltip v-if="slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate">
                   Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.
                 </md-tooltip>
               </span>
@@ -297,6 +298,7 @@ export default {
       console.log(tData);
       console.log(bData);
 
+      this.tenderId = tData._id;
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;
       this.priceRevealType = tData.priceRevealType;
@@ -361,8 +363,6 @@ export default {
           slotData.deselected = false;
           this.slots.push(slotData);
         });
-        // TODO: NOT WORKING YET
-        // let deletedSlots = bData.slots.filter(s => !tData.slots.includes(s.tenderSlot._id));
       }
       this.updateBidTotal();
       if (this.bidCreatedBy !== null
