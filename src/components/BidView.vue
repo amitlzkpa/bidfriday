@@ -177,6 +177,10 @@
     </md-card>
 
     <md-card-actions>
+      <span class="md-caption" v-if="isStale">
+        Shows details as it was when the bid was submitted.
+      </span>
+      <md-button :to="'/bid-edit/' + bidId" class="md-primary">Update Bid</md-button>
     </md-card-actions>
 
   </div>
@@ -206,6 +210,7 @@ export default {
       bidCreatedBy: null,
       bidTotal: 0,
       bidLastUpdatedAt: null,
+      isStale: false,
       
       showDetailsDialog: false,
       detailsItem: {},
@@ -219,6 +224,7 @@ export default {
   },
   methods: {
     async refresh() {
+      this.isStale = false;
       let bId = this.bidId;
       let postData = {
         bId: bId,
@@ -250,6 +256,7 @@ export default {
         slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
         this.bidTotal += slotData.tenderLineItem.total;
+        if (slotData.isStale) this.isStale = true;
         return slotData;
       });
     },
