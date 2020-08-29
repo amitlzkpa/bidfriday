@@ -65,6 +65,11 @@
 
           <div class="md-layout-item md-large-size-25 md-xsmall-size-30" style="text-align: center;">
 
+            <md-button class="md-icon-button" v-if="slotData.isStale">
+              <md-icon>new_releases</md-icon>
+              <md-tooltip md-direction="right">The item has changed since the bid was submitted.</md-tooltip>
+            </md-button>
+
             <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
               <md-icon v-if="!slotData.deselected">remove</md-icon>
               <md-icon v-else>add</md-icon>
@@ -85,16 +90,29 @@
           <div class="md-layout-item md-large-size-30 md-xsmall-size-70">
             {{ slotData.index }}.
             <span :style="slotData.deselected ? 'color: #BBBBBB' : 'color: #000000'"
-                  class="md-headline">{{ slotData.tenderLineItem.name }}</span>
+                  :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'isStale' : '' "
+                  class="md-headline"
+            >
+              {{ slotData.tenderLineItem.name }}
+              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.</md-tooltip>
+            </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
-            <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
+            <span class="md-subhead" :class="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
+                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'isStale' : '' "
+            >
+              {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
+              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.</md-tooltip>
+            </span>
           </div>
 
           <div class="md-layout-item md-large-size-10 md-xsmall-size-20" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
-              <span>{{ slotData.tenderLineItem.rate | currency }}</span>
+              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'isStale' : '' ">
+                {{ slotData.tenderLineItem.rate | currency }}
+                <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.</md-tooltip>
+              </span>
             </span>
           </div>
 
@@ -385,5 +403,11 @@ export default {
 }
 .content-editable:hover {
   background-color: #CCCCFF;
+}
+
+.isStale {
+  background-color: lightsalmon;
+  padding: 2px 6px 2px 6px;
+  border-radius: 4px;
 }
 </style>
