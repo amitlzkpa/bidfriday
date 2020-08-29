@@ -1,40 +1,28 @@
 <template>
-  <div>
+  <div v-if="!isInMonday">
     <md-toolbar md-elevation="0">
       <span style="flex: 1">
-        <a href="/" :target="isInMonday ? '_blank' : ''" style="text-decoration: none !important;">
+        <a href="/" style="text-decoration: none !important;">
           <img :src="require('@/assets/static/images/icon_64x64.png')" style="margin-right: 0px; margin-left: auto; width: 27px; height: 27px;" />
           <span class="md-title">BidFriday</span>
         </a>
       </span>
 
-      <span v-if="isInMonday">
-        <span v-if="hasMondayConnected">
-          <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
-        </span>
+      <span v-if="!$auth.loading">
+        
+        <md-button v-if="!$auth.isAuthenticated" @click="login">LOG IN</md-button>
         <span v-else>
-          <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
-          <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
+          <md-menu md-size="medium" md-align-trigger>
+            <md-button md-menu-trigger>{{ $auth.bfUser.email }}</md-button>
+
+            <md-menu-content>
+              <md-menu-item><router-link to="/my-profile">MY PROFILE</router-link></md-menu-item>
+              <md-menu-item><router-link to="/my-bids">MY BIDS</router-link></md-menu-item>
+              <md-menu-item @click="logout">LOG OUT</md-menu-item>
+            </md-menu-content>
+          </md-menu>
         </span>
-      </span>
 
-      <span v-else>
-        <span v-if="!$auth.loading">
-          
-          <md-button v-if="!$auth.isAuthenticated" @click="login">LOG IN</md-button>
-          <span v-else>
-            <md-menu md-size="medium" md-align-trigger>
-              <md-button md-menu-trigger>{{ $auth.bfUser.email }}</md-button>
-
-              <md-menu-content>
-                <md-menu-item><router-link to="/my-profile">MY PROFILE</router-link></md-menu-item>
-                <md-menu-item><router-link to="/my-bids">MY BIDS</router-link></md-menu-item>
-                <md-menu-item @click="logout">LOG OUT</md-menu-item>
-              </md-menu-content>
-            </md-menu>
-          </span>
-
-        </span>
       </span>
 
     </md-toolbar>
@@ -43,12 +31,6 @@
 
 <script>
 export default {
-  computed: {
-    redirect_uri() {
-      // return window.location.origin;
-      return "http://localhost:4001"
-    }
-  },
   methods: {
     login() {
       this.$auth.loginWithRedirect();
@@ -57,9 +39,6 @@ export default {
       this.$auth.logout({
         returnTo: window.location.origin
       });
-    },
-    sync() {
-      this.eventBus.$emit('sync');
     }
   }
 }

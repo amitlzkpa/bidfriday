@@ -1,6 +1,16 @@
 <template>
   <div>
 
+    <span>
+      <span v-if="hasMondayConnected">
+        <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
+      </span>
+      <span v-else>
+        <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
+        <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
+      </span>
+    </span>
+
     <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
     <LineItemDetails ref="itemDetails" />
@@ -106,6 +116,12 @@ export default {
 
       isProcessing: false
     };
+  },
+  computed: {
+    redirect_uri() {
+      // return window.location.origin;
+      return "http://localhost:4001"
+    }
   },
   async mounted () {
 
