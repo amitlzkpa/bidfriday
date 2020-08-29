@@ -374,7 +374,7 @@ export default {
       let slotData = this.slots.filter(s => !s.deselected).map(s => {
         let slotBidData = {};
         slotBidData.tenderSlotId = s.tenderLineItem.slot;
-        slotBidData.tenderLineItemId = s.tenderLineItem._id;
+        slotBidData.tenderLineItemId = s.latestTenderItem._id;
         slotBidData.name = s.bidLineItem.name;
         slotBidData.rate = parseFloat(s.bidLineItem.rate);
         slotBidData.specifications = s.bidLineItem.specifications;
