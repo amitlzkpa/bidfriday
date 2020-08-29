@@ -67,6 +67,9 @@
         <div class="md-layout">
 
           <div class="md-layout-item md-size-10" style="text-align: center;">
+
+            <span v-if="slotData.isStale">*</span>
+            
             <md-button class="md-icon-button" @click="showDetails(slotData.tenderLineItem)">
               <md-icon>info</md-icon>
             </md-button>
@@ -226,8 +229,10 @@ export default {
         slotData.index = idx + 1;
         let tis = s.tenderSlot.tenderLineItems;
         let bis = s.bidLineItems;
-        slotData.tenderLineItem = tis[tis.length - 1];
+        slotData.latestTenderItem = tis[tis.length - 1];
         slotData.bidLineItem = bis[bis.length - 1];
+        slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
+        slotData.isStale = slotData.tenderLineItem._id !== slotData.latestTenderItem._id;
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
         this.bidTotal += slotData.tenderLineItem.total;
         return slotData;
