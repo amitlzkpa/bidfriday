@@ -77,6 +77,12 @@
                 The item was added new after the bid was submitted.
               </md-tooltip>
             </md-button>
+            <md-button class="md-icon-button" v-if="slotData.updateState === 'removed'">
+              <md-icon>remove_circle</md-icon>
+              <md-tooltip md-direction="right">
+                The item has been removed since the bid was submitted.
+              </md-tooltip>
+            </md-button>
 
             <md-button class="md-icon-button" v-if="!mustBidOnAll" @click="slotData.deselected = !slotData.deselected; updateBidTotal()">
               <md-icon v-if="!slotData.deselected">remove</md-icon>
@@ -327,7 +333,8 @@ export default {
           slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           slotData.bidLineItem = bis[bis.length - 1];
           slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
-          slotData.updateState = (slotData.tenderLineItem._id !== slotData.latestTenderItem._id) ? 'updated' : 'unchanged';
+          slotData.updateState = (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' 
+                               : (s.tenderSlot.status === "inactive") ? 'removed' : 'updated';
           slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
           if (slotData.updateState !== 'unchanged') this.bidHasUpdates = true;
           slotData.deselected = false;
