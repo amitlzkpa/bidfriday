@@ -1,7 +1,13 @@
 <template>
   <div>
 
+
+    <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
+
+
+    <!-- Navbar -->
     <span>
+
       <span v-if="hasMondayConnected">
         <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
       </span>
@@ -9,79 +15,96 @@
         <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
         <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
       </span>
+
+      <md-button style="margi-top: 8px" @click="activeTab = 'tender'">Request Items</md-button>
+      <md-button style="margi-top: 8px" @click="activeTab = 'bids'">Bids</md-button>
+      <md-button style="margi-top: 8px" @click="activeTab = 'settings'">Settings</md-button>
+      
     </span>
 
-    <md-progress-bar v-if="isProcessing" md-mode="query"></md-progress-bar>
 
     <LineItemDetails ref="itemDetails" />
     <BidSlotDetails ref="bidSlotDetails" />
 
-    <div class="md-layout md-gutter">
-      <div class="md-layout-item">
-        <span @click="copyToClipboard()">
-          Invite Link
-        </span>
-      </div>
+
+    <!-- Tender Items -->
+    <div v-if="activeTab === 'tender'">
+      <md-table>
+        <md-table-row>
+          <md-table-head>Status</md-table-head>
+          <md-table-head>Name</md-table-head>
+          <md-table-head>Quantity</md-table-head>
+          <md-table-head>Rate</md-table-head>
+          <md-table-head>Total</md-table-head>
+          <md-table-head>Bid Count</md-table-head>
+          <md-table-head>Bid Price Range</md-table-head>
+          <md-table-head>Bid Price Average/Median</md-table-head>
+        </md-table-row>
+
+        <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids, tli.tenderLineItem)">
+          <md-table-cell>{{ tli.status }}</md-table-cell>
+          <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
+          <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
+          <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
+          <md-table-cell>{{ tli.total | currency }}</md-table-cell>
+          <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
+          <md-table-cell>{{ tli.bids.minBidRate | currency }} - {{ tli.bids.maxBidRate | currency }}</md-table-cell>
+          <md-table-cell>{{ tli.bids.averageRate | currency }}/{{ tli.bids.medianRate | currency }}</md-table-cell>
+        </md-table-row>
+      </md-table>
     </div>
 
-    <div class="md-layout md-gutter">
-      
-      <div class="md-layout-item md-size-70">
-        <md-field>
-          <label>Description</label>
-          <md-textarea v-model="description"></md-textarea>
-        </md-field>
-      </div>
-      
-      <div class="md-layout-item md-size-30">
-        <span class="md-caption">Price Reveal Type</span>
-        <br />
-        <md-menu md-size="medium" md-align-trigger>
-          <md-button md-menu-trigger>
-            <TenderSettings :mustBidOnAll="mustBidOnAll" :priceRevealType="priceRevealType" />
-          </md-button>
-          <md-menu-content>
-            <md-menu-item @click="priceRevealType = 'concealed';">
-              <md-icon>visibility_off</md-icon>
-              Concealed
-            </md-menu-item>
-            <md-menu-item @click="priceRevealType = 'lowest';">
-              <md-icon>gavel</md-icon>
-              Lowest
-            </md-menu-item>
-            <md-menu-item @click="priceRevealType = 'public';">
-              <md-icon>visibility</md-icon>
-              Public
-            </md-menu-item>
-          </md-menu-content>
-        </md-menu>
-      </div>
 
+    <!-- Bids -->
+    <div v-if="activeTab === 'bids'">
     </div>
 
-    <md-table>
-      <md-table-row>
-        <md-table-head>Status</md-table-head>
-        <md-table-head>Name</md-table-head>
-        <md-table-head>Quantity</md-table-head>
-        <md-table-head>Rate</md-table-head>
-        <md-table-head>Total</md-table-head>
-        <md-table-head>Bid Count</md-table-head>
-        <md-table-head>Bid Price Range</md-table-head>
-        <md-table-head>Bid Price Average/Median</md-table-head>
-      </md-table-row>
 
-      <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids, tli.tenderLineItem)">
-        <md-table-cell>{{ tli.status }}</md-table-cell>
-        <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
-        <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
-        <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
-        <md-table-cell>{{ tli.total | currency }}</md-table-cell>
-        <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
-        <md-table-cell>{{ tli.bids.minBidRate | currency }} - {{ tli.bids.maxBidRate | currency }}</md-table-cell>
-        <md-table-cell>{{ tli.bids.averageRate | currency }}/{{ tli.bids.medianRate | currency }}</md-table-cell>
-      </md-table-row>
-    </md-table>
+    <!-- Settings -->
+    <div v-if="activeTab === 'settings'">
+
+      <div class="md-layout md-gutter">
+        
+        <div class="md-layout-item">
+          <p style="padding: 8px;">
+            <code @click="copyToClipboard()">{{ tenderUrl }}</code>
+          </p>
+        </div>
+
+        <div class="md-layout-item md-size-70">
+          <md-field>
+            <label>Description</label>
+            <md-textarea v-model="description"></md-textarea>
+          </md-field>
+        </div>
+        
+        <div class="md-layout-item md-size-30">
+          <span class="md-caption">Price Reveal Type</span>
+          <br />
+          <md-menu md-size="medium" md-align-trigger>
+            <md-button md-menu-trigger>
+              <TenderSettings :mustBidOnAll="mustBidOnAll" :priceRevealType="priceRevealType" />
+            </md-button>
+            <md-menu-content>
+              <md-menu-item @click="priceRevealType = 'concealed';">
+                <md-icon>visibility_off</md-icon>
+                Concealed
+              </md-menu-item>
+              <md-menu-item @click="priceRevealType = 'lowest';">
+                <md-icon>gavel</md-icon>
+                Lowest
+              </md-menu-item>
+              <md-menu-item @click="priceRevealType = 'public';">
+                <md-icon>visibility</md-icon>
+                Public
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
+        </div>
+
+      </div>
+      
+    </div>
 
   </div>
 </template>
@@ -114,6 +137,7 @@ export default {
       mustBidOnAll: false,
       tenderCreatedBy: null,
 
+      activeTab: 'tender',
       isProcessing: false
     };
   },
@@ -121,6 +145,9 @@ export default {
     redirect_uri() {
       // return window.location.origin;
       return "http://localhost:4001"
+    },
+    tenderUrl() {
+      return `${window.location.origin}/tender-view/${this.linkedTenderId}`;
     }
   },
   async mounted () {
@@ -144,7 +171,7 @@ export default {
   },
   methods: {
     copyToClipboard() {
-      navigator.clipboard.writeText(`https://bidfriday.herokuapp.com/tender-view/${this.linkedTenderId}`);
+      navigator.clipboard.writeText(`${window.location.origin}/tender-view/${this.linkedTenderId}`);
     },
     async sync() {
       while(!ctx) await this.wait(200);
