@@ -86,16 +86,26 @@
 
           <div class="md-layout-item md-size-35">
             {{ slotData.index }}.
-            <span class="md-headline">{{ slotData.tenderLineItem.name }}</span>
+            <span class="md-headline" :class="(slotData.tenderLineItem.name !== slotData.latestTenderItem.name) ? 'isStale' : '' ">
+              {{ slotData.tenderLineItem.name }}
+              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.name }} to {{ slotData.latestTenderItem.name }}.</md-tooltip>
+            </span>
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
-            <span class="md-subhead">{{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}</span>
+            <span class="md-subhead" :class="(slotData.tenderLineItem.quantity !== slotData.latestTenderItem.quantity)
+                                          || (slotData.tenderLineItem.units !== slotData.latestTenderItem.units) ? 'isStale' : '' ">
+              {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }}
+              <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.quantity }} {{ slotData.tenderLineItem.units }} to {{ slotData.latestTenderItem.quantity }} {{ slotData.latestTenderItem.units }}.</md-tooltip>
+            </span>
           </div>
 
           <div class="md-layout-item md-size-10" style="padding-top: 6px; text-align: center;">
             <span class="md-subhead">
-              <span>{{ slotData.tenderLineItem.rate | currency }}</span>
+              <span :class="(slotData.tenderLineItem.rate !== slotData.latestTenderItem.rate) ? 'isStale' : '' ">
+                {{ slotData.tenderLineItem.rate | currency }}
+                <md-tooltip v-if="slotData.isStale">Updated from {{ slotData.tenderLineItem.rate | currency }} to {{ slotData.latestTenderItem.rate | currency }}.</md-tooltip>
+              </span>
             </span>
           </div>
 
@@ -104,7 +114,9 @@
           </div>
 
           <div class="md-layout-item md-size-15" style="text-align: right;">
-            <span class="md-body-1">{{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}</span>
+            <span class="md-body-1">
+              {{ (slotData.bidLineItem.rate * slotData.tenderLineItem.quantity) | currency }}
+            </span>
           </div>
         </div>
         
@@ -255,4 +267,9 @@ export default {
 </script>
 
 <style scoped>
+.isStale {
+  background-color: lightsalmon;
+  padding: 2px 6px 2px 6px;
+  border-radius: 4px;
+}
 </style>
