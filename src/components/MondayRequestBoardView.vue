@@ -185,6 +185,7 @@ export default {
       ctx = res.data;
     });
 
+    await this.updateFromTender();
     await this.sync();
 
   },
@@ -217,7 +218,6 @@ export default {
       });
       this.cols = this.currBoardData.columns;
 
-      await this.updateFromTender();
       await this.updateLinkedBidsBoard();
       await this.updateToBidsBoard();
       await this.updateFromBidsOnTender();
