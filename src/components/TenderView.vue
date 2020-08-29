@@ -65,8 +65,16 @@
       </md-table-row>
     </md-table>
 
-    <md-card-actions>
-      <md-button :to="'/bid-submit/' + tenderId" class="md-primary">Submit Bid</md-button>
+    <md-card-actions v-if="$auth.bfUser">
+      <span v-if="!!$auth.bfUser.phone && !!$auth.bfUser.location">
+        <md-button :to="'/bid-submit/' + tenderId" class="md-primary">Submit Bid</md-button>
+      </span>
+      <span v-else>
+        <span style="display:inline-block; margin-top: 10px;" class="md-caption">
+          Please complete your full profile to start submitting bids.
+        </span>
+        <md-button :to="'/my-profile/'" class="md-primary">Complete Profile</md-button>
+      </span>
     </md-card-actions>
 
   </div>
