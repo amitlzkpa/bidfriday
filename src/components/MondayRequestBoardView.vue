@@ -288,7 +288,7 @@ export default {
         let tli = this.tenderLineItems.filter(t => {
           return t.id.toString() === tSlot.mondayItemId.toString();
         })[0];
-        tli.tenderLineItem = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
+        if (tli) tli.tenderLineItem = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
       }
 
     },
@@ -311,6 +311,7 @@ export default {
         let tli = this.tenderLineItems.filter(t => {
           return t.id.toString() === mdId.toString()
         })[0];
+        tli = (tli) ? tli : {};
         tli.bids = bidStat;
       }
 

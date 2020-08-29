@@ -318,10 +318,11 @@ router.post('/get-tender-and-bids', async (req, res) => {
       mondayItemId: tSlot.mondayItemId,
       latestBids: latestBLIsOnThisSlot,
       bidwiseBidsHistory: bidwiseBidsHistory,
-      minBidRate: latestBLIsOnThisSlot[0].rate,
-      maxBidRate: latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate,
-      averageRate: average(latestBLIsOnThisSlot.map(b => b.rate)),
-      medianRate: (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2
+      minBidRate: (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[0].rate : 0,
+      maxBidRate: (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate : 0,
+      averageRate: (latestBLIsOnThisSlot.length > 0) ? average(latestBLIsOnThisSlot.map(b => b.rate)) : 0,
+      medianRate: (latestBLIsOnThisSlot.length > 0) ? 
+                  (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2 : 0
     });
   }
   ret.bidStats = bidStats;

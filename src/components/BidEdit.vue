@@ -270,7 +270,6 @@ export default {
         res = await this.$api.post('/api/get-bid', postData);
         bData = res.data;
         tData = bData.tender;
-        console.log(res.data);
       }
       console.log(tData);
       console.log(bData);
@@ -304,7 +303,9 @@ export default {
           return slotData;
         });
       } else {
+        let newSlots = tData.slots.map(s => s);
         this.slots = bData.slots.map((s, idx) => {
+          newSlots = newSlots.filter(ns => ns !== s.tenderSlot._id);
           let slotData = {};
           slotData.index = idx + 1;
           let tis = s.tenderSlot.tenderLineItems;
@@ -318,6 +319,8 @@ export default {
           slotData.deselected = false;
           return slotData;
         });
+        // TODO: NOT WORKING YET
+        // let deletedSlots = bData.slots.filter(s => !tData.slots.includes(s.tenderSlot._id));
       }
       this.updateBidTotal();
       if (this.bidCreatedBy !== null
