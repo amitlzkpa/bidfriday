@@ -553,4 +553,22 @@ router.post('/users', async (req, res) => {
 
 
 
+router.post('/update-user', [addUserToReq, authorizeUser], async (req, res) => {
+  const uData = req.body;
+  if (!uData || uData === {}) {
+    return res.status(400).send();
+  }
+  let user = await User.findOne({ email: req.user.email });
+  if (!user) {
+    return res.status(400).send();
+  }
+  user.name = uData.name;
+  user.phone = uData.phone;
+  user.location = uData.location;
+  user = await user.save();
+  return res.json(user);
+});
+
+
+
 module.exports = router;

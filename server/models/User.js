@@ -19,7 +19,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: ""
   },
-  bio: {
+  location: {
+    type: String,
+    default: ""
+  },
+  phone: {
     type: String,
     default: ""
   },
