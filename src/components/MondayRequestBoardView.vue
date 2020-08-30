@@ -109,7 +109,7 @@
           </div>
         </div>
 
-        <BidView v-show="Object.keys(activeBid).length !== 0" :bidId="activeBid._id" ref="bidView" />
+        <BidView v-show="Object.keys(activeBid).length !== 0" :bidId="activeBid._id" />
 
       </div>
 
@@ -350,10 +350,8 @@ export default {
       this.$refs.bidSlotDetails.showBidSlotDetails(bids, tenderLineItem);
     },
     async setActiveBid(activeBid) {
-      this.isProcessing = true;
       this.activeBid = activeBid;
-      await this.$refs.bidView.refresh(this.activeBid._id);
-      this.isProcessing = false;
+      this.eventBus.$emit('refreshBidView');
     }
   }
 }

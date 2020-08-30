@@ -237,10 +237,11 @@ export default {
 
     this.refresh();
 
+    this.eventBus.$on('refreshBidView', this.refresh);
+
   },
   methods: {
-    async refresh(bId) {
-      this.bidId = (bId) ? bId : this.bidId;
+    async refresh() {
       this.updateState = 'unchanged';
       let postData = { bidId: this.bidId };
       let res = await this.$api.post('/api/get-bid', postData);
