@@ -228,7 +228,6 @@ export default {
       tenderCreatedBy: null,
       tenderLastUpdatedAt: null,
 
-      bId: null,
       bidDescription: "",
       bidCreatedBy: null,
       bidTotal: 0,
@@ -240,23 +239,19 @@ export default {
       sampleImgURLS: []
     };
   },
-  created() {
-    if (this.bidId) {
-      this.bId = this.bidId;
-    }
-  },
   async mounted() {
 
     this.refresh();
 
   },
   methods: {
-    async refresh() {
+    async refresh(bId) {
+      this.bidId = (bId) ? bId : this.bidId;
       this.updateState = 'unchanged';
       let postData = {
-        bId: this.bId,
+        bId: this.bidId,
       };
-      // console.log(postData);
+      console.log(postData);
       let res = await this.$api.post('/api/get-bid', postData);
       let bData = res.data;
       let tData = bData.tender;
