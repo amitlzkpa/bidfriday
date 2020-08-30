@@ -448,6 +448,14 @@ router.post('/get-bid', async (req, res) => {
 
 
 
+router.post('/get-bids-on-tender', async (req, res) => {
+  let tId = req.body.tId;
+  let bids = await Bid.find({ tender: tId }).populate('createdBy', ['name', 'email']);
+  return res.json(bids);
+});
+
+
+
 router.post('/get-my-bids', [addUserToReq, authorizeUser], async (req, res) => {
   let user = req.user;
   let bids = await Bid.find({ createdBy: user._id })
