@@ -3,7 +3,6 @@ import VueRouter from 'vue-router';
 import Home from '@/components/Home.vue';
 import MondayRequestBoardView from '@/components/MondayRequestBoardView.vue';
 import MondayRequestDashboardView from '@/components/MondayRequestDashboardView.vue';
-import MondayBidsBoardView from '@/components/MondayBidsBoardView.vue';
 import MondayOAuth from '@/components/MondayOAuth.vue';
 import TenderView from '@/components/TenderView.vue';
 import BidView from '@/components/BidView.vue';
@@ -97,12 +96,6 @@ const routes =
     path: '/monday/boardview/request',
     name: 'MondayRequestBoardView',
     component: MondayRequestBoardView,
-    beforeEnter: mondayGuard
-  },
-  {
-    path: '/monday/boardview/bids',
-    name: 'MondayBidsBoardView',
-    component: MondayBidsBoardView,
     beforeEnter: mondayGuard
   },
   {
