@@ -58,6 +58,29 @@
 
       <!-- Bids -->
       <div v-if="activeTab === 'bids'">
+
+        <div class="md-layout">
+          <div class="md-layout-item">
+
+            <p>
+              Bids received: {{ bids.length }}
+            </p>
+            
+            <md-menu md-size="small">
+              <md-button md-menu-trigger>{{ (Object.keys(activeBid).length !== 0) ? activeBid.createdBy.name : 'none' }}</md-button>
+
+              <md-menu-content>
+                <md-menu-item v-for="bid in bids" :key="bid._id" @click="setActiveBid(bid)">
+                  {{ bid.createdBy.name }}
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+
+          </div>
+        </div>
+
+        <BidView v-show="Object.keys(activeBid).length !== 0" :bidId="activeBid._id" ref="bidView" />
+
       </div>
 
 
@@ -129,6 +152,7 @@
 </template>
 
 <script>
+import BidView from '@/components/BidView.vue';
 import TenderSettings from '@/components/TenderSettings.vue';
 import LineItemDetails from '@/components/LineItemDetails.vue';
 import BidSlotDetails from '@/components/BidSlotDetails.vue';
@@ -139,6 +163,7 @@ let key_linkedTenderId = "test_tenderId4";
 
 export default {
   components: {
+    BidView,
     TenderSettings,
     LineItemDetails,
     BidSlotDetails
@@ -154,7 +179,10 @@ export default {
       description: null,
       priceRevealType: 'concealed',
       mustBidOnAll: false,
-      tenderCreatedBy: null,
+
+      tender: null,
+      bids: [],
+      activeBid: {},
 
       activeTab: 'tender',
       isProcessing: false
@@ -269,27 +297,32 @@ export default {
     },
     async updateFromTender() {
 
-      let res;
+      let res, postData;
 
       res = await this.monday.storage.instance.getItem(key_linkedTenderId);
       this.linkedTenderId = res.data.value;
-      let postData = {
+      postData = {
         tId: this.linkedTenderId,
       };
       res = await this.$api.post('/api/get-tender', postData);
       let tData = res.data.tender;
-      console.log(tData);
-      this.description = tData.description;
-      this.priceRevealType = tData.priceRevealType;
-      this.mustBidOnAll = tData.mustBidOnAll;
-      this.tenderCreatedBy = tData.createdBy;
+      this.tender = tData;
+      this.description = this.tender.description;
+      this.priceRevealType = this.tender.priceRevealType;
+      this.mustBidOnAll = this.tender.mustBidOnAll;
 
-      for(let tSlot of tData.slots) {
+      for(let tSlot of this.tender.slots) {
         let tli = this.tenderLineItems.filter(t => {
           return t.id.toString() === tSlot.mondayItemId.toString();
         })[0];
         if (tli) tli.tenderLineItem = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
       }
+      
+      postData = {
+        tId: this.linkedTenderId,
+      };
+      res = await this.$api.post('/api/get-bids-on-tender', postData);
+      this.bids = res.data;
 
     },
     async updateFromBidsOnTender() {
@@ -305,7 +338,6 @@ export default {
       res = await this.$api.post('/api/get-tender-and-bids', postData);
       
       let bidStats = res.data.bidStats;
-      console.log(bidStats);
       for(let bidStat of bidStats) {
         let mdId = bidStat.mondayItemId;
         let tli = this.tenderLineItems.filter(t => {
@@ -330,7 +362,6 @@ export default {
         description: this.description
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
-      console.log(res.data);
       this.linkedTenderId = res.data._id;
       this.description = res.data.description;
       this.priceRevealType = res.data.priceRevealType;
@@ -343,10 +374,16 @@ export default {
       this.monday.execute('openItemCard', { itemId: itemId });
     },
     showDetails(item) {
-      this.$refs.itemDetails.showDetails(item, this.tenderCreatedBy);
+      this.$refs.itemDetails.showDetails(item, this.tender.createdBy);
     },
     showBidSlotDetails(bids, tenderLineItem) {
       this.$refs.bidSlotDetails.showBidSlotDetails(bids, tenderLineItem);
+    },
+    async setActiveBid(activeBid) {
+      this.isProcessing = true;
+      this.activeBid = activeBid;
+      await this.$refs.bidView.refresh(this.activeBid._id);
+      this.isProcessing = false;
     }
   }
 }
