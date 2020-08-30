@@ -235,7 +235,6 @@ export default {
     return {
       tenderName: null,
       tenderDescription: null,
-      priceRevealType: null,
       mustBidOnAll: false,
       slots: [],
       tenderCreatedBy: null,
@@ -289,7 +288,6 @@ export default {
       this.tenderId = tData._id;
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;
-      this.priceRevealType = tData.priceRevealType;
       this.mustBidOnAll = tData.mustBidOnAll;
       this.tenderCreatedBy = tData.createdBy;
       this.tenderLastUpdatedAt = tData.updatedAt;

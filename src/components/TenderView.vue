@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="tenderName">
     
     <LineItemDetails ref="itemDetails" />
 
@@ -10,10 +10,6 @@
         <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
       </div>
       <div class="md-layout-item md-size-15">
-        <TenderSettings
-          :priceRevealType="priceRevealType"
-          :mustBidOnAll="mustBidOnAll"
-        />
       </div>
     </div>
 
@@ -30,19 +26,13 @@
         :md-description="`No item found for '${search}'.`">
       </md-table-empty-state>
 
-      <md-table-row slot="md-table-row" slot-scope="{ item }" @click="showDetails(item)">
+      <md-table-row slot="md-table-row" slot-scope="{ item }" @click="showDetails(item)" style='cursor:pointer'>
         <md-table-cell md-label="No" md-sort-by="index">{{ item.index }}</md-table-cell>
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.name }}</md-table-cell>
         <md-table-cell md-label="Unit" md-sort-by="units">{{ item.units }}</md-table-cell>
         <md-table-cell md-label="Quantity" md-sort-by="quantity">{{ item.quantity }}</md-table-cell>
-        <md-table-cell md-label="Rate" md-sort-by="rate">
-          <span v-if="item.rate === -1">-</span>
-          <span v-else>{{ item.rate | currency }}</span>
-        </md-table-cell>
-        <md-table-cell md-label="Total" md-sort-by="total">
-          <span v-if="item.rate === -1">-</span>
-          <span v-else>{{ item.total | currency }}</span>
-        </md-table-cell>
+        <md-table-cell md-label="Rate" md-sort-by="rate"><span>{{ item.rate | currency }}</span></md-table-cell>
+        <md-table-cell md-label="Total" md-sort-by="total"><span>{{ item.total | currency }}</span></md-table-cell>
       </md-table-row>
     </md-table>
 
@@ -81,7 +71,6 @@
 </template>
 
 <script>
-import TenderSettings from '@/components/TenderSettings.vue';
 import LineItemDetails from '@/components/LineItemDetails.vue';
 
 const toLower = text => {
@@ -97,7 +86,6 @@ const searchByName = (items, term) => {
 
 export default {
   components: {
-    TenderSettings,
     LineItemDetails
   },
   props: ['tenderId'],
@@ -107,7 +95,7 @@ export default {
       tenderDescription: null,
       tenderCreatedBy: null,
       tenderLastUpdatedAt: null,
-      priceRevealType: null,
+      priceRevealSettings: null,
       mustBidOnAll: false,
       slots: [],
       tenderItems: [],
@@ -130,12 +118,11 @@ export default {
       };
       let res = await this.$api.post('/api/get-tender', postData);
       let tData = res.data.tender;
-      console.log(tData);
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;
       this.tenderCreatedBy = tData.createdBy;
       this.tenderLastUpdatedAt = tData.updatedAt;
-      this.priceRevealType = tData.priceRevealType;
+      this.priceRevealSettings = (tData.priceRevealSettings) ? JSON.parse(tData.priceRevealSettings) : {};
       this.mustBidOnAll = tData.mustBidOnAll;
       this.slots = tData.slots || [];
       this.tenderItems = this.slots.map((s, idx) => {
