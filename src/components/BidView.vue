@@ -197,7 +197,7 @@
       <span class="md-caption" v-if="tenderHasUpdates">
         Shows details as it was when the bid was submitted.
       </span>
-      <md-button :to="`/tender-view/${tenderId}`">View Tender</md-button>
+      <md-button target="_blank" :to="`/tender-view/${tenderId}`">View Tender</md-button>
       <md-button v-if="$auth.bfUser && bidCreatedBy && $auth.bfUser.email === bidCreatedBy.email" :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
     </md-card-actions>
 

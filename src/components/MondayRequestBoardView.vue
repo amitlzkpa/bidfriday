@@ -6,19 +6,26 @@
 
 
     <!-- Navbar -->
-    <div>
+    <div style="display: flex;">
 
-      <span v-if="hasMondayConnected">
-        <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
-      </span>
-      <span v-else>
-        <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
-        <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
+      <span style="flex: 1">
+        <md-button :class="(activeTab === 'tender') ? 'md-primary' : ''"
+          style="margin-top: 8px" @click="activeTab = 'tender'">Items</md-button>
+        <md-button :class="(activeTab === 'bids') ? 'md-primary' : ''"
+          style="margin-top: 8px" @click="activeTab = 'bids'">Bids</md-button>
+        <md-button :class="(activeTab === 'settings') ? 'md-primary' : ''"
+          style="margin-top: 8px" @click="activeTab = 'settings'">Settings</md-button>
       </span>
 
-      <md-button style="margi-top: 8px" @click="activeTab = 'tender'">Items</md-button>
-      <md-button style="margi-top: 8px" @click="activeTab = 'bids'">Bids</md-button>
-      <md-button style="margi-top: 8px" @click="activeTab = 'settings'">Settings</md-button>
+      <span>
+        <span v-if="hasMondayConnected">
+          <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
+        </span>
+        <span v-else>
+          <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
+          <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
+        </span>
+      </span>
       
     </div>
 

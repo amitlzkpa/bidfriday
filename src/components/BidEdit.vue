@@ -215,8 +215,8 @@
 
     <md-card-actions>
       <span v-if="bidLastUpdatedAt" class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
-      <md-button :to="`/tender-view/${tenderId}`">View Tender</md-button>
-      <md-button :to="`/bid-view/${bidId}`">View Bid</md-button>
+      <md-button target="_blank" :to="`/tender-view/${tenderId}`">View Tender</md-button>
+      <md-button target="_blank" :to="`/bid-view/${bidId}`">View Bid</md-button>
       <md-button :disabled="!hasAllFieldsPopulated" @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
