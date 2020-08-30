@@ -66,15 +66,21 @@
               Bids received: {{ bids.length }}
             </p>
             
-            <md-menu md-size="small">
-              <md-button md-menu-trigger>{{ (Object.keys(activeBid).length !== 0) ? activeBid.createdBy.name : 'none' }}</md-button>
+            <div>
+              <span style="margin-top: 10px; display: inline-block;">
+                View bid:
+              </span>
+              
+              <md-menu md-size="small">
+                <md-button md-menu-trigger>{{ (Object.keys(activeBid).length !== 0) ? activeBid.createdBy.name : 'none' }}</md-button>
 
-              <md-menu-content>
-                <md-menu-item v-for="bid in bids" :key="bid._id" @click="setActiveBid(bid)">
-                  {{ bid.createdBy.name }}
-                </md-menu-item>
-              </md-menu-content>
-            </md-menu>
+                <md-menu-content>
+                  <md-menu-item v-for="bid in bids" :key="bid._id" @click="setActiveBid(bid)">
+                    {{ bid.createdBy.name }}
+                  </md-menu-item>
+                </md-menu-content>
+              </md-menu>
+            </div>
 
           </div>
         </div>
