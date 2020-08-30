@@ -10,7 +10,8 @@
 
       <div class="md-layout-item md-large-size-60 md-xsmall-size-100">
         <h1 class="md-title">{{ tenderName }}</h1>
-        <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
+        <p class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</p>
+        <p class="md-caption" v-if="bidCreatedBy">Submitted by: &nbsp; {{ bidCreatedBy.name }}</p>
         <p class="md-caption" style="min-height: 4vh;">{{ bidDescription }}</p>
       </div>
 
@@ -196,7 +197,8 @@
       <span class="md-caption" v-if="tenderHasUpdates">
         Shows details as it was when the bid was submitted.
       </span>
-      <md-button :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
+      <md-button :to="`/tender-view/${tenderId}`">View Tender</md-button>
+      <md-button v-if="$auth.bfUser && bidCreatedBy && $auth.bfUser.email === bidCreatedBy.email" :to="`/bid-edit/${tenderId}/${bidId}`" class="md-primary">Update Bid</md-button>
     </md-card-actions>
 
   </div>

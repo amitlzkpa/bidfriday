@@ -10,7 +10,8 @@
 
       <div class="md-layout-item md-large-size-60 md-xsmall-size-100">
         <h1 class="md-title">{{ tenderName }}</h1>
-        <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
+        <p class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</p>
+        <p class="md-caption" v-if="bidCreatedBy">Submitted by: &nbsp; {{ bidCreatedBy.name }}</p>
         <md-field>
           <label>Description</label>
           <md-textarea v-model="bidDescription" md-autogrow></md-textarea>
@@ -214,6 +215,8 @@
 
     <md-card-actions>
       <span v-if="bidLastUpdatedAt" class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
+      <md-button :to="`/tender-view/${tenderId}`">View Tender</md-button>
+      <md-button :to="`/bid-view/${bidId}`">View Bid</md-button>
       <md-button :disabled="!hasAllFieldsPopulated" @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
