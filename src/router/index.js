@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/components/Home.vue';
 import MondayRequestBoardView from '@/components/MondayRequestBoardView.vue';
-import MondayRequestDashboardView from '@/components/MondayRequestDashboardView.vue';
 import MondayOAuth from '@/components/MondayOAuth.vue';
 import TenderView from '@/components/TenderView.vue';
 import BidView from '@/components/BidView.vue';
@@ -86,12 +85,6 @@ const routes =
     beforeEnter: auth0Guard
   },
 
-  {
-    path: '/monday/boardview/dashboard',
-    name: 'MondayRequestDashboardView',
-    component: MondayRequestDashboardView,
-    beforeEnter: mondayGuard
-  },
   {
     path: '/monday/boardview/request',
     name: 'MondayRequestBoardView',
