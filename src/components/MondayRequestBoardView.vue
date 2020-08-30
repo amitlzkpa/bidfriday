@@ -23,7 +23,7 @@
         </span>
         <span v-else>
           <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
-          <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirect_uri + '/monday/connect'">CONNECT</md-button>
+          <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirectUrl + '/monday/connect'">CONNECT</md-button>
         </span>
       </span>
       
@@ -203,9 +203,8 @@ export default {
     };
   },
   computed: {
-    redirect_uri() {
-      // return window.location.origin;
-      return "http://localhost:4001"
+    redirectUrl() {
+      return (process.env.NODE_ENV === 'production') ? window.location.origin : "http://localhost:4001"
     },
     tenderUrl() {
       return `${window.location.origin}/tender-view/${this.linkedTenderId}`;
@@ -273,7 +272,7 @@ export default {
       };
       res = await this.$api.post('/api/get-tender-and-bids', postData);
 
-      console.log(res.data);
+      if (!res.data) return;
 
       let tData = res.data.tender;
       this.tender = tData;
@@ -300,6 +299,9 @@ export default {
         tli = (tli) ? tli : {};
         tli.bids = bidStat;
       }
+      
+      this.linkedTenderId = this.tender._id;
+      res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 
     },
     async updateToTender() {
@@ -317,8 +319,6 @@ export default {
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
-      this.description = res.data.description;
-      this.mustBidOnAll = res.data.mustBidOnAll;
 
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
 

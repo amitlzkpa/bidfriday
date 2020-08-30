@@ -265,7 +265,7 @@ router.post('/get-tender-and-bids', [addUserToReq], async (req, res) => {
   let includeStaleBids = !!req.body.includeStaleBids;
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
-    return res.json({});
+    return res.json(null);
   }
   let priceRevealSettings = JSON.parse(tender.priceRevealSettings);
   let ret = {};

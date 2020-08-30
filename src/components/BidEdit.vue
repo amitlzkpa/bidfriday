@@ -216,7 +216,7 @@
     <md-card-actions>
       <span v-if="bidLastUpdatedAt" class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
       <md-button target="_blank" :to="`/tender-view/${tenderId}`">View Tender</md-button>
-      <md-button target="_blank" :to="`/bid-view/${bidId}`">View Bid</md-button>
+      <md-button v-if="bidId" target="_blank" :to="`/bid-view/${bidId}`">View Bid</md-button>
       <md-button :disabled="!hasAllFieldsPopulated" @click="submitBid" class="md-primary">Submit</md-button>
     </md-card-actions>
 
@@ -376,6 +376,7 @@ export default {
       let postData = { bidData: bidData };
       let r = await this.$api.post('/api/create-or-update-bid', postData);
       this.bidId = r.data._id;
+      this.$router.push({ name: 'bid-view', params: { bidId: this.bidId } });
     },
     toggleAll() {
       let rs = this.$refs;
