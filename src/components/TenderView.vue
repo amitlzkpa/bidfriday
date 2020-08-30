@@ -150,6 +150,11 @@ export default {
         tId: tId,
       };
       let res = await this.$api.post('/api/get-tender', postData);
+      // let postData = {
+      //   tId: tId,
+      //   // includeStaleBids: false
+      // };
+      // let res = await this.$api.post('/api/get-tender-and-bids', postData);
       let tData = res.data.tender;
       this.tenderName = tData.name;
       this.tenderDescription = tData.description;
@@ -168,6 +173,17 @@ export default {
         return ret;
       });
       this.searched = this.tenderItems;
+
+      // let bidStats = res.data.bidStats;
+      // for(let bidStat of bidStats) {
+      //   let tSlotId = bidStat.tenderSlot;
+      //   let tli = this.tenderItems.filter(t => {
+      //     return t.slot._id.toString() === tSlotId.toString()
+      //   })[0];
+      //   tli = (tli) ? tli : {};
+      //   tli.bids = bidStat;
+      // }
+      
     },
     searchOnTable () {
       this.searched = searchByName(this.tenderItems, this.search);
