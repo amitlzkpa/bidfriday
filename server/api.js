@@ -104,7 +104,7 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
   let user = req.user;
   let tId = req.body.tenderId;
   let requestBoardId = req.body.requestBoardId;
-  let priceRevealType = req.body.priceRevealType;
+  let priceRevealSettings = req.body.priceRevealSettings;
   let mustBidOnAll = req.body.mustBidOnAll;
   let description = req.body.description;
 
@@ -219,7 +219,7 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
 
   tender.description = description;
   tender.mustBidOnAll = mustBidOnAll;
-  tender.priceRevealType = priceRevealType;
+  tender.priceRevealSettings = priceRevealSettings;
 
   tender = await tender.save();
 

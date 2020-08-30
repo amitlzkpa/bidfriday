@@ -13,9 +13,9 @@ const TenderSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  priceRevealType: {
+  priceRevealSettings: {
     type: String,
-    default: "concealed"
+    default: "{}"
   },
   mustBidOnAll: {
     type: Boolean,

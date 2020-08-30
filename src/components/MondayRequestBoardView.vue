@@ -118,41 +118,24 @@
 
         <div class="md-layout">
 
-          <div class="md-layout-item">
+          <div class="md-layout-item md-size-60" style="padding: 8px;">
 
             <p class="md-title">Settings</p>
+            <md-field>
+              <label>Description</label>
+              <md-textarea v-model="description"></md-textarea>
+            </md-field>
 
-            <span class="md-size-70">
-              <md-field>
-                <label>Description</label>
-                <md-textarea v-model="description"></md-textarea>
-              </md-field>
-            </span>
+          </div>
 
-            <span class="md-size-30">
-              <span class="md-caption">Price Reveal Type</span>
-              <br />
-              <md-menu md-size="medium" md-align-trigger>
-                <md-button md-menu-trigger>
-                  <TenderSettings :mustBidOnAll="mustBidOnAll" :priceRevealType="priceRevealType" />
-                </md-button>
-                <md-menu-content>
-                  <md-menu-item @click="priceRevealType = 'concealed';">
-                    <md-icon>visibility_off</md-icon>
-                    Concealed
-                  </md-menu-item>
-                  <md-menu-item @click="priceRevealType = 'lowest';">
-                    <md-icon>gavel</md-icon>
-                    Lowest
-                  </md-menu-item>
-                  <md-menu-item @click="priceRevealType = 'public';">
-                    <md-icon>visibility</md-icon>
-                    Public
-                  </md-menu-item>
-                </md-menu-content>
-              </md-menu>
-            </span>
-
+          <div class="md-layout-item md-size-40" style="padding: 8px;">
+            <span class="md-caption">Price Reveal</span>
+            <br />
+            <md-checkbox v-model="priceRevealSettings.count">Count</md-checkbox><br />
+            <md-checkbox v-model="priceRevealSettings.range">Range</md-checkbox><br />
+            <md-checkbox v-model="priceRevealSettings.average">Average</md-checkbox><br />
+            <md-checkbox v-model="priceRevealSettings.median">Median</md-checkbox><br />
+            <md-checkbox v-model="priceRevealSettings.full">Full</md-checkbox>
           </div>
 
         </div>
@@ -166,18 +149,15 @@
 
 <script>
 import BidView from '@/components/BidView.vue';
-import TenderSettings from '@/components/TenderSettings.vue';
 import LineItemDetails from '@/components/LineItemDetails.vue';
 import BidSlotDetails from '@/components/BidSlotDetails.vue';
 
 let ctx;
-let key_linkedBidBoard = "test3";
 let key_linkedTenderId = "test_tenderId4";
 
 export default {
   components: {
     BidView,
-    TenderSettings,
     LineItemDetails,
     BidSlotDetails
   },
@@ -186,12 +166,17 @@ export default {
       currBoardData: null,
       tenderLineItems: [],
       cols: [],
-      linkedBoardId: null,
       linkedTenderId: null,
 
       description: null,
-      priceRevealType: 'concealed',
       mustBidOnAll: false,
+      priceRevealSettings: {
+        count: false,
+        range: false,
+        average: false,
+        median: false,
+        full: false,
+      },
 
       tender: null,
       bids: [],
@@ -274,8 +259,8 @@ export default {
       let tData = res.data.tender;
       this.tender = tData;
       this.description = this.tender.description;
-      this.priceRevealType = this.tender.priceRevealType;
       this.mustBidOnAll = this.tender.mustBidOnAll;
+      this.priceRevealSettings = (this.tender.priceRevealSettings) ? JSON.parse(this.tender.priceRevealSettings) : {};
 
       for(let tSlot of this.tender.slots) {
         let tli = this.tenderLineItems.filter(t => {
@@ -323,14 +308,13 @@ export default {
       let postData = {
         requestBoardId: this.currBoardData.id,
         tenderId: this.linkedTenderId,
-        priceRevealType: this.priceRevealType,
         mustBidOnAll: this.mustBidOnAll,
-        description: this.description
+        description: this.description,
+        priceRevealSettings: JSON.stringify(this.priceRevealSettings)
       };
       res = await this.$api.post('/api/create-or-update-tender', postData);
       this.linkedTenderId = res.data._id;
       this.description = res.data.description;
-      this.priceRevealType = res.data.priceRevealType;
       this.mustBidOnAll = res.data.mustBidOnAll;
 
       res = await this.monday.storage.instance.setItem(key_linkedTenderId, this.linkedTenderId);
