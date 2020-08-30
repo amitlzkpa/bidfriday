@@ -56,8 +56,8 @@
             <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
             <md-table-cell>{{ tli.total | currency }}</md-table-cell>
             <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
-            <md-table-cell>{{ tli.bids.minBidRate | currency }} - {{ tli.bids.maxBidRate | currency }}</md-table-cell>
-            <md-table-cell>{{ tli.bids.averageRate | currency }}/{{ tli.bids.medianRate | currency }}</md-table-cell>
+            <md-table-cell>{{ tli.bids.latestBids ? (`${tli.bids.minBidRate | currency} - ${tli.bids.maxBidRate | currency}`) : '-' }}</md-table-cell>
+            <md-table-cell>{{ tli.bids.latestBids ? (`${tli.bids.averageRate | currency}/${tli.bids.medianRate | currency}`) : '-' }}</md-table-cell>
           </md-table-row>
         </md-table>
       </div>
@@ -257,7 +257,6 @@ export default {
       });
       this.cols = this.currBoardData.columns;
 
-      await this.updateFromBidsOnTender();
       await this.updateToTender();
 
       this.isProcessing = false;
@@ -270,8 +269,12 @@ export default {
       this.linkedTenderId = res.data.value;
       postData = {
         tId: this.linkedTenderId,
+        includeStaleBids: false
       };
-      res = await this.$api.post('/api/get-tender', postData);
+      res = await this.$api.post('/api/get-tender-and-bids', postData);
+
+      console.log(res.data);
+
       let tData = res.data.tender;
       this.tender = tData;
       this.description = this.tender.description;
@@ -284,27 +287,10 @@ export default {
         })[0];
         if (tli) tli.tenderLineItem = tSlot.tenderLineItems[tSlot.tenderLineItems.length - 1];
       }
-      
-      postData = {
-        tId: this.linkedTenderId,
-      };
-      res = await this.$api.post('/api/get-bids-on-tender', postData);
-      this.bids = res.data;
+
+      this.bids = res.data.bids;
       if ((this.bids.length > 0)) await this.setActiveBid(this.bids[0]);
 
-    },
-    async updateFromBidsOnTender() {
-
-      let res;
-
-      res = await this.monday.storage.instance.getItem(key_linkedTenderId);
-      this.linkedTenderId = res.data.value;
-      let postData = {
-        tId: this.linkedTenderId,
-        includeStaleBids: true
-      };
-      res = await this.$api.post('/api/get-tender-and-bids', postData);
-      
       let bidStats = res.data.bidStats;
       for(let bidStat of bidStats) {
         let mdId = bidStat.mondayItemId;
