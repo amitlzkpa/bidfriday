@@ -5,24 +5,19 @@
 
     <div class="md-layout" style="padding: 8px;">
 
-      <div class="md-layout-item md-large-size-50 md-small-size-100">
-        <h1 class="md-title">{{ tenderName }}</h1>
-        <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
+      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
       </div>
 
-      <div class="md-layout-item md-large-size-30 md-small-size-60">
-        <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
+      <div class="md-layout-item md-large-size-60 md-xsmall-size-100">
+        <h1 class="md-title">{{ tenderName }}</h1>
+        <span class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</span>
         <md-field>
           <label>Description</label>
           <md-textarea v-model="bidDescription" md-autogrow></md-textarea>
         </md-field>
       </div>
-  
-      <div class="md-layout-item md-large-size-20 md-small-size-40">
-        <TenderSettings
-          :priceRevealType="priceRevealType"
-          :mustBidOnAll="mustBidOnAll"
-        />
+
+      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
       </div>
       
     </div>
@@ -226,12 +221,10 @@
 </template>
 
 <script>
-import TenderSettings from '@/components/TenderSettings.vue';
 import LineItemDetails from '@/components/LineItemDetails.vue';
 
 export default {
   components: {
-    TenderSettings,
     LineItemDetails
   },
   props: ['tenderId', 'bidId'],
