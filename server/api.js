@@ -408,8 +408,8 @@ router.post('/create-or-update-bid', [addUserToReq, authorizeUser], async (req, 
 
 
 router.post('/get-bid', async (req, res) => {
-  let bId = req.body.bId;
-  let bid = await Bid.findOne({ _id: bId });
+  let bidId = req.body.bidId;
+  let bid = await Bid.findOne({ _id: bidId });
   if (!bid) {
     return res.json({});
   }

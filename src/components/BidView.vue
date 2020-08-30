@@ -248,14 +248,12 @@ export default {
     async refresh(bId) {
       this.bidId = (bId) ? bId : this.bidId;
       this.updateState = 'unchanged';
-      let postData = {
-        bId: this.bidId,
-      };
-      console.log(postData);
+      let postData = { bidId: this.bidId };
       let res = await this.$api.post('/api/get-bid', postData);
       let bData = res.data;
       let tData = bData.tender;
-      console.log(bData);
+
+      if (!bData._id || !tData._id) return;
 
       this.tenderId = tData._id;
       this.tenderName = tData.name;

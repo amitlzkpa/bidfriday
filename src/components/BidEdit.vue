@@ -245,7 +245,6 @@ export default {
       tenderCreatedBy: null,
       tenderLastUpdatedAt: null,
 
-      bId: null,
       bidDescription: null,
       bidCreatedBy: null,
       bidTotal: 0,
@@ -256,11 +255,6 @@ export default {
       detailsItem: {},
       sampleImgURLS: []
     };
-  },
-  created() {
-    if (this.bidId) {
-      this.bId = this.bidId;
-    }
   },
   async mounted() {
 
@@ -290,13 +284,11 @@ export default {
         res = await this.$api.post('/api/get-tender', postData);
         tData = res.data.tender;
       } else {
-        postData = { bId: this.bId };
+        postData = { bidId: this.bidId };
         res = await this.$api.post('/api/get-bid', postData);
         bData = res.data;
         tData = bData.tender;
       }
-      console.log(tData);
-      console.log(bData);
 
       this.tenderId = tData._id;
       this.tenderName = tData.name;
@@ -383,15 +375,13 @@ export default {
       });
       let bidData = {
         slotData: slotData,
-        bidId: this.bId,
+        bidId: this.bidId,
         bidDescription: this.bidDescription,
         tenderId: this.tenderId
       };
       let postData = { bidData: bidData };
       let r = await this.$api.post('/api/create-or-update-bid', postData);
-      console.log(r.data);
-      this.bId = r.data._id;
-      this.$router.push({ name: 'bid-edit', params: { tenderId: this.tenderId, bidId: this.bId } });
+      this.bidId = r.data._id;
     },
     toggleAll() {
       let rs = this.$refs;
