@@ -45,8 +45,9 @@
             <md-table-head>Rate</md-table-head>
             <md-table-head>Total</md-table-head>
             <md-table-head>Bid Count</md-table-head>
-            <md-table-head>Bid Price Range</md-table-head>
-            <md-table-head>Bid Price Average/Median</md-table-head>
+            <md-table-head>Min</md-table-head>
+            <md-table-head>Max</md-table-head>
+            <md-table-head>Average</md-table-head>
           </md-table-row>
 
           <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids, tli.tenderLineItem)">
@@ -56,8 +57,18 @@
             <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
             <md-table-cell>{{ tli.total | currency }}</md-table-cell>
             <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
-            <md-table-cell>{{ tli.bids.latestBids ? (`${tli.bids.minBidRate | currency} - ${tli.bids.maxBidRate | currency}`) : '-' }}</md-table-cell>
-            <md-table-cell>{{ tli.bids.latestBids ? (`${tli.bids.averageRate | currency}/${tli.bids.medianRate | currency}`) : '-' }}</md-table-cell>
+            <md-table-cell>
+              <span v-if="tli.bids.latestBids">{{ tli.bids.minBidRate | currency }}</span>
+              <span v-else>-</span>
+            </md-table-cell>
+            <md-table-cell>
+              <span v-if="tli.bids.latestBids">{{ tli.bids.maxBidRate | currency }}</span>
+              <span v-else>-</span>
+            </md-table-cell>
+            <md-table-cell>
+              <span v-if="tli.bids.latestBids">{{ tli.bids.averageRate | currency }}</span>
+              <span v-else>-</span>
+            </md-table-cell>
           </md-table-row>
         </md-table>
       </div>
@@ -224,12 +235,18 @@ export default {
   methods: {
     async sync() {
       while(!ctx) await this.wait(200);
-
       this.isProcessing = true;
+      await this.updateToTender();
+      this.isProcessing = false;
+    },
+    async updateFromTender() {
+      while(!ctx) await this.wait(200);
+
+      let res, postData;
 
       let boardId = ctx.boardId;
       let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
-      let res = await this.monday.api(queryStr);
+      res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
       this.tenderLineItems = this.currBoardData.items.map(row => {
         return {
@@ -247,14 +264,6 @@ export default {
       });
       this.cols = this.currBoardData.columns;
 
-      await this.updateToTender();
-
-      this.isProcessing = false;
-    },
-    async updateFromTender() {
-
-      let res, postData;
-
       res = await this.monday.storage.instance.getItem(key_linkedTenderId);
       this.linkedTenderId = res.data.value;
       postData = {
@@ -262,8 +271,6 @@ export default {
         includeStaleBids: false
       };
       res = await this.$api.post('/api/get-tender-and-bids', postData);
-
-      console.log(res.data);
 
       if (!res.data) return;
 
@@ -281,7 +288,7 @@ export default {
       }
 
       this.bids = res.data.bids;
-      if ((this.bids.length > 0)) await this.setActiveBid(this.bids[0]);
+      if (this.bids.length > 0) await this.setActiveBid(this.bids[0]);
 
       let bidStats = res.data.bidStats;
       for(let bidStat of bidStats) {
