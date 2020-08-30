@@ -69,25 +69,42 @@
         <div class="md-layout">
           <div class="md-layout-item">
 
-            <p>
-              Bids received: {{ bids.length }}
-            </p>
-            
-            <div>
-              <span style="margin-top: 10px; display: inline-block;">
-                View bid:
-              </span>
-              
-              <md-menu md-size="small">
-                <md-button md-menu-trigger>{{ (Object.keys(activeBid).length !== 0) ? activeBid.createdBy.name : 'none' }}</md-button>
+            <md-card class="md-elevation-0">
 
-                <md-menu-content>
-                  <md-menu-item v-for="bid in bids" :key="bid._id" @click="setActiveBid(bid)">
-                    {{ bid.createdBy.name }}
-                  </md-menu-item>
-                </md-menu-content>
-              </md-menu>
-            </div>
+              <md-card-expand>
+                <md-card-actions md-alignment="space-between">
+
+                  <div>
+                    <md-card-expand-trigger>
+                      <md-button class="md-icon-button">
+                        <md-icon>keyboard_arrow_down</md-icon>
+                      </md-button>
+                    </md-card-expand-trigger>
+
+                    <span style="display: inline-block; margin-top: 10px">
+                      Viewing Bid: 
+                      {{ (Object.keys(activeBid).length !== 0) ? activeBid.createdBy.name : 'none' }}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span style="display: inline-block; margin: 10px 10px 0px 0px;">
+                      {{ bids.length }}
+                    </span>
+                  </div>
+
+                </md-card-actions>
+
+                <md-card-expand-content>
+                  <md-card-content>
+                    <p style="cursor: pointer;" v-for="(bid, idx) in bids" :key="bid._id" @click="setActiveBid(bid)">
+                      {{ idx+1 }}. {{ bid.createdBy.name }}
+                    </p>
+                  </md-card-content>
+                </md-card-expand-content>
+              </md-card-expand>
+
+            </md-card>
 
           </div>
         </div>
@@ -182,7 +199,7 @@ export default {
       bids: [],
       activeBid: {},
 
-      activeTab: 'tender',
+      activeTab: 'bids',
       isProcessing: false
     };
   },
@@ -274,6 +291,7 @@ export default {
       };
       res = await this.$api.post('/api/get-bids-on-tender', postData);
       this.bids = res.data;
+      if ((this.bids.length > 0)) await this.setActiveBid(this.bids[0]);
 
     },
     async updateFromBidsOnTender() {
