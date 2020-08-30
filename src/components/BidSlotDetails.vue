@@ -118,8 +118,6 @@ export default {
       this.showDetailsDialog = true;
       this.bids = bids;
       this.tenderLineItem = tenderLineItem;
-      console.log(this.tenderLineItem);
-      console.log(this.bids);
     }
   }
 }

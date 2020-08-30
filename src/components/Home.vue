@@ -11,32 +11,22 @@
           <br /><br />
 
           <img src="" />
-          <span class="md-subheading">Upload your bill of quantities.</span>
+          <span class="md-subheading">Upload your item list.</span>
 
           <br /><br />
 
           <img src="" />
-          <span class="md-subheading">Share and invite vendors to bid for fulfilment.</span>
+          <span class="md-subheading">Share and invite vendors to bid.</span>
 
           <br /><br />
 
           <img src="" />
-          <span class="md-subheading">Manage the process easily from a simple dashboard.</span>
-
-          <br /><br />
-
-          <img src="" />
-          <span class="md-subheading">Receive automated emails when new bids arrive.</span>
+          <span class="md-subheading">Easily manage changes to your requirements and bids.</span>
 
           <br /><br />
 
           <img src="" />
           <span class="md-subheading">Negotiate prices to make sure you get the best deal.</span>
-
-          <br /><br />
-
-          <img src="" />
-          <span class="md-subheading">When you are done create the purchase order right from the app.</span>
 
           <br /><br />
 
