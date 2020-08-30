@@ -5,10 +5,7 @@
 
     <div class="md-layout" style="padding: 8px;">
 
-      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
-      </div>
-
-      <div class="md-layout-item md-large-size-60 md-xsmall-size-100">
+      <div class="md-layout-item md-large-size-60 md-small-size-100">
         <h1 class="md-title">{{ tenderName }}</h1>
         <p class="md-caption">Last updated: &nbsp; {{ bidLastUpdatedAt | moment("calendar") }}</p>
         <p class="md-caption" v-if="bidCreatedBy">Submitted by: &nbsp; {{ bidCreatedBy.name }}</p>
@@ -16,9 +13,6 @@
           <label>Description</label>
           <md-textarea v-model="bidDescription" md-autogrow></md-textarea>
         </md-field>
-      </div>
-
-      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
       </div>
       
     </div>

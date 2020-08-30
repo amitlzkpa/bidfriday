@@ -135,7 +135,7 @@
 
         <div class="md-layout">
 
-          <div class="md-layout-item md-size-60" style="padding: 8px;">
+          <div class="md-layout-item" style="padding: 8px;">
 
             <p class="md-title">Settings</p>
             <md-field>
@@ -143,15 +143,6 @@
               <md-textarea v-model="description"></md-textarea>
             </md-field>
 
-          </div>
-
-          <div class="md-layout-item md-size-40" style="padding: 8px;">
-            <span class="md-caption">Price Reveal</span>
-            <br />
-            <md-checkbox v-model="priceRevealSettings.count">Count</md-checkbox><br />
-            <md-checkbox v-model="priceRevealSettings.range">Range</md-checkbox><br />
-            <md-checkbox v-model="priceRevealSettings.average">Average</md-checkbox><br />
-            <md-checkbox v-model="priceRevealSettings.median">Median</md-checkbox><br />
           </div>
 
         </div>
@@ -271,6 +262,8 @@ export default {
         includeStaleBids: false
       };
       res = await this.$api.post('/api/get-tender-and-bids', postData);
+
+      console.log(res.data);
 
       if (!res.data) return;
 
