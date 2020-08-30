@@ -152,7 +152,6 @@
             <md-checkbox v-model="priceRevealSettings.range">Range</md-checkbox><br />
             <md-checkbox v-model="priceRevealSettings.average">Average</md-checkbox><br />
             <md-checkbox v-model="priceRevealSettings.median">Median</md-checkbox><br />
-            <md-checkbox v-model="priceRevealSettings.full">Full</md-checkbox>
           </div>
 
         </div>
@@ -199,7 +198,7 @@ export default {
       bids: [],
       activeBid: {},
 
-      activeTab: 'bids',
+      activeTab: 'tender',
       isProcessing: false
     };
   },

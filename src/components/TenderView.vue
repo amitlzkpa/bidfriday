@@ -4,13 +4,46 @@
     <LineItemDetails ref="itemDetails" />
 
     <div class="md-layout" style="padding: 8px;">
-      <div class="md-layout-item">
+      
+      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
+      </div>
+
+      <div class="md-layout-item md-large-size-40 md-xsmall-size-0">
         <h1 class="md-title">{{ tenderName }}</h1>
         <span class="md-caption">Last updated: &nbsp; {{ tenderLastUpdatedAt | moment("calendar") }}</span>
-        <p class="md-caption" style="height: 4vh;">{{ tenderDescription }}</p>
+        <p class="md-caption" style="min-height: 4vh;">{{ tenderDescription }}</p>
       </div>
-      <div class="md-layout-item md-size-15">
+      
+      <div class="md-layout-item md-large-size-20 md-xsmall-size-0" style="margin: 60px 0px 0px 60px;">
+        <div>
+          <md-icon v-if="priceRevealSettings.count">visibility_on</md-icon>
+          <md-icon v-else>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Number of bids publicly visible.</md-tooltip>
+          Count
+        </div>
+        <div>
+          <md-icon v-if="priceRevealSettings.range">visibility_on</md-icon>
+          <md-icon v-else>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Maximum and minimum across the range of bids is publicly visible.</md-tooltip>
+          Range
+        </div>
+        <div>
+          <md-icon v-if="priceRevealSettings.average">visibility_on</md-icon>
+          <md-icon v-else>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Average price of all bids is publicly visible.</md-tooltip>
+          Average
+        </div>
+        <div>
+          <md-icon v-if="priceRevealSettings.median">visibility_on</md-icon>
+          <md-icon v-else>visibility_off</md-icon>
+          <md-tooltip md-delay="300">Median price of all bids is publicly visible.</md-tooltip>
+          Median
+        </div>
       </div>
+      
+      <div class="md-layout-item md-large-size-20 md-xsmall-size-0">
+      </div>
+
     </div>
 
 
