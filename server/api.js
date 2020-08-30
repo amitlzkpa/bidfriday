@@ -260,13 +260,14 @@ router.post('/get-tender', async (req, res) => {
 
 
 
-router.post('/get-tender-and-bids', async (req, res) => {
+router.post('/get-tender-and-bids', [addUserToReq], async (req, res) => {
   let tId = req.body.tId;
   let includeStaleBids = !!req.body.includeStaleBids;
   let tender = await Tender.findOne({ _id: tId });
   if (!tender) {
     return res.json({});
   }
+  let priceRevealSettings = JSON.parse(tender.priceRevealSettings);
   let ret = {};
   tender = await tender.populate({
     path: 'slots',
@@ -313,17 +314,35 @@ router.post('/get-tender-and-bids', async (req, res) => {
       }
     }
     latestBLIsOnThisSlot = latestBLIsOnThisSlot.sort((a, b) => a.rate < b.rate ? -1 : 1);
-    bidStats.push({
-      tenderSlot: tSlot._id,
-      mondayItemId: tSlot.mondayItemId,
-      latestBids: latestBLIsOnThisSlot,
-      bidwiseBidsHistory: bidwiseBidsHistory,
-      minBidRate: (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[0].rate : 0,
-      maxBidRate: (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate : 0,
-      averageRate: (latestBLIsOnThisSlot.length > 0) ? average(latestBLIsOnThisSlot.map(b => b.rate)) : 0,
-      medianRate: (latestBLIsOnThisSlot.length > 0) ? 
-                  (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2 : 0
-    });
+    let isOwner = tender.createdBy.email === req.user.email;
+    // let isOwner = true;
+    let statsItem = {};
+    statsItem.tenderSlot = tSlot._id;
+    if (isOwner) {
+      statsItem.mondayItemId = tSlot.mondayItemId;
+      statsItem.latestBids = latestBLIsOnThisSlot;
+      statsItem.bidwiseBidsHistory = bidwiseBidsHistory;
+    }
+    if (isOwner || priceRevealSettings.count) {
+      let count = latestBLIsOnThisSlot.length;
+      statsItem.count = count;
+    }
+    if (isOwner || priceRevealSettings.range) {
+      let min = (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[0].rate : 0;
+      let max = (latestBLIsOnThisSlot.length > 0) ? latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate : 0;
+      statsItem.minBidRate = min;
+      statsItem.maxBidRate = max;
+    }
+    if (isOwner || priceRevealSettings.median) {
+      let median = (latestBLIsOnThisSlot.length > 0) ? 
+                   (latestBLIsOnThisSlot[latestBLIsOnThisSlot.length - 1].rate - latestBLIsOnThisSlot[0].rate) / 2 : 0;
+      statsItem.medianRate = median;
+    }
+    if (isOwner || priceRevealSettings.average) {
+      let avg = (latestBLIsOnThisSlot.length > 0) ? average(latestBLIsOnThisSlot.map(b => b.rate)) : 0;
+      statsItem.averageRate = avg;
+    }
+    bidStats.push(statsItem);
   }
   ret.bidStats = bidStats;
   return res.json(ret);
