@@ -256,9 +256,8 @@ export default {
       this.bidLastUpdatedAt = bData.updatedAt;
 
       let newSlots = tData.slots.map(s => s);
-      console.log(bData.slots);
       this.slots = bData.slots.map((s, idx) => {
-        newSlots = newSlots.filter(ns => ns._id !== s.tenderSlot._id);
+        newSlots = newSlots.filter(ns => ns.status !== "inactive" && ns._id !== s.tenderSlot._id);
         let slotData = {};
         slotData.index = idx + 1;
         let tis = s.tenderSlot.tenderLineItems;
@@ -272,7 +271,6 @@ export default {
         slotData.tenderLineItem.total = slotData.tenderLineItem.quantity * slotData.bidLineItem.rate;
         return slotData;
       });
-      console.log(this.slots);
       let runningIdx = this.slots.length;
       newSlots.forEach((ns, idx) => {
         let slotData = {};
