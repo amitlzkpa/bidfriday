@@ -304,7 +304,7 @@ export default {
       this.linkedTenderId = res.data.value;
       postData = {
         tId: this.linkedTenderId,
-        includeStaleBids: false
+        includeStaleBids: true
       };
       res = await this.$api.post('/api/get-tender-and-bids', postData);
 

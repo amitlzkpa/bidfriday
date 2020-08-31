@@ -132,6 +132,8 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
   let unitsColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'units') - 1;
   let qtyColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'quantity') - 1;
   let rateColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'rate') - 1;
+  let imgColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'sample images') - 1;
+  let attColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'attachments') - 1;
 
   // keep check of the existing slots and new ones so that the rest can be marked inactive
   let activeSlots = [];
@@ -180,8 +182,8 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
     let mondayUnits = lineItem.column_values[unitsColIdx].text;
     let mondayQuantity = parseFloat(lineItem.column_values[qtyColIdx].text);
     let mondayRate = parseFloat(lineItem.column_values[rateColIdx].text);
-    let mondayImageData = JSON.stringify(lineItem.column_values[6]);
-    let mondayAttachmentData = JSON.stringify(lineItem.column_values[7]);
+    let mondayImageData = JSON.stringify(lineItem.column_values[imgColIdx]);
+    let mondayAttachmentData = JSON.stringify(lineItem.column_values[attColIdx]);
 
     let needsUpdate = 
          (bidfridayName !== mondayName)
