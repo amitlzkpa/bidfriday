@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/components/Home.vue';
 import MondayRequestBoardView from '@/components/MondayRequestBoardView.vue';
+import MondaySetup from '@/components/MondaySetup.vue';
 import MondayOAuth from '@/components/MondayOAuth.vue';
 import TenderView from '@/components/TenderView.vue';
 import BidView from '@/components/BidView.vue';
@@ -90,6 +91,11 @@ const routes =
     name: 'MondayRequestBoardView',
     component: MondayRequestBoardView,
     beforeEnter: mondayGuard
+  },
+  {
+    path: '/monday/setup-your-board',
+    name: 'MondaySetup',
+    component: MondaySetup,
   },
   {
     path: '/monday/connect',

@@ -19,6 +19,10 @@
 
       <span>
         <span>
+          <md-tooltip md-delay="300">Learn how to use BidFriday.</md-tooltip>
+          <md-button target="_blank" href="/monday/setup-your-board">HELP</md-button>
+        </span>
+        <span>
           <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
         </span>
       </span>
@@ -27,6 +31,10 @@
 
     <div style="display: flex;" v-else>
       <span style="flex: 1">
+      </span>
+      <span>
+        <md-tooltip md-delay="300">Learn how to use BidFriday.</md-tooltip>
+        <md-button target="_blank" href="/monday/setup-your-board">HELP</md-button>
       </span>
       <span>
         <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
