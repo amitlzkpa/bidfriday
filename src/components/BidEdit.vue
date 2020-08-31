@@ -315,7 +315,7 @@ export default {
       } else {
         let newSlots = tData.slots.map(s => s);
         this.slots = bData.slots.map((s, idx) => {
-          newSlots = newSlots.filter(ns => ns._id !== s.tenderSlot._id);
+          newSlots = newSlots.filter(ns => ns.status !== "inactive" && ns._id !== s.tenderSlot._id);
           let slotData = {};
           slotData.index = idx + 1;
           let tis = s.tenderSlot.tenderLineItems;
