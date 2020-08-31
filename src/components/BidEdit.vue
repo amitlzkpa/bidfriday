@@ -154,6 +154,10 @@
             
             <div class="md-layout md-gutter" style="margin-bottom: 8px;">
 
+              <div class="md-layout-item md-size-15">
+                <md-switch v-model="slotData.bidLineItem.forceUpdate">Force Update</md-switch>
+              </div>
+
               <div class="md-layout-item">
                 <p class="md-subhead">
                   Name
@@ -301,7 +305,8 @@ export default {
             name: null,
             specifications: null,
             description: null,
-            rate: 0
+            rate: 0,
+            forceUpdate: false
           };
           slotData.bidLineItem = bidLineItem;
           slotData.deselected = false;
@@ -317,6 +322,7 @@ export default {
           let bis = s.bidLineItems;
           slotData.latestTenderItem = (tis.length > 0) ? tis[tis.length - 1] : {};
           slotData.bidLineItem = bis[bis.length - 1];
+          slotData.bidLineItem.forceUpdate = false; 
           slotData.tenderLineItem = tis.filter(t => t._id === slotData.bidLineItem.tenderLineItem)[0];
           slotData.updateState = (s.tenderSlot.status === "inactive") ? 'removed'
                                : (slotData.tenderLineItem._id === slotData.latestTenderItem._id) ? 'unchanged' : 'updated';
@@ -336,7 +342,8 @@ export default {
             name: null,
             specifications: null,
             description: null,
-            rate: 0
+            rate: 0,
+            forceUpdate: false
           };
           slotData.bidLineItem = bidLineItem;
           slotData.updateState = 'new';
@@ -356,16 +363,17 @@ export default {
         slotBidData.tenderSlotId = s.tenderLineItem.slot;
         slotBidData.tenderLineItemId = s.latestTenderItem._id;
         slotBidData.name = s.bidLineItem.name;
+        slotBidData.forceUpdate = s.bidLineItem.forceUpdate;
         slotBidData.rate = parseFloat(s.bidLineItem.rate);
-        slotBidData.specifications = s.bidLineItem.specifications;
-        slotBidData.description = s.bidLineItem.description;
+        slotBidData.specifications = (s.bidLineItem.specifications === null) ? "" : s.bidLineItem.specifications;
+        slotBidData.description = (s.bidLineItem.description === null) ? "" : s.bidLineItem.description;
         return slotBidData;
       });
       let bidData = {
         slotData: slotData,
         bidId: this.bidId,
         bidDescription: this.bidDescription,
-        tenderId: this.tenderId
+        tenderId: this.tenderId,
       };
       let postData = { bidData: bidData };
       let r = await this.$api.post('/api/create-or-update-bid', postData);

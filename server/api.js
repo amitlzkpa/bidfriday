@@ -396,8 +396,9 @@ router.post('/create-or-update-bid', [addUserToReq, authorizeUser], async (req, 
       });
       latestBidLineItem = await latestBidLineItem.save();
       bidSlot.bidLineItems.push(latestBidLineItem._id);
-    }
-    let needsUpdate = (latestBidLineItem.name !== slotData.name)
+    }    
+    let needsUpdate = (slotData.forceUpdate)
+                    ||(latestBidLineItem.name !== slotData.name)
                     ||(latestBidLineItem.rate !== slotData.rate)
                     ||(latestBidLineItem.description !== slotData.description)
                     ||(latestBidLineItem.specification !== slotData.specification);
