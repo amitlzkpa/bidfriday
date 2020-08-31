@@ -126,6 +126,13 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
     tender = await tender.save();
   }
 
+  if (boardInfo.columns.length < 1) return res.json(tender);
+
+  let specsColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'specifications') - 1;
+  let unitsColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'units') - 1;
+  let qtyColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'quantity') - 1;
+  let rateColIdx = boardInfo.columns.findIndex(c => c.title.toLowerCase() === 'rate') - 1;
+
   // keep check of the existing slots and new ones so that the rest can be marked inactive
   let activeSlots = [];
   
@@ -165,16 +172,14 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
     let bidfridayUnits = latestTenderItemInSlot.units;
     let bidfridayQuantity = latestTenderItemInSlot.quantity;
     let bidfridayRate = latestTenderItemInSlot.rate;
-    let bidfridayStatus = latestTenderItemInSlot.status;
     let bidfridayImageData = latestTenderItemInSlot.sampleImages;
     let bidfridayAttachmentData = latestTenderItemInSlot.attachments;
 
     let mondayName = lineItem.name;
-    let mondaySpecifications = lineItem.column_values[0].text;
-    let mondayUnits = lineItem.column_values[1].text;
-    let mondayQuantity = parseFloat(lineItem.column_values[2].text);
-    let mondayRate = parseFloat(lineItem.column_values[3].text);
-    let mondayStatus = lineItem.column_values[8].text;
+    let mondaySpecifications = lineItem.column_values[specsColIdx].text;
+    let mondayUnits = lineItem.column_values[unitsColIdx].text;
+    let mondayQuantity = parseFloat(lineItem.column_values[qtyColIdx].text);
+    let mondayRate = parseFloat(lineItem.column_values[rateColIdx].text);
     let mondayImageData = JSON.stringify(lineItem.column_values[6]);
     let mondayAttachmentData = JSON.stringify(lineItem.column_values[7]);
 
@@ -184,7 +189,6 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
       || (bidfridayUnits !== mondayUnits)
       || (bidfridayQuantity !== mondayQuantity)
       || (bidfridayRate !== mondayRate)
-      || (bidfridayStatus !== mondayStatus)
       || (bidfridayImageData !== mondayImageData)
       || (bidfridayAttachmentData !== mondayAttachmentData);
 
@@ -196,11 +200,11 @@ router.post('/create-or-update-tender', [addUserToReq, authorizeUser], async (re
         description: "",
         specifications: mondaySpecifications,
         units: mondayUnits,
-        quantity: mondayQuantity,
-        rate: isNaN(mondayRate) ? -1 : mondayRate,
+        quantity: isNaN(mondayQuantity) ? 0 : mondayQuantity,
+        rate: isNaN(mondayRate) ? 0 : mondayRate,
         sampleImages: mondayImageData,
         attachments: mondayAttachmentData,
-        status: mondayStatus,
+        status: "",
         createdBy: user
       });
       latestTenderItemInSlot = await latestTenderItemInSlot.save();

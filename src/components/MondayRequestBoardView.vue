@@ -33,10 +33,6 @@
       <span style="flex: 1">
       </span>
       <span>
-        <md-tooltip md-delay="300">Learn how to use BidFriday.</md-tooltip>
-        <md-button target="_blank" href="/monday/setup-your-board">HELP</md-button>
-      </span>
-      <span>
         <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
         <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirectUrl + '/monday/connect'">CONNECT</md-button>
       </span>
@@ -48,11 +44,16 @@
 
 
     <div v-if="hasMondayConnected" style="padding: 8px;">
+
+      <div v-if="tenderLineItems.length < 1">
+        <span class="md-title" style="color: #CCCCCC">No items on your board yet.</span>
+      </div>
+
+      <div v-else>
       <!-- Tender Items -->
       <div v-if="activeTab === 'tender'">
         <md-table>
           <md-table-row>
-            <md-table-head>Status</md-table-head>
             <md-table-head>Name</md-table-head>
             <md-table-head>Quantity</md-table-head>
             <md-table-head>Rate</md-table-head>
@@ -64,9 +65,8 @@
           </md-table-row>
 
           <md-table-row v-for="tli in tenderLineItems" :key="tli.id" @click="showBidSlotDetails(tli.bids, tli.tenderLineItem)">
-            <md-table-cell>{{ tli.status }}</md-table-cell>
             <md-table-cell @click="openItemCard(tli.id)">{{ tli.name }}</md-table-cell>
-            <md-table-cell>{{ tli.units }} {{ tli.quantity }}</md-table-cell>
+            <md-table-cell>{{ tli.quantity }} {{ tli.units }}</md-table-cell>
             <md-table-cell>{{ tli.rate | currency }}</md-table-cell>
             <md-table-cell>{{ tli.total | currency }}</md-table-cell>
             <md-table-cell>{{ tli.bids.latestBids ? tli.bids.latestBids.length : '-' }}</md-table-cell>
@@ -172,6 +172,8 @@
         </div>
         
       </div>
+      </div>
+
     </div>
 
     <div v-if="msgTitle !== null">
@@ -278,16 +280,20 @@ export default {
       let queryStr = `query { boards (ids: ${boardId}) { id name columns { id title } items { id name column_values { text value } } } }`;
       res = await this.monday.api(queryStr);
       this.currBoardData = res.data.boards[0];
+      let specsColIdx = this.currBoardData.columns.findIndex(c => c.title.toLowerCase() === 'specifications') - 1;
+      let unitsColIdx = this.currBoardData.columns.findIndex(c => c.title.toLowerCase() === 'units') - 1;
+      let qtyColIdx = this.currBoardData.columns.findIndex(c => c.title.toLowerCase() === 'quantity') - 1;
+      let rateColIdx = this.currBoardData.columns.findIndex(c => c.title.toLowerCase() === 'rate') - 1;
       this.tenderLineItems = this.currBoardData.items.map(row => {
         return {
           row: row,
           id: row.id,
           name: row.name,
-          status: row.column_values[8].text,
-          units: row.column_values[2].text,
-          quantity: row.column_values[1].text,
-          rate: row.column_values[3].text,
-          total: parseFloat(row.column_values[2].text) * parseFloat(row.column_values[3].text),
+          specifications: row.column_values[specsColIdx].text,
+          units: row.column_values[unitsColIdx].text,
+          quantity: row.column_values[qtyColIdx].text,
+          rate: row.column_values[rateColIdx].text,
+          total: parseFloat(row.column_values[qtyColIdx].text) * parseFloat(row.column_values[rateColIdx].text),
           bids: {},
           tenderLineItem: {}
         }

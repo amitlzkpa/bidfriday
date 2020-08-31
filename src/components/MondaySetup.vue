@@ -3,6 +3,8 @@
     <div class="md-layout">
       <div class="md-layout-item md-large-size-60 md-small-size-100" style="padding: 8px;">
 
+
+
         
         <h2>Setting Up for BidFriday</h2>
         <p>
@@ -11,6 +13,7 @@
           Make sure your follow these steps <b>before</b> adding the BidFriday component to your board.
         </p>
 
+        <iframe width="400" height="600" src="https://www.youtube.com/embed/eJDiIw5c3Ww" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
         <hr />
         
@@ -44,7 +47,9 @@
 
         <h3>Add columns necessary for BidFriday</h3>
         <p>
-          Add the following columns of the specified type in the same order.
+          Add the following columns of the specified type.
+          <br />
+          The titles must match exactly as shown.
         </p>
         <ul>
           <li>Name(default)</li>
@@ -66,13 +71,27 @@
         <hr />
         
 
+        <h3>Install BidFriday on your Monday Account</h3>
+        <p>
+          To start using BidFriday add it from the Monday market-place to your Monday account.
+          Here's a <a href="https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&response_type=install" target="_blank">shortcut to get to the app</a>.
+        </p>
+        <img src="/imgs/08.jpg" />
+        <p class="md-caption">Add BidFriday to your account.</p>
+
+
+        <hr />
+        
+
         <h3>Add BidFriday view</h3>
         <p>
           Now we are ready. You can go ahead and add the BidFriday view from the marketplace.<br />
           Here's a <a href="https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&response_type=install" target="_blank">shortcut to get to the app</a>.
         </p>
-        <img src="/imgs/08.jpg" />
-        <p class="md-caption">How to find marketplace view.</p>
+        <img src="/imgs/09.jpg" />
+        <p class="md-caption">Find the app.</p>
+        <img src="/imgs/10.jpg" />
+        <p class="md-caption">Add it to your board.</p>
 
 
         <hr />
