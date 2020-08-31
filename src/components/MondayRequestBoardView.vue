@@ -237,6 +237,7 @@ export default {
       while(!ctx) await this.wait(200);
       this.isProcessing = true;
       await this.updateToTender();
+      await this.updateFromTender();
       this.isProcessing = false;
     },
     async updateFromTender() {
