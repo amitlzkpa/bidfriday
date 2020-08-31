@@ -166,12 +166,11 @@
       </div>
     </div>
 
-    <div v-else>
+    <div v-if="msgTitle !== null">
       <div class="md-layout">
         <div class="md-layout-item">
-          <p class="md-title">Connect with BidFriday</p>
-          <span class="md-body-2">Allow BidFriday to talk to your Monday account to start syncing data.</span><br />
-          <span class="md-body-2">Use the 'Connect' button in the top row to link your accounts.</span>
+          <p class="md-title">{{ msgTitle }}</p>
+          <span class="md-body-2">{{ msgText }}</span>
         </div>
       </div>
     </div>
@@ -215,7 +214,9 @@ export default {
       activeBid: {},
 
       activeTab: 'tender',
-      isProcessing: false
+      isProcessing: false,
+      msgTitle: null,
+      msgText: null
     };
   },
   computed: {
@@ -234,7 +235,11 @@ export default {
       return;
     }
 
-    if(!this.hasMondayConnected) return;
+    if(!this.hasMondayConnected) {
+      this.msgTitle = "Connect with BidFriday";
+      this.msgText = "Allow BidFriday to talk to your Monday account to start syncing data. Use the 'Connect' button in the top row to link your accounts.";
+      return;
+    }
 
     this.eventBus.$on("sync", () => {
       this.sync();
