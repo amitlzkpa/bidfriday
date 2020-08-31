@@ -257,7 +257,7 @@ export default {
   computed:{
     hasAllFieldsPopulated() {
       for (let s of this.slots) {
-        if (s.deselected) continue;
+        if (s.deselected || s.updateState === "removed") continue;
         if (!s.bidLineItem.rate || !s.bidLineItem.name || s.bidLineItem.name === "") return false;
       }
       return true;
@@ -358,7 +358,9 @@ export default {
       }
     },
     async submitBid() {
-      let slotData = this.slots.filter(s => !s.deselected).map(s => {
+      let slotData = this.slots
+                         .filter(s => !s.deselected && s.updateState !== "removed")
+                         .map(s => {
         let slotBidData = {};
         slotBidData.tenderSlotId = s.tenderLineItem.slot;
         slotBidData.tenderLineItemId = s.latestTenderItem._id;
