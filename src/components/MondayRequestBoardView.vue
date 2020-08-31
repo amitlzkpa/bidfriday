@@ -6,7 +6,7 @@
 
 
     <!-- Navbar -->
-    <div style="display: flex;">
+    <div style="display: flex;" v-if="hasMondayConnected">
 
       <span style="flex: 1">
         <md-button :class="(activeTab === 'tender') ? 'md-primary' : ''"
@@ -18,15 +18,20 @@
       </span>
 
       <span>
-        <span v-if="hasMondayConnected">
+        <span>
           <md-button @click="sync" class="md-primary md-raised" style="border-radius: 18px;">SYNC</md-button>
-        </span>
-        <span v-else>
-          <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
-          <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirectUrl + '/monday/connect'">CONNECT</md-button>
         </span>
       </span>
       
+    </div>
+
+    <div style="display: flex;" v-else>
+      <span style="flex: 1">
+      </span>
+      <span>
+        <md-tooltip md-delay="300">Connect your accounts to sync and share your requests and bids.</md-tooltip>
+        <md-button target="_blank" :href="'https://auth.monday.com/oauth2/authorize?client_id=74f5d4a266dec72194a44f947d25ce70&redirect_uri=' + redirectUrl + '/monday/connect'">CONNECT</md-button>
+      </span>
     </div>
 
 
@@ -34,7 +39,7 @@
     <BidSlotDetails ref="bidSlotDetails" />
 
 
-    <div style="padding: 8px;">
+    <div v-if="hasMondayConnected" style="padding: 8px;">
       <!-- Tender Items -->
       <div v-if="activeTab === 'tender'">
         <md-table>
@@ -161,6 +166,15 @@
       </div>
     </div>
 
+    <div v-else>
+      <div class="md-layout">
+        <div class="md-layout-item">
+          <p class="md-title">Connect with BidFriday</p>
+          <span class="md-body-2">Allow BidFriday to talk to your Monday account to start syncing data.</span><br />
+          <span class="md-body-2">Use the 'Connect' button in the top row to link your accounts.</span>
+        </div>
+      </div>
+    </div>
 
   </div>
 </template>
@@ -219,6 +233,8 @@ export default {
       this.$el.parentNode.removeChild(this.$el);
       return;
     }
+
+    if(!this.hasMondayConnected) return;
 
     this.eventBus.$on("sync", () => {
       this.sync();
