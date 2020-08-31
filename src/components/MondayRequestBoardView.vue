@@ -52,6 +52,16 @@
       <div v-else>
       <!-- Tender Items -->
       <div v-if="activeTab === 'tender'">
+
+      <div style="display: flex;">
+        <span style="flex: 1;">
+        </span>
+        <span @click="includeStaleBids = !includeStaleBids; updateFromTender();">
+          <md-icon>{{ (includeStaleBids) ? 'check_box' : 'check_box_outline_blank' }}</md-icon>
+          Include stale bids
+        </span>
+      </div>
+
         <md-table>
           <md-table-row>
             <md-table-head>Name</md-table-head>
@@ -222,6 +232,7 @@ export default {
       tender: null,
       bids: [],
       activeBid: {},
+      includeStaleBids: false,
 
       activeTab: 'tender',
       isProcessing: false,
@@ -304,7 +315,7 @@ export default {
       this.linkedTenderId = res.data.value;
       postData = {
         tId: this.linkedTenderId,
-        includeStaleBids: true
+        includeStaleBids: this.includeStaleBids
       };
       res = await this.$api.post('/api/get-tender-and-bids', postData);
 
