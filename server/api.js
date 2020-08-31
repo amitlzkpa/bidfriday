@@ -510,8 +510,7 @@ router.post('/connect-monday-user', async (req, res) => {
     let tokenReqBody = {
       client_id: process.env.MONDAY_CLIENTID,
       client_secret: process.env.MONDAY_CLIENTSECRET,
-      // redirect_uri: process.env.MONDAY_REDIRECTURI,
-      redirect_uri: 'http://localhost:4001/monday/connect',
+      redirect_uri: (process.env.NODE_ENV === 'production') ? process.env.MONDAY_REDIRECTURI : 'http://localhost:4001/monday/connect',
       code: code
     };
     let at = await axios.post(tokenEndPt, tokenReqBody);
