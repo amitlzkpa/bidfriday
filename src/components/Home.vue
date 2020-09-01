@@ -1,5 +1,28 @@
 <template>
   <div>
+
+    <div class="md-layout md-gutter">
+
+      <div class="md-layout-item">
+        <div style="text-align: center; padding: 200px 0px 200px 200px;">
+          <img src="/imgs/OnScreen.png" style="width: 600px;" />
+        </div>
+      </div>
+      
+      <div class="md-layout-item">
+        <div style="text-align: center; padding: 300px 200px 200px 0px;">
+          <span class="md-display-2">BidFriday</span>
+          <br />
+          <span class="md-body-1">Simplify your bidding process.</span>
+          <br />
+          <span class="md-caption">powered with <img src="/imgs/monday-logo.png" style="height: 20px;" /></span>
+          <br />
+          <md-button target="_blank" href="https://bidfriday.herokuapp.com/tender-view/5f4dad057460a50017f995e0" class="md-primary">Sample</md-button>
+        </div>
+      </div>
+      
+    </div>
+    
     <div class="md-layout md-gutter">
       <div class="md-layout-item"></div>
       <div class="md-layout-item">
