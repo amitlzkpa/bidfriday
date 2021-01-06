@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.11.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "clipboardy": "^2.3.0",
     "concurrently": "^5.2.0",
